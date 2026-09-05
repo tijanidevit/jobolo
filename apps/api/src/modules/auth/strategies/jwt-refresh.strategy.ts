@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 
 interface JwtRefreshPayload {
   sub: string;
@@ -28,7 +28,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   validate(
     req: Request,
     payload: JwtRefreshPayload,
-  ): AuthenticatedUser & { refreshToken: string } {
+  ): IAuthenticatedUser & { refreshToken: string } {
     const refreshToken = (req.body as { refreshToken: string }).refreshToken;
     return { id: payload.sub, email: payload.email, refreshToken };
   }

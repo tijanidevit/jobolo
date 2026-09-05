@@ -15,7 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import { UsersService } from '../services/users.service.js';
 import { UserProfileResponse, UpdateProfileDto } from '../dto/user-profile.dto.js';
 
@@ -31,7 +31,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({ status: 200, description: 'Profile retrieved successfully', type: UserProfileResponse })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getProfile(@CurrentUser() user: AuthenticatedUser) {
+  async getProfile(@CurrentUser() user: IAuthenticatedUser) {
     const userEntity = await this.usersService.findById(user.id);
     return {
       message: 'Profile retrieved successfully',
@@ -45,7 +45,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Profile updated successfully', type: UserProfileResponse })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async updateProfile(
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: IAuthenticatedUser,
     @Body() dto: UpdateProfileDto,
   ) {
     const updated = await this.usersService.updateProfile(user.id, dto);

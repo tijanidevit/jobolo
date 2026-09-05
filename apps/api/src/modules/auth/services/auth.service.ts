@@ -11,7 +11,7 @@ import {
   AppBadRequestException,
   AppNotFoundException,
 } from '../../../common/exceptions/app.exceptions.js';
-import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 
 const BCRYPT_ROUNDS = 12;
 const RESET_TOKEN_EXPIRY_MS = 1000 * 60 * 60; // 1 hour
@@ -176,7 +176,7 @@ export class AuthService {
   // ─── Token Generation ─────────────────────────────────────────────────────
 
   private async generateTokens(userId: string, email: string) {
-    const payload: AuthenticatedUser = { id: userId, email };
+    const payload: IAuthenticatedUser = { id: userId, email };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(

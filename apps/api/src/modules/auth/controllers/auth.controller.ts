@@ -17,7 +17,7 @@ import { AuthService } from '../services/auth.service.js';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { JwtRefreshGuard } from '../../../common/guards/jwt-refresh.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import {
   RegisterDto,
   LoginDto,
@@ -66,7 +66,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Log out and invalidate refresh token' })
   @ApiResponse({ status: 200, description: 'Logged out successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async logout(@CurrentUser() user: AuthenticatedUser) {
+  async logout(@CurrentUser() user: IAuthenticatedUser) {
     await this.authService.logout(user.id);
     return { message: 'Logged out successfully', data: null };
   }
@@ -78,7 +78,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Tokens refreshed', type: AuthTokensResponse })
   @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
   async refresh(
-    @CurrentUser() user: AuthenticatedUser & { refreshToken: string },
+    @CurrentUser() user: IAuthenticatedUser & { refreshToken: string },
   ) {
     const tokens = await this.authService.refreshTokens(user.id, user.refreshToken);
     return {
@@ -126,7 +126,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Get current authenticated user identity (token check)' })
   @ApiResponse({ status: 200, description: 'Authenticated user identity' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  getMe(@CurrentUser() user: AuthenticatedUser) {
+  getMe(@CurrentUser() user: IAuthenticatedUser) {
     return { message: 'Authenticated', data: user };
   }
 }

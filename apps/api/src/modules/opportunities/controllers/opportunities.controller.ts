@@ -17,7 +17,7 @@ import { UpdateOpportunityDto } from '../dto/update-opportunity.dto.js';
 import { ChangeOpportunityStageDto } from '../dto/change-opportunity-stage.dto.js';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 
 @ApiTags('Opportunities')
 @ApiBearerAuth()
@@ -29,7 +29,7 @@ export class OpportunitiesController {
   @Post()
   @ApiOperation({ summary: 'Create a new opportunity' })
   async create(
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: IAuthenticatedUser,
     @Body() createOpportunityDto: CreateOpportunityDto,
   ) {
     return this.opportunitiesService.create(user.id, createOpportunityDto);
@@ -37,14 +37,14 @@ export class OpportunitiesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all opportunities for the current user' })
-  async findAll(@CurrentUser() user: AuthenticatedUser) {
+  async findAll(@CurrentUser() user: IAuthenticatedUser) {
     return this.opportunitiesService.findAllForUser(user.id);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific opportunity' })
   async findOne(
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
   ) {
     return this.opportunitiesService.findOne(id, user.id);
@@ -53,7 +53,7 @@ export class OpportunitiesController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update an opportunity' })
   async update(
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
     @Body() updateOpportunityDto: UpdateOpportunityDto,
   ) {
@@ -63,7 +63,7 @@ export class OpportunitiesController {
   @Patch(':id/stage')
   @ApiOperation({ summary: 'Change the pipeline stage of an opportunity' })
   async changeStage(
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
     @Body() changeStageDto: ChangeOpportunityStageDto,
   ) {
@@ -74,7 +74,7 @@ export class OpportunitiesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an opportunity' })
   async remove(
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
   ) {
     await this.opportunitiesService.remove(id, user.id);

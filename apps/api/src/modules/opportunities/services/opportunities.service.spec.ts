@@ -69,32 +69,32 @@ describe('OpportunitiesService', () => {
   describe('update', () => {
     it('should verify existence and update the opportunity', async () => {
       const existingOpp = { id: mockOpportunityId, userId: mockUserId } as Opportunity;
-      const updatedOpp = { ...existingOpp, companyName: 'New Name' } as Opportunity;
+      const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
 
       repository.findOne.mockResolvedValueOnce(existingOpp);
-      repository.update.mockResolvedValueOnce(updatedOpp);
+      repository.update.mockResolvedValueOnce(expectedResult as any);
 
       const result = await service.update(mockOpportunityId, mockUserId, { companyName: 'New Name' });
 
       expect(repository.update).toHaveBeenCalledWith(mockOpportunityId, mockUserId, {
         companyName: 'New Name',
       });
-      expect(result).toEqual(updatedOpp);
+      expect(result).toEqual(expectedResult);
     });
   });
 
   describe('changeStage', () => {
     it('should update the stage', async () => {
       const existingOpp = { id: mockOpportunityId, userId: mockUserId, stage: 'discovered' } as Opportunity;
-      const updatedOpp = { ...existingOpp, stage: 'applied' } as Opportunity;
+      const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
 
       repository.findOne.mockResolvedValueOnce(existingOpp);
-      repository.update.mockResolvedValueOnce(updatedOpp);
+      repository.update.mockResolvedValueOnce(expectedResult as any);
 
       const result = await service.changeStage(mockOpportunityId, mockUserId, 'applied');
 
       expect(repository.update).toHaveBeenCalledWith(mockOpportunityId, mockUserId, { stage: 'applied' });
-      expect(result).toEqual(updatedOpp);
+      expect(result).toEqual(expectedResult);
     });
   });
 

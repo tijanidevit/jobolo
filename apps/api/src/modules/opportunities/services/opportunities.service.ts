@@ -3,7 +3,8 @@ import { OpportunitiesRepository } from '../repositories/opportunities.repositor
 import { CreateOpportunityDto } from '../dto/create-opportunity.dto.js';
 import { UpdateOpportunityDto } from '../dto/update-opportunity.dto.js';
 import { Opportunity } from '../entities/opportunity.entity.js';
-import { OpportunityStatus } from '@jobolo/shared';
+import { UpdateResult } from 'typeorm';
+import type { OpportunityStatus } from '@jobolo/shared';
 
 @Injectable()
 export class OpportunitiesService {
@@ -20,7 +21,7 @@ export class OpportunitiesService {
     return this.opportunitiesRepository.findAllForUser(userId);
   }
 
-  async findOne(id: string, userId: string): Promise<Opportunity> {
+  private async getOpportunity(id: string, userId: string): Promise<Opportunity> {
     const opportunity = await this.opportunitiesRepository.findOne(id, userId);
     if (!opportunity) {
       throw new NotFoundException('Opportunity not found');
@@ -28,31 +29,27 @@ export class OpportunitiesService {
     return opportunity;
   }
 
-  async update(id: string, userId: string, updateDto: UpdateOpportunityDto): Promise<Opportunity> {
-    // Verify it exists first
-    await this.findOne(id, userId);
-    
-    const updated = await this.opportunitiesRepository.update(id, userId, updateDto);
-    if (!updated) {
-      throw new NotFoundException('Opportunity not found after update');
-    }
-    return updated;
+  async findOne(id: string, userId: string): Promise<Opportunity> {
+    return this.getOpportunity(id, userId);
   }
 
-  async changeStage(id: string, userId: string, stage: OpportunityStatus): Promise<Opportunity> {
-    // Verify it exists first
-    await this.findOne(id, userId);
+  async update(id: string, userId: string, updateDto: UpdateOpportunityDto): Promise<UpdateResult> {
 
-    const updated = await this.opportunitiesRepository.update(id, userId, { stage });
-    if (!updated) {
-      throw new NotFoundException('Opportunity not found after update');
-    }
-    return updated;
+    await this.getOpportunity(id, userId);
+    
+    return this.opportunitiesRepository.update(id, userId, updateDto);
+  }
+
+  async changeStage(id: string, userId: string, stage: OpportunityStatus): Promise<UpdateResult> {
+
+    await this.getOpportunity(id, userId);
+
+    return this.opportunitiesRepository.update(id, userId, { stage });
   }
 
   async remove(id: string, userId: string): Promise<void> {
-    // Verify it exists first
-    await this.findOne(id, userId);
+
+    await this.getOpportunity(id, userId);
     
     await this.opportunitiesRepository.delete(id, userId);
   }

@@ -2,14 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OpportunitiesController } from './opportunities.controller.js';
 import { OpportunitiesService } from '../services/opportunities.service.js';
 import { CreateOpportunityDto } from '../dto/create-opportunity.dto.js';
-import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import { PassportModule } from '@nestjs/passport';
 
 describe('OpportunitiesController', () => {
   let controller: OpportunitiesController;
   let service: Mocked<OpportunitiesService>;
 
-  const mockUser: AuthenticatedUser = {
+  const mockUser: IAuthenticatedUser = {
     id: 'user-123',
     email: 'test@example.com',
   };
@@ -68,21 +68,23 @@ describe('OpportunitiesController', () => {
   });
 
   it('should update an opportunity ensuring ownership', async () => {
-    service.update.mockResolvedValueOnce(mockOpportunity as any);
+    const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
+    service.update.mockResolvedValueOnce(expectedResult as any);
 
     const result = await controller.update(mockUser, 'opp-456', { companyName: 'New Corp' });
 
     expect(service.update).toHaveBeenCalledWith('opp-456', mockUser.id, { companyName: 'New Corp' });
-    expect(result).toEqual(mockOpportunity);
+    expect(result).toEqual(expectedResult);
   });
 
   it('should change stage ensuring ownership', async () => {
-    service.changeStage.mockResolvedValueOnce({ ...mockOpportunity, stage: 'applied' } as any);
+    const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
+    service.changeStage.mockResolvedValueOnce(expectedResult as any);
 
     const result = await controller.changeStage(mockUser, 'opp-456', { stage: 'applied' });
 
     expect(service.changeStage).toHaveBeenCalledWith('opp-456', mockUser.id, 'applied');
-    expect(result.stage).toBe('applied');
+    expect(result).toEqual(expectedResult);
   });
 
   it('should remove an opportunity ensuring ownership', async () => {

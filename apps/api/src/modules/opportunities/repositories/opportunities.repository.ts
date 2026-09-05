@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Opportunity } from '../entities/opportunity.entity.js';
 
 @Injectable()
@@ -26,9 +26,8 @@ export class OpportunitiesRepository {
     });
   }
 
-  async update(id: string, userId: string, updateData: Partial<Opportunity>): Promise<Opportunity | null> {
-    await this.repository.update({ id, userId }, updateData);
-    return this.findOne(id, userId);
+  async update(id: string, userId: string, updateData: Partial<Opportunity>): Promise<UpdateResult> {
+    return this.repository.update({ id, userId }, updateData);
   }
 
   async delete(id: string, userId: string): Promise<boolean> {
