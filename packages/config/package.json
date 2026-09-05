@@ -1,0 +1,6 @@
+{
+  "name": "@jobolo/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared tooling configuration for the Jobolo monorepo"
+}

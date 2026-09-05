@@ -1,0 +1,27 @@
+{
+  "name": "jobolo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Job Search Operating System — Monorepo Root",
+  "scripts": {
+    "dev": "pnpm --parallel -r run dev",
+    "dev:api": "pnpm --filter api run dev",
+    "dev:web": "pnpm --filter web run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "test:ci": "pnpm -r run test:ci",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
+    "typecheck": "pnpm -r run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@12.2.1"
+}
