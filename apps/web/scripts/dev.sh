@@ -15,5 +15,9 @@ while true; do
   port=$((port + 1))
 done
 
+# Remove the Next.js dev server lockfile if it exists so we can start
+# even if another instance is running in this directory.
+rm -f .next/dev/lock
+
 echo "Starting Next.js on port $port"
 exec next dev --port "$port"
