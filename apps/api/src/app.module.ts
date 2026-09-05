@@ -10,6 +10,7 @@ import { AppController } from './app.controller.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { MailModule } from './modules/mail/mail.module.js';
+import { OpportunitiesModule } from './modules/opportunities/opportunities.module.js';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MailModule } from './modules/mail/mail.module.js';
     MailModule,
     AuthModule,
     UsersModule,
+    OpportunitiesModule,
   ],
   controllers: [AppController],
 })
