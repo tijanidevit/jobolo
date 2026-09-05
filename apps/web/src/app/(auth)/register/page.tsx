@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,9 +23,9 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const router = useRouter();
   const { register: registerAuth, isRegistering } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const {
     register,
@@ -46,9 +45,7 @@ export default function RegisterPage() {
     try {
       setError(null);
       await registerAuth(data);
-      // User is now authenticated — redirect to dashboard.
-      // A verification reminder is shown there via the profile/email badge.
-      router.replace('/dashboard');
+      setSuccess(true);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create account. Please try again.');
     }
@@ -68,7 +65,22 @@ export default function RegisterPage() {
               <CardTitle>Create an account</CardTitle>
               <CardDescription>Enter your details to get started</CardDescription>
             </CardHeader>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            {success ? (
+              <CardContent className="space-y-4">
+                <div className="rounded-md bg-green-50 p-4 text-center">
+                  <h3 className="text-sm font-medium text-green-800">Registration successful</h3>
+                  <div className="mt-2 text-sm text-green-700">
+                    <p>We've sent a verification link to your email.</p>
+                  </div>
+                  <div className="mt-4">
+                    <Link href="/login" className="w-full">
+                      <Button className="w-full">Go to sign in</Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <CardContent className="space-y-4">
                   {error && (
                     <div className="flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-600">
@@ -148,6 +160,7 @@ export default function RegisterPage() {
                   </p>
                 </CardFooter>
               </form>
+            )}
           </Card>
         </div>
       </div>

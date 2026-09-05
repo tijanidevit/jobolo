@@ -52,13 +52,6 @@ export const useAuth = () => {
 
   const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: (data) => {
-      if (typeof window !== 'undefined') {
-        Cookies.set('accessToken', data.data.accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-        Cookies.set('refreshToken', data.data.refreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-      }
-      queryClient.invalidateQueries({ queryKey: ['me'] });
-    },
   });
 
   const logoutMutation = useMutation({
