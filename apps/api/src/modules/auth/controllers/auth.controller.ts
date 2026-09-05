@@ -137,7 +137,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Get current authenticated user identity (token check)' })
   @ApiResponse({ status: 200, description: 'Authenticated user identity' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  getMe(@CurrentUser() user: IAuthenticatedUser) {
-    return { message: 'Authenticated', data: user };
+  async getMe(@CurrentUser() user: IAuthenticatedUser) {
+    const safeUser = await this.authService.getMe(user.id);
+    return { message: 'Authenticated', data: safeUser };
   }
 }

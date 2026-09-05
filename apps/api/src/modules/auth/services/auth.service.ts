@@ -105,6 +105,17 @@ export class AuthService {
     return this.generateTokens(user.id, user.email);
   }
 
+  // ─── Get Me ───────────────────────────────────────────────────────────────
+
+  async getMe(userId: string) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new AppUnauthorizedException('User not found', 'USER_NOT_FOUND');
+    }
+    const { passwordHash, emailVerificationToken, passwordResetToken, hashedRefreshToken, ...safeUser } = user;
+    return safeUser;
+  }
+
   // ─── Logout ───────────────────────────────────────────────────────────────
 
   async logout(userId: string): Promise<void> {
