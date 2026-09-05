@@ -65,7 +65,7 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
   if (!publicPage && !requireAuth && isAuthenticated) return null;
 
   // Block unverified users from accessing protected pages
-  if (requireAuth && isAuthenticated && user && !user.emailVerified) {
+  if (!publicPage && requireAuth && isAuthenticated && user && !user.emailVerified) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
         <div className="w-full max-w-md shadow-sm border border-slate-200 bg-white rounded-lg p-6 text-center space-y-6">
