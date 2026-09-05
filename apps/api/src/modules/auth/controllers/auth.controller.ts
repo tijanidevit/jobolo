@@ -97,6 +97,17 @@ export class AuthController {
     return { message: 'Email verified successfully', data: null };
   }
 
+  @Post('resend-verification')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Resend verification email to the authenticated user' })
+  @ApiResponse({ status: 200, description: 'Verification email sent' })
+  async resendVerification(@CurrentUser() user: IAuthenticatedUser) {
+    await this.authService.resendVerificationEmail(user.id);
+    return { message: 'Verification email sent successfully', data: null };
+  }
+
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request a password reset email' })

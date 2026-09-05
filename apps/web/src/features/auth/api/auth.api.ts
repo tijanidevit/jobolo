@@ -51,4 +51,9 @@ export const authApi = {
     const response = await api.post<{ message: string; data: null }>('/auth/verify-email', data);
     return response.data;
   },
+
+  resendVerificationEmail: async () => {
+    const response = await api.post<{ message: string; data: null }>('/auth/resend-verification');
+    return response.data;
+  },
 };

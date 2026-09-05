@@ -66,6 +66,29 @@ export class AuthService {
     return this.generateTokens(user.id, user.email);
   }
 
+  async resendVerificationEmail(userId: string) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new AppUnauthorizedException('User not found', 'USER_NOT_FOUND');
+    }
+    if (user.emailVerified) {
+      return; // Already verified, do nothing silently
+    }
+
+    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+    user.emailVerificationToken = emailVerificationToken;
+    await this.usersRepository.save(user);
+
+    // Send verification email
+    this.mailService
+      .sendEmailVerification(user.email, user.firstName, emailVerificationToken)
+      .catch((err: unknown) => {
+        this.logger.error(`Failed to resend verification email to ${user.email}`, err);
+      });
+
+    this.logger.log(`Resent verification email to: ${user.email}`);
+  }
+
   // ─── Login ────────────────────────────────────────────────────────────────
 
   async login(dto: { email: string; password: string }) {

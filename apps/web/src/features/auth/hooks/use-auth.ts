@@ -65,15 +65,21 @@ export const useAuth = () => {
     },
   });
 
+  const resendVerificationMutation = useMutation({
+    mutationFn: authApi.resendVerificationEmail,
+  });
+
   return {
     user,
     isInitializing,
     login: loginMutation.mutateAsync,
     register: registerMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
+    resendVerification: resendVerificationMutation.mutateAsync,
     isLoggingIn: loginMutation.isPending,
     isRegistering: registerMutation.isPending,
     isLoggingOut: logoutMutation.isPending,
+    isResendingVerification: resendVerificationMutation.isPending,
     loginError: loginMutation.error,
     registerError: registerMutation.error,
   };
