@@ -3,23 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 
-/**
- * Mail service — SMTP-backed transactional email.
- *
- * All SMTP settings are configurable via environment variables:
- *   MAIL_HOST, MAIL_PORT, MAIL_SECURE, MAIL_USER, MAIL_PASS, MAIL_FROM, MAIL_FROM_NAME
- *
- * Compatible with any SMTP provider — Resend (smtp.resend.com:587), SendGrid, Mailgun,
- * Brevo, Postmark, or a local SMTP server.
- *
- * To use Resend SMTP:
- *   MAIL_HOST=smtp.resend.com
- *   MAIL_PORT=587
- *   MAIL_SECURE=false
- *   MAIL_USER=resend
- *   MAIL_PASS=<your-resend-api-key>
- *   MAIL_FROM=noreply@yourdomain.com
- */
+
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
