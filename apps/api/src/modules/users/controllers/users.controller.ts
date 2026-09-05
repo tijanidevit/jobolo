@@ -14,7 +14,8 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser, AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import { UsersService } from '../services/users.service.js';
 import { UserProfileResponse, UpdateProfileDto } from '../dto/user-profile.dto.js';
 

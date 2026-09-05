@@ -16,7 +16,8 @@ import {
 import { AuthService } from '../services/auth.service.js';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { JwtRefreshGuard } from '../../../common/guards/jwt-refresh.guard.js';
-import { CurrentUser, AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import {
   RegisterDto,
   LoginDto,

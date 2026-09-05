@@ -17,7 +17,7 @@ export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
     migrationsRun: false,
     // synchronize is ONLY for development. NEVER use in production.
     synchronize: configService.get<string>('app.nodeEnv') === 'development',
-    logging: configService.get<string>('app.nodeEnv') === 'development',
+    logging: false,
     autoLoadEntities: true,
   }),
 };

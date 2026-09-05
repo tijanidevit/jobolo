@@ -35,7 +35,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
             success: true,
             message: message ?? 'Request successful',
             data,
-            ...(meta && { meta }),
+            ...(meta ? { meta } : {}),
           } as ApiResponse<T>;
         }
 
