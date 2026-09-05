@@ -1,6 +1,6 @@
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserEntity } from '../modules/users/entities/user.entity.js';
+import { User } from '../modules/users/entities/user.entity.js';
 
 export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
@@ -12,7 +12,7 @@ export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
     database: configService.get<string>('database.name'),
     username: configService.get<string>('database.user'),
     password: configService.get<string>('database.pass'),
-    entities: [UserEntity],
+    entities: [User],
     migrations: ['dist/migrations/*.js'],
     migrationsRun: false,
     // synchronize is ONLY for development. NEVER use in production.

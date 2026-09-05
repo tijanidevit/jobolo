@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import type { UserEntity } from '../entities/user.entity.js';
+import type { User } from '../entities/user.entity.js';
 
 /**
  * User profile response DTO.
@@ -30,7 +30,7 @@ export class UserProfileResponse {
   @ApiProperty({ description: 'Account last-updated timestamp' })
   updatedAt: Date;
 
-  static fromEntity(user: UserEntity): UserProfileResponse {
+  static fromEntity(user: User): UserProfileResponse {
     const dto = new UserProfileResponse();
     dto.id = user.id;
     dto.email = user.email;

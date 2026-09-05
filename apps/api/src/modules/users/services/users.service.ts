@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../repositories/users.repository.js';
-import { UserEntity } from '../entities/user.entity.js';
+import { User } from '../entities/user.entity.js';
 import { AppNotFoundException } from '../../../common/exceptions/app.exceptions.js';
 
 /**
@@ -10,7 +10,7 @@ import { AppNotFoundException } from '../../../common/exceptions/app.exceptions.
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async findById(id: string): Promise<UserEntity> {
+  async findById(id: string): Promise<User> {
     const user = await this.usersRepository.findById(id);
     if (!user) {
       throw new AppNotFoundException('User', 'USER_NOT_FOUND');
@@ -18,14 +18,14 @@ export class UsersService {
     return user;
   }
 
-  async findByEmail(email: string): Promise<UserEntity | null> {
+  async findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findByEmail(email);
   }
 
   async updateProfile(
     id: string,
     data: { firstName?: string; lastName?: string },
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     const user = await this.findById(id);
 
     if (data.firstName !== undefined) user.firstName = data.firstName;

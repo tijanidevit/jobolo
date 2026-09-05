@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from '../entities/user.entity.js';
+import { User } from '../entities/user.entity.js';
 
 /**
  * Users repository.
@@ -10,32 +10,32 @@ import { UserEntity } from '../entities/user.entity.js';
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly repo: Repository<UserEntity>,
+    @InjectRepository(User)
+    private readonly repo: Repository<User>,
   ) {}
 
-  async findById(id: string): Promise<UserEntity | null> {
+  async findById(id: string): Promise<User | null> {
     return this.repo.findOne({ where: { id } });
   }
 
-  async findByEmail(email: string): Promise<UserEntity | null> {
+  async findByEmail(email: string): Promise<User | null> {
     return this.repo.findOne({ where: { email } });
   }
 
-  async findByEmailVerificationToken(token: string): Promise<UserEntity | null> {
+  async findByEmailVerificationToken(token: string): Promise<User | null> {
     return this.repo.findOne({ where: { emailVerificationToken: token } });
   }
 
-  async findByPasswordResetToken(token: string): Promise<UserEntity | null> {
+  async findByPasswordResetToken(token: string): Promise<User | null> {
     return this.repo.findOne({ where: { passwordResetToken: token } });
   }
 
-  async create(data: Partial<UserEntity>): Promise<UserEntity> {
+  async create(data: Partial<User>): Promise<User> {
     const user = this.repo.create(data);
     return this.repo.save(user);
   }
 
-  async save(user: UserEntity): Promise<UserEntity> {
+  async save(user: User): Promise<User> {
     return this.repo.save(user);
   }
 }
