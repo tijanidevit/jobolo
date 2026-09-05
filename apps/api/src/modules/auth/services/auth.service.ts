@@ -72,7 +72,7 @@ export class AuthService {
       throw new AppUnauthorizedException('User not found', 'USER_NOT_FOUND');
     }
     if (user.emailVerified) {
-      return; // Already verified, do nothing silently
+      throw new AppBadRequestException('Email is already verified', 'ALREADY_VERIFIED');
     }
 
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
