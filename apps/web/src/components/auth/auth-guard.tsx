@@ -22,6 +22,7 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
   const isInitialized = useAuthStore((state) => state.isInitialized);
   
   const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
   const { logout, resendVerification, isResendingVerification } = useAuth();
   const [hasResent, setHasResent] = useState(false);
 
@@ -45,8 +46,13 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
     try {
       await resendVerification();
       setHasResent(true);
-    } catch (error) {
-      console.error('Failed to resend verification email', error);
+    } catch (error: any) {
+      if (error.response?.data?.code === 'ALREADY_VERIFIED' && user) {
+        // Backend knows user is verified, but frontend state is stale. Sync it up.
+        setUser({ ...user, emailVerified: true });
+      } else {
+        console.error('Failed to resend verification email', error);
+      }
     }
   };
 
