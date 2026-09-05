@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 /**
  * Global Axios instance configured for the NestJS API.
@@ -8,7 +9,7 @@ import axios from 'axios';
  * - Handles 401 Unauthorized responses by automatically rotating the refresh token.
  */
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -33,11 +34,8 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 
 api.interceptors.request.use(
   (config) => {
-    // We would normally read this from a secure storage or context.
-    // For simplicity in a browser app, localStorage is common,
-    // though HttpOnly cookies are better.
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('accessToken');
+      const token = Cookies.get('accessToken');
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -52,7 +50,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // If it's a 401, not a retry, and not hitting the auth endpoints itself
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -74,20 +71,21 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = Cookies.get('refreshToken');
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
 
         const { data } = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/refresh`,
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/auth/refresh`,
           { refreshToken }
         );
 
         const { accessToken, refreshToken: newRefreshToken } = data.data;
 
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
+        // Store cookies for 7 days
+        Cookies.set('accessToken', accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+        Cookies.set('refreshToken', newRefreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
 
         api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -96,11 +94,10 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err as Error, null);
-        // Dispatch event or clear storage to redirect to login
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          window.location.href = '/auth/login';
+          Cookies.remove('accessToken');
+          Cookies.remove('refreshToken');
+          window.location.href = '/login';
         }
         return Promise.reject(err);
       } finally {
