@@ -1,12 +1,21 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service.js';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@Controller()
+/**
+ * Health check controller.
+ * Used for monitoring, load balancers, and uptime checks.
+ */
+@ApiTags('health')
+@Controller('health')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @ApiOperation({ summary: 'API health check' })
+  @ApiResponse({ status: 200, description: 'API is running' })
+  check() {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      service: 'jobolo-api',
+    };
   }
 }
