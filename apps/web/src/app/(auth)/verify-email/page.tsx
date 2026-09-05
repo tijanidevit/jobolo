@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthGuard } from '@/components/auth/auth-guard';
@@ -17,6 +17,7 @@ function VerifyEmailContent() {
   
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
+  const hasAttempted = useRef(false);
 
   useEffect(() => {
     if (!token) {
@@ -24,6 +25,9 @@ function VerifyEmailContent() {
       setError('Invalid or missing verification token.');
       return;
     }
+
+    if (hasAttempted.current) return;
+    hasAttempted.current = true;
 
     const verifyToken = async () => {
       try {
