@@ -93,7 +93,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <AuthGuard requireAuth={false}>
+    <AuthGuard publicPage>
       <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">

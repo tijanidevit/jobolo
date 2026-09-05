@@ -52,7 +52,7 @@ export class MailService {
     firstName: string,
     token: string,
   ): Promise<void> {
-    const verifyUrl = `${this.frontendUrl}/auth/verify-email?token=${token}`;
+    const verifyUrl = `${this.frontendUrl}/verify-email?token=${token}`;
 
     if (!this.isConfigured()) {
       this.logger.log(`[DEV] Email verification for ${to}: ${verifyUrl}`);
@@ -74,7 +74,7 @@ export class MailService {
     firstName: string,
     token: string,
   ): Promise<void> {
-    const resetUrl = `${this.frontendUrl}/auth/reset-password?token=${token}`;
+    const resetUrl = `${this.frontendUrl}/reset-password?token=${token}`;
 
     if (!this.isConfigured()) {
       this.logger.log(`[DEV] Password reset for ${to}: ${resetUrl}`);

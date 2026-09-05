@@ -8,9 +8,14 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 interface AuthGuardProps {
   children: React.ReactNode;
   requireAuth?: boolean;
+  /**
+   * If true, the page is publicly accessible regardless of auth state.
+   * No redirects will be applied (e.g. verify-email, reset-password).
+   */
+  publicPage?: boolean;
 }
 
-export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
+export function AuthGuard({ children, requireAuth = true, publicPage = false }: AuthGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -20,6 +25,8 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
   const { isInitializing } = useAuth();
 
   useEffect(() => {
+    // Public pages are always accessible — no redirects
+    if (publicPage) return;
     if (!isInitialized && isInitializing) return;
 
     if (requireAuth && !isAuthenticated) {
@@ -28,10 +35,11 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
       // If we are on an auth page (login/register) and already authenticated, redirect to dashboard
       router.replace('/dashboard');
     }
-  }, [isAuthenticated, isInitialized, isInitializing, requireAuth, router, pathname]);
+  }, [isAuthenticated, isInitialized, isInitializing, requireAuth, publicPage, router, pathname]);
 
   // Show nothing or a generic loading spinner while figuring out auth state
-  if (!isInitialized || isInitializing) {
+  // Public pages skip this wait
+  if (!publicPage && (!isInitialized || isInitializing)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"></div>
@@ -39,9 +47,9 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
     );
   }
 
-  // Prevent flash of content
-  if (requireAuth && !isAuthenticated) return null;
-  if (!requireAuth && isAuthenticated) return null;
+  // Prevent flash of content on protected/auth-only pages
+  if (!publicPage && requireAuth && !isAuthenticated) return null;
+  if (!publicPage && !requireAuth && isAuthenticated) return null;
 
   return <>{children}</>;
 }
