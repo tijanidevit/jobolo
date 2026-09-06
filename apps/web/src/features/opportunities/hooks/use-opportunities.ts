@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { opportunitiesApi } from '../api/opportunities.api';
 import type { OpportunityPayload } from '../types';
+import type { OpportunityStatus } from '@jobolo/shared';
 
 export const opportunitiesQueryKey = ['opportunities'] as const;
 
@@ -27,6 +28,11 @@ export function useOpportunities() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: opportunitiesQueryKey }),
   });
 
+  const changeStageMutation = useMutation({
+    mutationFn: ({ id, stage }: { id: string; stage: OpportunityStatus }) => opportunitiesApi.changeStage(id, stage),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: opportunitiesQueryKey }),
+  });
+
   return {
     opportunities: opportunitiesQuery.data?.data ?? [],
     isLoading: opportunitiesQuery.isLoading,
@@ -35,8 +41,10 @@ export function useOpportunities() {
     createOpportunity: createMutation.mutateAsync,
     updateOpportunity: updateMutation.mutateAsync,
     deleteOpportunity: deleteMutation.mutateAsync,
+    changeStage: changeStageMutation.mutateAsync,
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
+    isChangingStage: changeStageMutation.isPending,
   };
 }

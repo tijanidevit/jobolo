@@ -1,6 +1,7 @@
 import type { ApiResponse } from '@jobolo/shared';
 import { api } from '@/lib/axios';
 import type { Opportunity, OpportunityPayload } from '../types';
+import type { OpportunityStatus } from '@jobolo/shared';
 
 export const opportunitiesApi = {
   list: async () => {
@@ -15,6 +16,11 @@ export const opportunitiesApi = {
 
   update: async (id: string, payload: Partial<OpportunityPayload>) => {
     const response = await api.patch<ApiResponse<unknown>>(`/opportunities/${id}`, payload);
+    return response.data;
+  },
+
+  changeStage: async (id: string, stage: OpportunityStatus) => {
+    const response = await api.patch<ApiResponse<unknown>>(`/opportunities/${id}/stage`, { stage });
     return response.data;
   },
 

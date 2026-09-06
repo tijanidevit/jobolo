@@ -6,9 +6,10 @@ import { AlertCircle, BriefcaseBusiness, ExternalLink, MapPin, Pencil, Plus, Tra
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { getStageLabel } from '../constants';
+import { getStageLabel, OPPORTUNITY_STAGES } from '../constants';
 import { useOpportunities } from '../hooks/use-opportunities';
 import type { Opportunity, OpportunityPayload } from '../types';
+import type { OpportunityStatus } from '@jobolo/shared';
 import { OpportunityForm } from './opportunity-form';
 
 function getErrorMessage(error: unknown, fallback: string) {
@@ -32,6 +33,7 @@ export function OpportunitiesScreen() {
   const [isCreating, setIsCreating] = useState(searchParams.get('create') === '1');
   const [formError, setFormError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedStage, setSelectedStage] = useState<OpportunityStatus | 'all'>('all');
   const {
     opportunities,
     isLoading,
@@ -40,10 +42,16 @@ export function OpportunitiesScreen() {
     createOpportunity,
     updateOpportunity,
     deleteOpportunity,
+    changeStage,
     isCreating: isSaving,
     isUpdating,
     isDeleting,
+    isChangingStage,
   } = useOpportunities();
+
+  const visibleOpportunities = selectedStage === 'all'
+    ? opportunities
+    : opportunities.filter((opportunity) => opportunity.stage === selectedStage);
 
   const closeForm = () => {
     setEditingOpportunity(null);
@@ -75,6 +83,16 @@ export function OpportunitiesScreen() {
       setFormError(getErrorMessage(deleteError, 'We could not delete this opportunity. Please try again.'));
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const updateStage = async (opportunity: Opportunity, stage: OpportunityStatus) => {
+    if (stage === opportunity.stage) return;
+    try {
+      setFormError(null);
+      await changeStage({ id: opportunity.id, stage });
+    } catch (stageError: unknown) {
+      setFormError(getErrorMessage(stageError, 'We could not update the opportunity stage. Please try again.'));
     }
   };
 
@@ -116,25 +134,126 @@ export function OpportunitiesScreen() {
       )}
       {formError && <ErrorBanner message={formError} />}
 
+      <PipelineSummary
+        opportunities={opportunities}
+        selectedStage={selectedStage}
+        onSelectStage={setSelectedStage}
+      />
+
       {isLoading ? (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3" aria-label="Loading opportunities">
           {[1, 2, 3].map((item) => <div key={item} className="h-64 animate-pulse rounded-xl border border-slate-200 bg-white" />)}
         </div>
       ) : opportunities.length === 0 ? (
         <EmptyState onCreate={() => setIsCreating(true)} />
+      ) : visibleOpportunities.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center px-6 py-14 text-center">
+            <h2 className="text-lg font-semibold text-slate-900">No opportunities in this stage</h2>
+            <p className="mt-2 text-sm text-slate-500">Choose another stage or move an opportunity into this part of your pipeline.</p>
+            <Button className="mt-5" variant="outline" onClick={() => setSelectedStage('all')}>Show all opportunities</Button>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {opportunities.map((opportunity) => (
+          {visibleOpportunities.map((opportunity) => (
             <OpportunityCard
               key={opportunity.id}
               opportunity={opportunity}
               isDeleting={isDeleting && deletingId === opportunity.id}
               onEdit={() => setEditingOpportunity(opportunity)}
               onDelete={() => void removeOpportunity(opportunity)}
+              onStageChange={(stage) => void updateStage(opportunity, stage)}
+              isChangingStage={isChangingStage}
             />
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function PipelineSummary({
+  opportunities,
+  selectedStage,
+  onSelectStage,
+}: {
+  opportunities: Opportunity[];
+  selectedStage: OpportunityStatus | 'all';
+  onSelectStage: (stage: OpportunityStatus | 'all') => void;
+}) {
+  const activeStages = new Set<OpportunityStatus>([
+    'discovered',
+    'interested',
+    'applied',
+    'recruiter_contact',
+    'screening',
+    'interview',
+    'final_round',
+    'offer',
+  ]);
+  const interviewStages = new Set<OpportunityStatus>(['interview', 'final_round']);
+  const closedStages = new Set<OpportunityStatus>(['accepted', 'declined', 'rejected', 'withdrawn', 'ghosted', 'expired']);
+  const countWhere = (stages: Set<OpportunityStatus>) => opportunities.filter((opportunity) => stages.has(opportunity.stage)).length;
+
+  return (
+    <section aria-labelledby="pipeline-heading" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />
+            <h2 id="pipeline-heading" className="text-lg font-semibold text-slate-900">Your pipeline</h2>
+          </div>
+          <p className="mt-1 text-sm text-slate-500">A quick view of where your opportunities stand.</p>
+        </div>
+        <div className="text-left sm:text-right">
+          <p className="text-2xl font-semibold tracking-tight text-slate-900">{opportunities.length}</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Total opportunities</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 py-5 sm:grid-cols-3 lg:grid-cols-6">
+        <PipelineMetric label="Active" value={countWhere(activeStages)} tone="blue" />
+        <PipelineMetric label="Applied" value={opportunities.filter((opportunity) => opportunity.stage === 'applied').length} />
+        <PipelineMetric label="Interviews" value={countWhere(interviewStages)} />
+        <PipelineMetric label="Offers" value={opportunities.filter((opportunity) => opportunity.stage === 'offer').length} tone="amber" />
+        <PipelineMetric label="Closed" value={countWhere(closedStages)} />
+        <PipelineMetric label="Interested" value={opportunities.filter((opportunity) => opportunity.stage === 'interested').length} />
+      </div>
+
+      <div className="flex flex-col gap-2 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <label htmlFor="pipeline-stage-filter" className="text-sm font-semibold text-slate-700">Filter by stage</label>
+          <p className="text-xs text-slate-400">Choose a specific point in the lifecycle.</p>
+        </div>
+        <select
+          id="pipeline-stage-filter"
+          value={selectedStage}
+          onChange={(event) => onSelectStage(event.target.value as OpportunityStatus | 'all')}
+          className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 sm:w-64"
+        >
+          <option value="all">All stages ({opportunities.length})</option>
+          {OPPORTUNITY_STAGES.map((stage) => (
+            <option key={stage.value} value={stage.value}>
+              {stage.label} ({opportunities.filter((opportunity) => opportunity.stage === stage.value).length})
+            </option>
+          ))}
+        </select>
+      </div>
+    </section>
+  );
+}
+
+function PipelineMetric({ label, value, tone = 'slate' }: { label: string; value: number; tone?: 'blue' | 'amber' | 'slate' }) {
+  return (
+    <div className="rounded-xl bg-slate-50 px-3 py-3">
+      <p className="text-xs font-medium text-slate-500">{label}</p>
+      <p className={cn(
+        'mt-1 text-xl font-semibold',
+        tone === 'blue' && 'text-blue-600',
+        tone === 'amber' && 'text-amber-600',
+        tone === 'slate' && 'text-slate-900',
+      )}>{value}</p>
     </div>
   );
 }
@@ -144,11 +263,15 @@ function OpportunityCard({
   isDeleting,
   onEdit,
   onDelete,
+  onStageChange,
+  isChangingStage,
 }: {
   opportunity: Opportunity;
   isDeleting: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onStageChange: (stage: OpportunityStatus) => void;
+  isChangingStage: boolean;
 }) {
   const scores = [
     formatScore(opportunity.fitScore, 'Fit'),
@@ -164,9 +287,16 @@ function OpportunityCard({
             <CardTitle className="truncate text-lg">{opportunity.jobTitle}</CardTitle>
             <CardDescription className="mt-1 truncate text-sm font-medium text-slate-700">{opportunity.companyName}</CardDescription>
           </div>
-          <span className="shrink-0 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-            {getStageLabel(opportunity.stage)}
-          </span>
+          <label className="sr-only" htmlFor={`stage-${opportunity.id}`}>Stage for {opportunity.jobTitle}</label>
+          <select
+            id={`stage-${opportunity.id}`}
+            value={opportunity.stage}
+            disabled={isChangingStage}
+            onChange={(event) => onStageChange(event.target.value as OpportunityStatus)}
+            className="max-w-36 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          >
+            {OPPORTUNITY_STAGES.map((stage) => <option key={stage.value} value={stage.value}>{getStageLabel(stage.value)}</option>)}
+          </select>
         </div>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-5">
