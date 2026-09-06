@@ -39,7 +39,10 @@ describe('OpportunitiesController', () => {
   });
 
   it('should create an opportunity and pass the correct userId', async () => {
-    const dto: CreateOpportunityDto = { companyName: 'Acme Corp', jobTitle: 'Developer' };
+    const dto: CreateOpportunityDto = {
+      companyName: 'Acme Corp',
+      jobTitle: 'Developer',
+    };
     service.create.mockResolvedValueOnce(mockOpportunity as any);
 
     const result = await controller.create(mockUser, dto);
@@ -71,9 +74,13 @@ describe('OpportunitiesController', () => {
     const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
     service.update.mockResolvedValueOnce(expectedResult as any);
 
-    const result = await controller.update(mockUser, 'opp-456', { companyName: 'New Corp' });
+    const result = await controller.update(mockUser, 'opp-456', {
+      companyName: 'New Corp',
+    });
 
-    expect(service.update).toHaveBeenCalledWith('opp-456', mockUser.id, { companyName: 'New Corp' });
+    expect(service.update).toHaveBeenCalledWith('opp-456', mockUser.id, {
+      companyName: 'New Corp',
+    });
     expect(result).toEqual(expectedResult);
   });
 
@@ -81,9 +88,15 @@ describe('OpportunitiesController', () => {
     const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
     service.changeStage.mockResolvedValueOnce(expectedResult as any);
 
-    const result = await controller.changeStage(mockUser, 'opp-456', { stage: 'applied' });
+    const result = await controller.changeStage(mockUser, 'opp-456', {
+      stage: 'applied',
+    });
 
-    expect(service.changeStage).toHaveBeenCalledWith('opp-456', mockUser.id, 'applied');
+    expect(service.changeStage).toHaveBeenCalledWith(
+      'opp-456',
+      mockUser.id,
+      'applied',
+    );
     expect(result).toEqual(expectedResult);
   });
 

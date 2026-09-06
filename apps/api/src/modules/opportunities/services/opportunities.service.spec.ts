@@ -39,7 +39,11 @@ describe('OpportunitiesService', () => {
         companyName: 'Acme Corp',
         jobTitle: 'Software Engineer',
       };
-      const expectedOpp = { id: mockOpportunityId, ...createDto, userId: mockUserId } as Opportunity;
+      const expectedOpp = {
+        id: mockOpportunityId,
+        ...createDto,
+        userId: mockUserId,
+      } as Opportunity;
 
       repository.create.mockResolvedValueOnce(expectedOpp);
       activitiesRepository.create.mockResolvedValueOnce({} as never);
@@ -56,53 +60,80 @@ describe('OpportunitiesService', () => {
 
   describe('findOne', () => {
     it('should return an opportunity if it exists and belongs to the user', async () => {
-      const expectedOpp = { id: mockOpportunityId, userId: mockUserId } as Opportunity;
+      const expectedOpp = {
+        id: mockOpportunityId,
+        userId: mockUserId,
+      } as Opportunity;
       repository.findOne.mockResolvedValueOnce(expectedOpp);
 
       const result = await service.findOne(mockOpportunityId, mockUserId);
 
-      expect(repository.findOne).toHaveBeenCalledWith(mockOpportunityId, mockUserId);
+      expect(repository.findOne).toHaveBeenCalledWith(
+        mockOpportunityId,
+        mockUserId,
+      );
       expect(result).toEqual(expectedOpp);
     });
 
     it('should throw NotFoundException if opportunity is not found', async () => {
       repository.findOne.mockResolvedValueOnce(null);
 
-      await expect(service.findOne(mockOpportunityId, mockUserId)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.findOne(mockOpportunityId, mockUserId),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('update', () => {
     it('should verify existence and update the opportunity', async () => {
-      const existingOpp = { id: mockOpportunityId, userId: mockUserId } as Opportunity;
+      const existingOpp = {
+        id: mockOpportunityId,
+        userId: mockUserId,
+      } as Opportunity;
       const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
 
       repository.findOne.mockResolvedValueOnce(existingOpp);
       repository.update.mockResolvedValueOnce(expectedResult as any);
       activitiesRepository.create.mockResolvedValueOnce({} as never);
 
-      const result = await service.update(mockOpportunityId, mockUserId, { companyName: 'New Name' });
-
-      expect(repository.update).toHaveBeenCalledWith(mockOpportunityId, mockUserId, {
+      const result = await service.update(mockOpportunityId, mockUserId, {
         companyName: 'New Name',
       });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        mockOpportunityId,
+        mockUserId,
+        {
+          companyName: 'New Name',
+        },
+      );
       expect(result).toEqual(expectedResult);
     });
   });
 
   describe('changeStage', () => {
     it('should update the stage', async () => {
-      const existingOpp = { id: mockOpportunityId, userId: mockUserId, stage: 'discovered' } as Opportunity;
+      const existingOpp = {
+        id: mockOpportunityId,
+        userId: mockUserId,
+        stage: 'discovered',
+      } as Opportunity;
       const expectedResult = { affected: 1, raw: [], generatedMaps: [] };
 
       repository.findOne.mockResolvedValueOnce(existingOpp);
       repository.update.mockResolvedValueOnce(expectedResult as any);
 
-      const result = await service.changeStage(mockOpportunityId, mockUserId, 'applied');
+      const result = await service.changeStage(
+        mockOpportunityId,
+        mockUserId,
+        'applied',
+      );
 
-      expect(repository.update).toHaveBeenCalledWith(mockOpportunityId, mockUserId, { stage: 'applied' });
+      expect(repository.update).toHaveBeenCalledWith(
+        mockOpportunityId,
+        mockUserId,
+        { stage: 'applied' },
+      );
       expect(activitiesRepository.create).toHaveBeenCalledWith(
         mockUserId,
         mockOpportunityId,
@@ -114,14 +145,20 @@ describe('OpportunitiesService', () => {
 
   describe('remove', () => {
     it('should verify existence and delete the opportunity', async () => {
-      const existingOpp = { id: mockOpportunityId, userId: mockUserId } as Opportunity;
+      const existingOpp = {
+        id: mockOpportunityId,
+        userId: mockUserId,
+      } as Opportunity;
 
       repository.findOne.mockResolvedValueOnce(existingOpp);
       repository.delete.mockResolvedValueOnce(true);
 
       await service.remove(mockOpportunityId, mockUserId);
 
-      expect(repository.delete).toHaveBeenCalledWith(mockOpportunityId, mockUserId);
+      expect(repository.delete).toHaveBeenCalledWith(
+        mockOpportunityId,
+        mockUserId,
+      );
     });
   });
 });

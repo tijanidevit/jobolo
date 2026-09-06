@@ -4,7 +4,10 @@ import { UsersRepository } from '../../users/repositories/users.repository.js';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from '../../mail/mail.service.js';
-import { AppConflictException, AppUnauthorizedException } from '../../../common/exceptions/app.exceptions.js';
+import {
+  AppConflictException,
+  AppUnauthorizedException,
+} from '../../../common/exceptions/app.exceptions.js';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../users/entities/user.entity.js';
 
@@ -111,7 +114,9 @@ describe('AuthService', () => {
         id: 'new-user-id',
         email: 'jane@example.com',
       } as User);
-      usersRepository.findById.mockResolvedValueOnce({ id: 'new-user-id' } as User);
+      usersRepository.findById.mockResolvedValueOnce({
+        id: 'new-user-id',
+      } as User);
       usersRepository.save.mockResolvedValue({} as User);
 
       await authService.register({
@@ -121,7 +126,9 @@ describe('AuthService', () => {
         password: 'SecurePass123',
       });
 
-      expect(usersRepository.findByEmail).toHaveBeenCalledWith('jane@example.com');
+      expect(usersRepository.findByEmail).toHaveBeenCalledWith(
+        'jane@example.com',
+      );
     });
   });
 
@@ -143,7 +150,10 @@ describe('AuthService', () => {
       } as User);
 
       await expect(
-        authService.login({ email: 'user@example.com', password: 'wrong-password' }),
+        authService.login({
+          email: 'user@example.com',
+          password: 'wrong-password',
+        }),
       ).rejects.toThrow(AppUnauthorizedException);
     });
 
@@ -182,7 +192,9 @@ describe('AuthService', () => {
 
     it('does not throw if user not found on logout', async () => {
       usersRepository.findById.mockResolvedValueOnce(null);
-      await expect(authService.logout('non-existent-id')).resolves.toBeUndefined();
+      await expect(
+        authService.logout('non-existent-id'),
+      ).resolves.toBeUndefined();
     });
   });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CheckCircle2, Mail, User, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Mail, User, ShieldCheck, ShieldAlert } from 'lucide-react';
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(100),
@@ -20,8 +20,6 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
   const { profile, isLoading, updateProfile, isUpdating } = useProfile();
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -47,15 +45,9 @@ export default function ProfilePage() {
   }, [profile, reset]);
 
   const onSubmit = async (data: ProfileFormValues) => {
-    try {
-      setErrorMessage(null);
-      setSuccessMessage(null);
-      await updateProfile(data);
-      setSuccessMessage('Profile updated successfully.');
-      reset(data); // Reset dirty state with new values
-    } catch (err: any) {
-      setErrorMessage(err.response?.data?.message || 'Failed to update profile. Please try again.');
-    }
+    await updateProfile(data)
+      .then(() => reset(data))
+      .catch(() => undefined);
   };
 
   if (isLoading) {
@@ -102,7 +94,9 @@ export default function ProfilePage() {
               ) : (
                 <>
                   <ShieldAlert className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm text-amber-600 font-medium">Email not yet verified. Check your inbox for a verification link.</span>
+                  <span className="text-sm text-amber-600 font-medium">
+                    Email not yet verified. Check your inbox for a verification link.
+                  </span>
                 </>
               )}
             </div>
@@ -117,30 +111,12 @@ export default function ProfilePage() {
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
-              {successMessage && (
-                <div className="flex items-center gap-2 rounded-md bg-green-50 p-3 text-sm text-green-700">
-                  <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  <span>{successMessage}</span>
-                </div>
-              )}
-              {errorMessage && (
-                <div className="flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-600">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First name</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="firstName"
-                      type="text"
-                      className="pl-9"
-                      {...register('firstName')}
-                    />
+                    <Input id="firstName" type="text" className="pl-9" {...register('firstName')} />
                   </div>
                   {errors.firstName && (
                     <p className="text-xs text-red-500">{errors.firstName.message}</p>
@@ -150,12 +126,7 @@ export default function ProfilePage() {
                   <Label htmlFor="lastName">Last name</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="lastName"
-                      type="text"
-                      className="pl-9"
-                      {...register('lastName')}
-                    />
+                    <Input id="lastName" type="text" className="pl-9" {...register('lastName')} />
                   </div>
                   {errors.lastName && (
                     <p className="text-xs text-red-500">{errors.lastName.message}</p>

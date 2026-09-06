@@ -10,8 +10,15 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, AlertCircle, CheckCircle2 } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Mail, CheckCircle2 } from 'lucide-react';
 import { authApi } from '@/features/auth/api/auth.api';
 
 const forgotPasswordSchema = z.object({
@@ -21,7 +28,6 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
-  const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,16 +43,12 @@ export default function ForgotPasswordPage() {
   });
 
   const onSubmit = async (data: ForgotPasswordFormValues) => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      await authApi.forgotPassword({ email: data.email });
-      setIsSuccess(true);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to send reset link. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    await authApi
+      .forgotPassword({ email: data.email })
+      .then(() => setIsSuccess(true))
+      .catch(() => undefined)
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -57,7 +59,7 @@ export default function ForgotPasswordPage() {
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Jobolo</h1>
             <p className="text-sm text-slate-500 mt-2">The Job Search Operating System</p>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Reset password</CardTitle>
@@ -68,12 +70,13 @@ export default function ForgotPasswordPage() {
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
                   <CheckCircle2 className="h-12 w-12 text-green-500" />
                   <p className="text-sm text-slate-600">
-                    If an account with that email exists, a password reset link has been sent. Please check your inbox.
+                    If an account with that email exists, a password reset link has been sent.
+                    Please check your inbox.
                   </p>
                   <Link
                     href="/login"
                     className={cn(
-                      'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900'
+                      'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900',
                     )}
                   >
                     Return to sign in
@@ -83,13 +86,6 @@ export default function ForgotPasswordPage() {
             ) : (
               <form onSubmit={handleSubmit(onSubmit)}>
                 <CardContent className="space-y-4">
-                  {error && (
-                    <div className="flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-600">
-                      <AlertCircle className="h-4 w-4" />
-                      <span>{error}</span>
-                    </div>
-                  )}
-                  
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">

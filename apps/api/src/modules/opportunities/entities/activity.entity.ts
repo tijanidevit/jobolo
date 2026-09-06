@@ -50,6 +50,8 @@ export class Activity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToMany(() => ActivityAttachment, (attachment) => attachment.activity, { cascade: true })
+  @OneToMany(() => ActivityAttachment, (attachment) => attachment.activity, {
+    cascade: true,
+  })
   attachments: ActivityAttachment[];
 }

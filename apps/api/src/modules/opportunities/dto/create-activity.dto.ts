@@ -1,4 +1,10 @@
-import { IsDate, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ACTIVITY_TYPES } from '@jobolo/shared';
 import type { ActivityType } from '@jobolo/shared';

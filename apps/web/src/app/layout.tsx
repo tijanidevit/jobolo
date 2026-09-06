@@ -8,17 +8,11 @@ export const metadata: Metadata = {
   description: 'Track your applications, ace your interviews, and land your dream job with Jobolo.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="antialiased min-h-screen flex flex-col">
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

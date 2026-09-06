@@ -26,7 +26,11 @@ export class OpportunitiesRepository {
     });
   }
 
-  async update(id: string, userId: string, updateData: Partial<Opportunity>): Promise<UpdateResult> {
+  async update(
+    id: string,
+    userId: string,
+    updateData: Partial<Opportunity>,
+  ): Promise<UpdateResult> {
     return this.repository.update({ id, userId }, updateData);
   }
 

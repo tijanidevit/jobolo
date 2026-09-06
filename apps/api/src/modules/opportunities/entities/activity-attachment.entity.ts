@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import type { Activity } from './activity.entity.js';
 
 @Entity('opportunity_activity_attachments')
@@ -9,7 +16,9 @@ export class ActivityAttachment {
   @Column({ type: 'varchar', length: 36 })
   activityId: string;
 
-  @ManyToOne('Activity', (activity: Activity) => activity.attachments, { onDelete: 'CASCADE' })
+  @ManyToOne('Activity', (activity: Activity) => activity.attachments, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'activityId' })
   activity: Activity;
 

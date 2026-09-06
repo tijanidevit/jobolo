@@ -1,4 +1,10 @@
-import { IsEmail, IsString, MinLength, MaxLength, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  MaxLength,
+  Matches,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
@@ -27,7 +33,8 @@ export class RegisterDto {
   @MinLength(8)
   @MaxLength(128)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, {
-    message: 'password must contain at least one uppercase letter, one lowercase letter, and one digit',
+    message:
+      'password must contain at least one uppercase letter, one lowercase letter, and one digit',
   })
   password: string;
 }
@@ -60,7 +67,8 @@ export class ResetPasswordDto {
   @MinLength(8)
   @MaxLength(128)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, {
-    message: 'password must contain at least one uppercase letter, one lowercase letter, and one digit',
+    message:
+      'password must contain at least one uppercase letter, one lowercase letter, and one digit',
   })
   password: string;
 }

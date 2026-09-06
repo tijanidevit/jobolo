@@ -6,7 +6,7 @@ export const usersApi = {
     const response = await api.get<UserProfileResponse>('/profile');
     return response.data;
   },
-  
+
   updateProfile: async (data: UpdateProfilePayload) => {
     const response = await api.patch<UserProfileResponse>('/profile', data);
     return response.data;

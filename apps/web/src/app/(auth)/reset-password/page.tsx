@@ -11,17 +11,26 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { authApi } from '@/features/auth/api/auth.api';
 
-const resetPasswordSchema = z.object({
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-});
+const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
@@ -29,7 +38,7 @@ function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  
+
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,16 +61,13 @@ function ResetPasswordForm() {
       return;
     }
 
-    try {
-      setError(null);
-      setIsLoading(true);
-      await authApi.resetPassword({ token, password: data.password });
-      setIsSuccess(true);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to reset password. The link may have expired.');
-    } finally {
-      setIsLoading(false);
-    }
+    setError(null);
+    setIsLoading(true);
+    await authApi
+      .resetPassword({ token, password: data.password })
+      .then(() => setIsSuccess(true))
+      .catch(() => undefined)
+      .finally(() => setIsLoading(false));
   };
 
   if (!token) {
@@ -76,7 +82,7 @@ function ResetPasswordForm() {
           <Link
             href="/forgot-password"
             className={cn(
-              'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900'
+              'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900',
             )}
           >
             Request new link
@@ -98,7 +104,7 @@ function ResetPasswordForm() {
           <Link
             href="/login"
             className={cn(
-              'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700'
+              'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700',
             )}
           >
             Sign in
@@ -121,21 +127,16 @@ function ResetPasswordForm() {
             <span>{error}</span>
           </div>
         )}
-        
+
         <div className="space-y-2">
           <Label htmlFor="password">New Password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <Input
-              id="password"
-              type="password"
-              className="pl-9"
-              {...register('password')}
-            />
+            <Input id="password" type="password" className="pl-9" {...register('password')} />
           </div>
           {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
           <div className="relative">
@@ -147,7 +148,9 @@ function ResetPasswordForm() {
               {...register('confirmPassword')}
             />
           </div>
-          {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>}
+          {errors.confirmPassword && (
+            <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
+          )}
         </div>
       </CardContent>
       <CardFooter>
@@ -168,7 +171,7 @@ export default function ResetPasswordPage() {
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Jobolo</h1>
             <p className="text-sm text-slate-500 mt-2">The Job Search Operating System</p>
           </div>
-          
+
           <Card>
             <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading...</div>}>
               <ResetPasswordForm />

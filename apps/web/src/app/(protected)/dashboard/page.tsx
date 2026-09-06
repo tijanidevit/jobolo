@@ -16,14 +16,12 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Good morning, {user?.firstName}
           </h1>
-          <p className="text-slate-500 mt-1">
-            Here's what's happening with your job search today.
-          </p>
+          <p className="text-slate-500 mt-1">Here's what's happening with your job search today.</p>
         </div>
         <Link href="/opportunities?create=1">
           <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Opportunity
+            <Plus className="mr-2 h-4 w-4" />
+            Add Opportunity
           </Button>
         </Link>
       </div>
@@ -31,22 +29,26 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Active Applications</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-500">
+              Active Applications
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-slate-900">12</div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Upcoming Interviews</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-500">
+              Upcoming Interviews
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-slate-900">2</div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-slate-500">Offers</CardTitle>
@@ -56,7 +58,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="col-span-1">
           <CardHeader>
@@ -69,7 +71,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Next Actions</CardTitle>

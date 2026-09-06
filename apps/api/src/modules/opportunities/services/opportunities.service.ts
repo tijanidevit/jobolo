@@ -14,7 +14,10 @@ export class OpportunitiesService {
     private readonly activitiesRepository: ActivitiesRepository,
   ) {}
 
-  async create(userId: string, createDto: CreateOpportunityDto): Promise<Opportunity> {
+  async create(
+    userId: string,
+    createDto: CreateOpportunityDto,
+  ): Promise<Opportunity> {
     const opportunity = await this.opportunitiesRepository.create({
       ...createDto,
       userId,
@@ -32,7 +35,10 @@ export class OpportunitiesService {
     return this.opportunitiesRepository.findAllForUser(userId);
   }
 
-  private async getOpportunity(id: string, userId: string): Promise<Opportunity> {
+  private async getOpportunity(
+    id: string,
+    userId: string,
+  ): Promise<Opportunity> {
     const opportunity = await this.opportunitiesRepository.findOne(id, userId);
     if (!opportunity) {
       throw new NotFoundException('Opportunity not found');
@@ -44,36 +50,51 @@ export class OpportunitiesService {
     return this.getOpportunity(id, userId);
   }
 
-  async update(id: string, userId: string, updateDto: UpdateOpportunityDto): Promise<UpdateResult> {
-
+  async update(
+    id: string,
+    userId: string,
+    updateDto: UpdateOpportunityDto,
+  ): Promise<UpdateResult> {
     const opportunity = await this.getOpportunity(id, userId);
-    const result = await this.opportunitiesRepository.update(id, userId, updateDto);
+    const result = await this.opportunitiesRepository.update(
+      id,
+      userId,
+      updateDto,
+    );
     if (updateDto.stage && updateDto.stage !== opportunity.stage) {
       await this.recordStageChange(userId, opportunity, updateDto.stage);
     }
     return result;
   }
 
-  async changeStage(id: string, userId: string, stage: OpportunityStatus): Promise<UpdateResult> {
-
+  async changeStage(
+    id: string,
+    userId: string,
+    stage: OpportunityStatus,
+  ): Promise<UpdateResult> {
     const opportunity = await this.getOpportunity(id, userId);
     if (opportunity.stage === stage) {
       return { affected: 0, raw: [], generatedMaps: [] };
     }
 
-    const result = await this.opportunitiesRepository.update(id, userId, { stage });
+    const result = await this.opportunitiesRepository.update(id, userId, {
+      stage,
+    });
     await this.recordStageChange(userId, opportunity, stage);
     return result;
   }
 
   async remove(id: string, userId: string): Promise<void> {
-
     await this.getOpportunity(id, userId);
-    
+
     await this.opportunitiesRepository.delete(id, userId);
   }
 
-  private async recordStageChange(userId: string, opportunity: Opportunity, nextStage: OpportunityStatus) {
+  private async recordStageChange(
+    userId: string,
+    opportunity: Opportunity,
+    nextStage: OpportunityStatus,
+  ) {
     await this.activitiesRepository.create(userId, opportunity.id, {
       type: 'status_change',
       title: `Stage changed to ${nextStage}`,

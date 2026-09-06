@@ -67,7 +67,9 @@ export interface Opportunity {
   updatedAt: string;
 }
 
-export type OpportunityPayload = Partial<Omit<Opportunity, 'id' | 'userId' | 'createdAt' | 'updatedAt'>> & {
+export type OpportunityPayload = Partial<
+  Omit<Opportunity, 'id' | 'userId' | 'createdAt' | 'updatedAt'>
+> & {
   companyName: string;
   jobTitle: string;
 };

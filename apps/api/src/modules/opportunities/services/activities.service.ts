@@ -21,48 +21,102 @@ export class ActivitiesService {
     private readonly activitiesRepository: ActivitiesRepository,
   ) {}
 
-  async create(userId: string, opportunityId: string, dto: CreateActivityDto, files: UploadedActivityFile[] = []) {
+  async create(
+    userId: string,
+    opportunityId: string,
+    dto: CreateActivityDto,
+    files: UploadedActivityFile[] = [],
+  ) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const activity = await this.activitiesRepository.create(userId, opportunityId, dto);
+    const activity = await this.activitiesRepository.create(
+      userId,
+      opportunityId,
+      dto,
+    );
     if (files.length > 0) {
-      const attachmentData = await Promise.all(files.map(async (file) => {
-        const storedName = `${Date.now()}-${randomUUID()}${extname(file.originalname)}`;
-        await fs.mkdir(join(process.cwd(), 'uploads', 'activities'), { recursive: true });
-        await fs.writeFile(join(process.cwd(), 'uploads', 'activities', storedName), file.buffer);
-        return {
-        originalName: file.originalname,
-        storedName,
-        mimeType: file.mimetype,
-        size: file.size,
-        };
-      }));
-      await this.activitiesRepository.addAttachments(activity.id, attachmentData);
+      const attachmentData = await Promise.all(
+        files.map(async (file) => {
+          const storedName = `${Date.now()}-${randomUUID()}${extname(file.originalname)}`;
+          await fs.mkdir(join(process.cwd(), 'uploads', 'activities'), {
+            recursive: true,
+          });
+          await fs.writeFile(
+            join(process.cwd(), 'uploads', 'activities', storedName),
+            file.buffer,
+          );
+          return {
+            originalName: file.originalname,
+            storedName,
+            mimeType: file.mimetype,
+            size: file.size,
+          };
+        }),
+      );
+      await this.activitiesRepository.addAttachments(
+        activity.id,
+        attachmentData,
+      );
     }
-    return this.activitiesRepository.findAllForOpportunity(userId, opportunityId).then((items) => items.find((item) => item.id === activity.id));
+    return this.activitiesRepository
+      .findAllForOpportunity(userId, opportunityId)
+      .then((items) => items.find((item) => item.id === activity.id));
   }
 
-  async update(userId: string, opportunityId: string, activityId: string, dto: UpdateActivityDto) {
+  async update(
+    userId: string,
+    opportunityId: string,
+    activityId: string,
+    dto: UpdateActivityDto,
+  ) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const activity = await this.activitiesRepository.update(activityId, userId, dto);
-    if (!activity || activity.opportunityId !== opportunityId) throw new NotFoundException('Activity not found');
+    const activity = await this.activitiesRepository.update(
+      activityId,
+      userId,
+      dto,
+    );
+    if (!activity || activity.opportunityId !== opportunityId)
+      throw new NotFoundException('Activity not found');
     return activity;
   }
 
   async findAllForOpportunity(userId: string, opportunityId: string) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    return this.activitiesRepository.findAllForOpportunity(userId, opportunityId);
+    return this.activitiesRepository.findAllForOpportunity(
+      userId,
+      opportunityId,
+    );
   }
 
-  async getAttachment(userId: string, opportunityId: string, activityId: string, storedName: string) {
+  async getAttachment(
+    userId: string,
+    opportunityId: string,
+    activityId: string,
+    storedName: string,
+  ) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const activity = await this.activitiesRepository.findOne(userId, opportunityId, activityId);
-    const attachment = activity?.attachments.find((item) => item.storedName === storedName);
+    const activity = await this.activitiesRepository.findOne(
+      userId,
+      opportunityId,
+      activityId,
+    );
+    const attachment = activity?.attachments.find(
+      (item) => item.storedName === storedName,
+    );
     if (!attachment) throw new NotFoundException('Attachment not found');
-    return { path: join(process.cwd(), 'uploads', 'activities', attachment.storedName), mimeType: attachment.mimeType };
+    return {
+      path: join(process.cwd(), 'uploads', 'activities', attachment.storedName),
+      mimeType: attachment.mimeType,
+    };
   }
 
-  private async ensureOpportunityBelongsToUser(userId: string, opportunityId: string) {
-    const opportunity = await this.opportunitiesRepository.findOne(opportunityId, userId);
+  private async ensureOpportunityBelongsToUser(
+    userId: string,
+    opportunityId: string,
+  ) {
+    const opportunity = await this.opportunitiesRepository.findOne(
+      opportunityId,
+      userId,
+    );
     if (!opportunity) throw new NotFoundException('Opportunity not found');
   }
 }

@@ -7,10 +7,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service.js';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { JwtRefreshGuard } from '../../../common/guards/jwt-refresh.guard.js';
@@ -32,10 +29,16 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiMessage('Registration successful. Please check your email to verify your account.')
+  @ApiMessage(
+    'Registration successful. Please check your email to verify your account.',
+  )
   async register(@Body() dto: RegisterDto) {
     const result = await this.authService.register(dto);
-    return { accessToken: result.accessToken, refreshToken: result.refreshToken, user: result.user };
+    return {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+      user: result.user,
+    };
   }
 
   @Post('login')
@@ -43,7 +46,11 @@ export class AuthController {
   @ApiMessage('Login successful')
   async login(@Body() dto: LoginDto) {
     const result = await this.authService.login(dto);
-    return { accessToken: result.accessToken, refreshToken: result.refreshToken, user: result.user };
+    return {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+      user: result.user,
+    };
   }
 
   @Post('logout')
@@ -62,8 +69,14 @@ export class AuthController {
   async refresh(
     @CurrentUser() user: IAuthenticatedUser & { refreshToken: string },
   ) {
-    const tokens = await this.authService.refreshTokens(user.id, user.refreshToken);
-    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+    const tokens = await this.authService.refreshTokens(
+      user.id,
+      user.refreshToken,
+    );
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   }
 
   @Post('verify-email')
@@ -84,14 +97,18 @@ export class AuthController {
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @ApiMessage('If an account with that email exists, a password reset link has been sent.')
+  @ApiMessage(
+    'If an account with that email exists, a password reset link has been sent.',
+  )
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
     await this.authService.requestPasswordReset(dto.email);
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiMessage('Password reset successfully. Please log in with your new password.')
+  @ApiMessage(
+    'Password reset successfully. Please log in with your new password.',
+  )
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.authService.resetPassword(dto.token, dto.password);
   }

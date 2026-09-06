@@ -36,8 +36,16 @@ export const useAuth = () => {
     mutationFn: authApi.login,
     onSuccess: (data) => {
       if (typeof window !== 'undefined') {
-        Cookies.set('accessToken', data.data.accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-        Cookies.set('refreshToken', data.data.refreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+        Cookies.set('accessToken', data.data.accessToken, {
+          expires: 7,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        });
+        Cookies.set('refreshToken', data.data.refreshToken, {
+          expires: 7,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        });
       }
       setUser(data.data.user);
       setInitialized(true);
@@ -48,8 +56,16 @@ export const useAuth = () => {
     mutationFn: authApi.register,
     onSuccess: (data) => {
       if (typeof window !== 'undefined') {
-        Cookies.set('accessToken', data.data.accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-        Cookies.set('refreshToken', data.data.refreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+        Cookies.set('accessToken', data.data.accessToken, {
+          expires: 7,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        });
+        Cookies.set('refreshToken', data.data.refreshToken, {
+          expires: 7,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        });
       }
       setUser(data.data.user);
       setInitialized(true);

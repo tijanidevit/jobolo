@@ -18,7 +18,9 @@ export interface UpdateActivityPayload {
 
 export const activitiesApi = {
   list: async (opportunityId: string) => {
-    const response = await api.get<ApiResponse<OpportunityActivity[]>>(`/opportunities/${opportunityId}/activities`);
+    const response = await api.get<ApiResponse<OpportunityActivity[]>>(
+      `/opportunities/${opportunityId}/activities`,
+    );
     return response.data;
   },
 
@@ -29,12 +31,21 @@ export const activitiesApi = {
     formData.append('description', payload.description ?? '');
     formData.append('occurredAt', payload.occurredAt);
     files.forEach((file) => formData.append('files', file));
-    const response = await api.post<ApiResponse<OpportunityActivity>>(`/opportunities/${opportunityId}/activities`, formData);
+    const response = await api.post<ApiResponse<OpportunityActivity>>(
+      `/opportunities/${opportunityId}/activities`,
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      },
+    );
     return response.data;
   },
 
   update: async (opportunityId: string, activityId: string, payload: UpdateActivityPayload) => {
-    const response = await api.patch<ApiResponse<OpportunityActivity>>(`/opportunities/${opportunityId}/activities/${activityId}`, payload);
+    const response = await api.patch<ApiResponse<OpportunityActivity>>(
+      `/opportunities/${opportunityId}/activities/${activityId}`,
+      payload,
+    );
     return response.data;
   },
 };

@@ -1,22 +1,33 @@
 'use client';
 
+'use client';
+
 import { Controller, useForm, type Control, type FieldPath } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SearchableSelect } from '@/components/ui/searchable-select';
-import { cn } from '@/lib/utils';
-import { EMPLOYMENT_TYPES, OPPORTUNITY_PRIORITIES, OPPORTUNITY_STAGES, WORK_ARRANGEMENTS } from '../constants';
-import type { Opportunity, OpportunityPayload } from '../types';
-import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/opportunity.schema';
+import {
+  EMPLOYMENT_TYPES,
+  OPPORTUNITY_PRIORITIES,
+  OPPORTUNITY_STAGES,
+  WORK_ARRANGEMENTS,
+} from '../../constants';
+import type { Opportunity, OpportunityPayload } from '../../types';
+import {
+  opportunityFormSchema,
+  type OpportunityFormValues,
+} from '../../schemas/opportunity.schema';
 
 interface OpportunityFormProps {
   opportunity?: Opportunity | null;
   isSaving: boolean;
   onSubmit: (payload: OpportunityPayload) => Promise<void>;
-  onCancel: () => void;
+  onCancel?: () => void;
+  cancelHref?: string;
 }
 
 const inputClassName = 'bg-white';
@@ -44,7 +55,8 @@ function defaultValues(opportunity?: Opportunity | null): OpportunityFormValues 
     workArrangement: opportunity?.workArrangement ?? '',
     stage: opportunity?.stage ?? 'discovered',
     source: emptyValue(opportunity?.source),
-    dateDiscovered: opportunity?.dateDiscovered?.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+    dateDiscovered:
+      opportunity?.dateDiscovered?.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
     dateApplied: opportunity?.dateApplied?.slice(0, 10) ?? '',
     currency: emptyValue(opportunity?.currency),
     salaryRangeMin: numberValue(opportunity?.salaryRangeMin),
@@ -59,7 +71,7 @@ function defaultValues(opportunity?: Opportunity | null): OpportunityFormValues 
 }
 
 function toPayload(values: OpportunityFormValues): OpportunityPayload {
-  const optionalNumber = (value: string) => value.trim() ? Number(value) : undefined;
+  const optionalNumber = (value: string) => (value.trim() ? Number(value) : undefined);
   return {
     companyName: values.companyName.trim(),
     jobTitle: values.jobTitle.trim(),
@@ -84,7 +96,13 @@ function toPayload(values: OpportunityFormValues): OpportunityPayload {
   };
 }
 
-export function OpportunityForm({ opportunity, isSaving, onSubmit, onCancel }: OpportunityFormProps) {
+export function OpportunityForm({
+  opportunity,
+  isSaving,
+  onSubmit,
+  onCancel,
+  cancelHref,
+}: OpportunityFormProps) {
   const {
     register,
     control,
@@ -101,41 +119,89 @@ export function OpportunityForm({ opportunity, isSaving, onSubmit, onCancel }: O
     <Card className="border-blue-100 shadow-md">
       <CardHeader>
         <CardTitle>{opportunity ? 'Edit opportunity' : 'Add opportunity'}</CardTitle>
-        <p className="text-sm text-slate-500">Capture the useful context now, even if you have not applied yet.</p>
+        <p className="text-sm text-slate-500">
+          Capture the useful context now, even if you have not applied yet.
+        </p>
       </CardHeader>
       <form onSubmit={handleSubmit(submit)}>
         <CardContent className="space-y-6">
           <section className="space-y-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Role basics</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+              Role basics
+            </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Company" error={errors.companyName?.message} required>
-                <Input className={inputClassName} {...register('companyName')} placeholder="Acme Inc." />
+                <Input
+                  className={inputClassName}
+                  {...register('companyName')}
+                  placeholder="Acme Inc."
+                />
               </Field>
               <Field label="Job title" error={errors.jobTitle?.message} required>
-                <Input className={inputClassName} {...register('jobTitle')} placeholder="Senior Backend Engineer" />
+                <Input
+                  className={inputClassName}
+                  {...register('jobTitle')}
+                  placeholder="Senior Backend Engineer"
+                />
               </Field>
               <Field label="Country" error={errors.companyCountry?.message}>
-                <Input className={inputClassName} {...register('companyCountry')} placeholder="Canada" />
+                <Input
+                  className={inputClassName}
+                  {...register('companyCountry')}
+                  placeholder="Canada"
+                />
               </Field>
               <Field label="Location" error={errors.location?.message}>
-                <Input className={inputClassName} {...register('location')} placeholder="Remote / Toronto" />
+                <Input
+                  className={inputClassName}
+                  {...register('location')}
+                  placeholder="Remote / Toronto"
+                />
               </Field>
               <Field label="Job URL" error={errors.jobUrl?.message}>
-                <Input className={inputClassName} {...register('jobUrl')} placeholder="https://..." type="url" />
+                <Input
+                  className={inputClassName}
+                  {...register('jobUrl')}
+                  placeholder="https://..."
+                  type="url"
+                />
               </Field>
               <Field label="Source" error={errors.source?.message}>
-                <Input className={inputClassName} {...register('source')} placeholder="LinkedIn, referral, company site" />
+                <Input
+                  className={inputClassName}
+                  {...register('source')}
+                  placeholder="LinkedIn, referral, company site"
+                />
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
-              <SelectField label="Stage" name="stage" control={control} options={OPPORTUNITY_STAGES} />
-              <SelectField label="Work arrangement" name="workArrangement" control={control} options={WORK_ARRANGEMENTS} placeholder="Not set" />
-              <SelectField label="Employment type" name="employmentType" control={control} options={EMPLOYMENT_TYPES} placeholder="Not set" />
+              <SelectField
+                label="Stage"
+                name="stage"
+                control={control}
+                options={OPPORTUNITY_STAGES}
+              />
+              <SelectField
+                label="Work arrangement"
+                name="workArrangement"
+                control={control}
+                options={WORK_ARRANGEMENTS}
+                placeholder="Not set"
+              />
+              <SelectField
+                label="Employment type"
+                name="employmentType"
+                control={control}
+                options={EMPLOYMENT_TYPES}
+                placeholder="Not set"
+              />
             </div>
           </section>
 
           <section className="space-y-4 border-t border-slate-100 pt-6">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Dates and priority</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+              Dates and priority
+            </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <Field label="Date discovered" error={errors.dateDiscovered?.message}>
                 <Input className={inputClassName} {...register('dateDiscovered')} type="date" />
@@ -143,35 +209,73 @@ export function OpportunityForm({ opportunity, isSaving, onSubmit, onCancel }: O
               <Field label="Date applied" error={errors.dateApplied?.message}>
                 <Input className={inputClassName} {...register('dateApplied')} type="date" />
               </Field>
-              <SelectField label="Priority" name="priority" control={control} options={OPPORTUNITY_PRIORITIES} placeholder="Not set" />
+              <SelectField
+                label="Priority"
+                name="priority"
+                control={control}
+                options={OPPORTUNITY_PRIORITIES}
+                placeholder="Not set"
+              />
             </div>
           </section>
 
           <section className="space-y-4 border-t border-slate-100 pt-6">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Compensation and assessment</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+              Compensation and assessment
+            </h2>
             <div className="grid gap-4 sm:grid-cols-4">
               <Field label="Currency" error={errors.currency?.message}>
                 <Input className={inputClassName} {...register('currency')} placeholder="CAD" />
               </Field>
               <Field label="Salary min" error={errors.salaryRangeMin?.message}>
-                <Input className={inputClassName} {...register('salaryRangeMin')} inputMode="decimal" placeholder="90000" />
+                <Input
+                  className={inputClassName}
+                  {...register('salaryRangeMin')}
+                  inputMode="decimal"
+                  placeholder="90000"
+                />
               </Field>
               <Field label="Salary max" error={errors.salaryRangeMax?.message}>
-                <Input className={inputClassName} {...register('salaryRangeMax')} inputMode="decimal" placeholder="120000" />
+                <Input
+                  className={inputClassName}
+                  {...register('salaryRangeMax')}
+                  inputMode="decimal"
+                  placeholder="120000"
+                />
               </Field>
               <Field label="Target salary" error={errors.targetSalary?.message}>
-                <Input className={inputClassName} {...register('targetSalary')} inputMode="decimal" placeholder="110000" />
+                <Input
+                  className={inputClassName}
+                  {...register('targetSalary')}
+                  inputMode="decimal"
+                  placeholder="110000"
+                />
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               <Field label="Fit (0-100)" error={errors.fitScore?.message}>
-                <Input className={inputClassName} {...register('fitScore')} inputMode="numeric" placeholder="80" />
+                <Input
+                  className={inputClassName}
+                  {...register('fitScore')}
+                  inputMode="numeric"
+                  placeholder="80"
+                />
               </Field>
               <Field label="Interest (0-100)" error={errors.interestScore?.message}>
-                <Input className={inputClassName} {...register('interestScore')} inputMode="numeric" placeholder="90" />
+                <Input
+                  className={inputClassName}
+                  {...register('interestScore')}
+                  inputMode="numeric"
+                  placeholder="90"
+                />
               </Field>
               <Field label="Confidence (0-100)" error={errors.confidenceScore?.message}>
-                <Input className={inputClassName} {...register('confidenceScore')} inputMode="numeric" placeholder="60" />
+                <Input
+                  className={inputClassName}
+                  {...register('confidenceScore')}
+                  inputMode="numeric"
+                  placeholder="60"
+                />
               </Field>
             </div>
           </section>
@@ -185,8 +289,21 @@ export function OpportunityForm({ opportunity, isSaving, onSubmit, onCancel }: O
           </Field>
         </CardContent>
         <CardFooter className="justify-end gap-3 border-t border-slate-100 pt-6">
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>Cancel</Button>
-          <Button type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : opportunity ? 'Save changes' : 'Create opportunity'}</Button>
+          {cancelHref ? (
+            <Link
+              href={cancelHref}
+              className="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400 disabled:pointer-events-none disabled:opacity-50"
+            >
+              Cancel
+            </Link>
+          ) : (
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
+              Cancel
+            </Button>
+          )}
+          <Button type="submit" disabled={isSaving}>
+            {isSaving ? 'Saving...' : opportunity ? 'Save changes' : 'Create opportunity'}
+          </Button>
         </CardFooter>
       </form>
     </Card>
@@ -203,7 +320,10 @@ interface FieldProps {
 function Field({ label, error, required, children }: FieldProps) {
   return (
     <div className="space-y-2">
-      <Label>{label}{required && <span className="ml-1 text-red-500">*</span>}</Label>
+      <Label>
+        {label}
+        {required && <span className="ml-1 text-red-500">*</span>}
+      </Label>
       {children}
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
@@ -222,7 +342,18 @@ function SelectField({ label, options, placeholder = 'Select', name, control }: 
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
-      <Controller control={control} name={name} render={({ field }) => <SearchableSelect value={field.value ?? ''} options={options} placeholder={placeholder} onChange={field.onChange} />} />
+      <Controller
+        control={control}
+        name={name}
+        render={({ field }) => (
+          <SearchableSelect
+            value={field.value ?? ''}
+            options={options}
+            placeholder={placeholder}
+            onChange={field.onChange}
+          />
+        )}
+      />
     </div>
   );
 }

@@ -17,16 +17,24 @@ import { API_MESSAGE_KEY } from '../decorators/api-message.decorator.js';
  * message/data/meta values still supported for transition purposes.
  */
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>> {
+export class ResponseInterceptor<T> implements NestInterceptor<
+  T,
+  ApiResponse<T>
+> {
   constructor(private readonly reflector: Reflector) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<T>> {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<ApiResponse<T>> {
     const message =
       this.reflector.getAllAndOverride<string>(API_MESSAGE_KEY, [
         context.getHandler(),
         context.getClass(),
       ]) ?? 'Request successful';
-    const httpResponse = context.switchToHttp().getResponse<{ statusCode?: number }>();
+    const httpResponse = context
+      .switchToHttp()
+      .getResponse<{ statusCode?: number }>();
 
     return next.handle().pipe(
       map((body) => {
@@ -40,8 +48,16 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
         }
 
         // Handle transitional { message, data, meta } shaped returns from controllers
-        if (body && typeof body === 'object' && ('data' in body || 'meta' in body || 'message' in body)) {
-          const { message: responseMessage, data, meta } = body as {
+        if (
+          body &&
+          typeof body === 'object' &&
+          ('data' in body || 'meta' in body || 'message' in body)
+        ) {
+          const {
+            message: responseMessage,
+            data,
+            meta,
+          } = body as {
             message?: string;
             data: T;
             meta?: unknown;

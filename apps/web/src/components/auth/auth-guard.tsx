@@ -17,9 +17,10 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
   const pathname = usePathname();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isInitialized = useAuthStore((state) => state.isInitialized);
-  
+
   const user = useAuthStore((state) => state.user);
-  const { logout, resendVerification, isResendingVerification, isLoggingOut, isInitializing } = useAuth();
+  const { logout, resendVerification, isResendingVerification, isLoggingOut, isInitializing } =
+    useAuth();
   const [hasResent, setHasResent] = useState(false);
   const [resendError, setResendError] = useState<string | null>(null);
 
@@ -33,7 +34,16 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
     } else if (!requireAuth && isAuthenticated && user?.emailVerified) {
       router.replace('/dashboard');
     }
-  }, [isAuthenticated, isInitialized, isInitializing, requireAuth, publicPage, router, pathname, user?.emailVerified]);
+  }, [
+    isAuthenticated,
+    isInitialized,
+    isInitializing,
+    requireAuth,
+    publicPage,
+    router,
+    pathname,
+    user?.emailVerified,
+  ]);
 
   const handleResend = async () => {
     try {
@@ -41,10 +51,12 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
       await resendVerification();
       setHasResent(true);
     } catch (error: unknown) {
-      const responseMessage = (error as { response?: { data?: { message?: unknown } } }).response?.data?.message;
-      const message = typeof responseMessage === 'string'
-        ? responseMessage
-        : 'We could not send the verification email. Please try again.';
+      const responseMessage = (error as { response?: { data?: { message?: unknown } } }).response
+        ?.data?.message;
+      const message =
+        typeof responseMessage === 'string'
+          ? responseMessage
+          : 'We could not send the verification email. Please try again.';
       setResendError(message);
     }
   };

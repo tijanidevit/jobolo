@@ -11,8 +11,15 @@ import { AuthGuard } from '@/components/auth/auth-guard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 
 const registerSchema = z.object({
   firstName: z.string().min(2, 'First name is required'),
@@ -26,7 +33,6 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const router = useRouter();
   const { register: registerAuth, isRegistering } = useAuth();
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -45,14 +51,12 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-    try {
-      setError(null);
-      await registerAuth(data);
-      setSuccess(true);
-      router.replace('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create account. Please try again.');
-    }
+    await registerAuth(data)
+      .then(() => {
+        setSuccess(true);
+        router.replace('/dashboard');
+      })
+      .catch(() => undefined);
   };
 
   return (
@@ -63,7 +67,7 @@ export default function RegisterPage() {
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Jobolo</h1>
             <p className="text-sm text-slate-500 mt-2">The Job Search Operating System</p>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Create an account</CardTitle>
@@ -86,13 +90,6 @@ export default function RegisterPage() {
             ) : (
               <form onSubmit={handleSubmit(onSubmit)}>
                 <CardContent className="space-y-4">
-                  {error && (
-                    <div className="flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-600">
-                      <AlertCircle className="h-4 w-4" />
-                      <span>{error}</span>
-                    </div>
-                  )}
-                  
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName">First name</Label>
@@ -105,9 +102,11 @@ export default function RegisterPage() {
                           {...register('firstName')}
                         />
                       </div>
-                      {errors.firstName && <p className="text-xs text-red-500">{errors.firstName.message}</p>}
+                      {errors.firstName && (
+                        <p className="text-xs text-red-500">{errors.firstName.message}</p>
+                      )}
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="lastName">Last name</Label>
                       <div className="relative">
@@ -119,10 +118,12 @@ export default function RegisterPage() {
                           {...register('lastName')}
                         />
                       </div>
-                      {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
+                      {errors.lastName && (
+                        <p className="text-xs text-red-500">{errors.lastName.message}</p>
+                      )}
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
@@ -137,7 +138,7 @@ export default function RegisterPage() {
                     </div>
                     {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
                     <div className="relative">
@@ -154,10 +155,16 @@ export default function RegisterPage() {
                         className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
                         aria-label={showPassword ? 'Hide password' : 'Show password'}
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </button>
                     </div>
-                    {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
+                    {errors.password && (
+                      <p className="text-xs text-red-500">{errors.password.message}</p>
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">

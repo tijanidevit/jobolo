@@ -1,9 +1,10 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { toast } from './toast';
 
 /**
  * Global Axios instance configured for the NestJS API.
- * 
+ *
  * Features:
  * - Automatically attaches the Authorization header with the JWT access token.
  * - Handles 401 Unauthorized responses by automatically rotating the refresh token.
@@ -42,11 +43,17 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const method = response.config.method?.toLowerCase();
+    if (method && method !== 'get') {
+      toast.success(response.data?.message || 'Changes saved successfully.');
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
@@ -78,14 +85,22 @@ api.interceptors.response.use(
 
         const { data } = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/auth/refresh`,
-          { refreshToken }
+          { refreshToken },
         );
 
         const { accessToken, refreshToken: newRefreshToken } = data.data;
 
         // Store cookies for 7 days
-        Cookies.set('accessToken', accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-        Cookies.set('refreshToken', newRefreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+        Cookies.set('accessToken', accessToken, {
+          expires: 7,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        });
+        Cookies.set('refreshToken', newRefreshToken, {
+          expires: 7,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        });
 
         api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -94,6 +109,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err as Error, null);
+        toast.error(getApiErrorMessage(err, 'Your session has expired. Please sign in again.'));
         if (typeof window !== 'undefined') {
           Cookies.remove('accessToken');
           Cookies.remove('refreshToken');
@@ -105,6 +121,13 @@ api.interceptors.response.use(
       }
     }
 
+    toast.error(getApiErrorMessage(error, 'Something went wrong. Please try again.'));
     return Promise.reject(error);
-  }
+  },
 );
+
+function getApiErrorMessage(error: unknown, fallback: string) {
+  const message = (error as { response?: { data?: { message?: unknown } } }).response?.data
+    ?.message;
+  return typeof message === 'string' ? message : fallback;
+}

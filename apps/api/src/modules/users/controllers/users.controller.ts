@@ -7,16 +7,16 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
 import { ApiMessage } from '../../../common/decorators/api-message.decorator.js';
 import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import { UsersService } from '../services/users.service.js';
-import { UserProfileResponse, UpdateProfileDto } from '../dto/user-profile.dto.js';
+import {
+  UserProfileResponse,
+  UpdateProfileDto,
+} from '../dto/user-profile.dto.js';
 
 @ApiTags('users')
 @ApiBearerAuth('access-token')

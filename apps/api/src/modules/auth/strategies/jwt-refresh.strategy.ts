@@ -15,12 +15,17 @@ interface JwtRefreshPayload {
  * Validates the refresh token and attaches the raw token for rotation.
  */
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor(configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('jwt.refreshSecret') ?? 'fallback-refresh-secret',
+      secretOrKey:
+        configService.get<string>('jwt.refreshSecret') ??
+        'fallback-refresh-secret',
       passReqToCallback: true,
     });
   }

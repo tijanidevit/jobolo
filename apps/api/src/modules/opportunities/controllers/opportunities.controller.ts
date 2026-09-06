@@ -68,7 +68,11 @@ export class OpportunitiesController {
     @Param('id') id: string,
     @Body() changeStageDto: ChangeOpportunityStageDto,
   ) {
-    return this.opportunitiesService.changeStage(id, user.id, changeStageDto.stage);
+    return this.opportunitiesService.changeStage(
+      id,
+      user.id,
+      changeStageDto.stage,
+    );
   }
 
   @Delete(':id')

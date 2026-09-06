@@ -31,10 +31,15 @@ export function EmailVerificationRequired({
           <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/20 ring-1 ring-blue-400/40">
             <Mail className="h-7 w-7 text-blue-300" aria-hidden="true" />
           </div>
-          <p className="mb-2 text-sm font-medium uppercase tracking-[0.18em] text-blue-300">One quick step</p>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Verify your email to continue</h1>
+          <p className="mb-2 text-sm font-medium uppercase tracking-[0.18em] text-blue-300">
+            One quick step
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Verify your email to continue
+          </h1>
           <p className="mt-3 max-w-md text-sm leading-6 text-slate-300">
-            Your account is ready. Confirm your email address to unlock your dashboard and keep your job search secure.
+            Your account is ready. Confirm your email address to unlock your dashboard and keep your
+            job search secure.
           </p>
         </div>
 
@@ -45,14 +50,22 @@ export function EmailVerificationRequired({
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-slate-900">Check your inbox</p>
                 <p className="mt-1 break-words text-sm leading-5 text-slate-600">
-                  We sent a verification link to <span className="font-medium text-slate-900">{email ?? 'your email address'}</span>.
+                  We sent a verification link to{' '}
+                  <span className="font-medium text-slate-900">
+                    {email ?? 'your email address'}
+                  </span>
+                  .
                 </p>
               </div>
             </div>
           </div>
 
           <ol className="space-y-4">
-            {['Open the verification email', 'Click the confirmation link', 'Return here to access your dashboard'].map((step, index) => (
+            {[
+              'Open the verification email',
+              'Click the confirmation link',
+              'Return here to access your dashboard',
+            ].map((step, index) => (
               <li key={step} className="flex items-center gap-3 text-sm text-slate-600">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700">
                   {index + 1}
@@ -63,24 +76,48 @@ export function EmailVerificationRequired({
           </ol>
 
           {hasResent && (
-            <div className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-700" role="status">
-              <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
-              A fresh verification link is on its way.
+            <div
+              className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-700"
+              role="status"
+            >
+              <Check className="h-4 w-4 shrink-0" aria-hidden="true" />A fresh verification link is
+              on its way.
             </div>
           )}
 
           {resendError && (
-            <p className="rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-700" role="alert">
+            <p
+              className="rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-700"
+              role="alert"
+            >
               {resendError}
             </p>
           )}
 
           <div className="space-y-3">
-            <Button type="button" className="w-full" onClick={onResend} disabled={isResending || hasResent}>
-              <RefreshCw className={cn('mr-2 h-4 w-4', isResending && 'animate-spin')} aria-hidden="true" />
-              {isResending ? 'Sending email...' : hasResent ? 'Verification email sent' : 'Resend verification email'}
+            <Button
+              type="button"
+              className="w-full"
+              onClick={onResend}
+              disabled={isResending || hasResent}
+            >
+              <RefreshCw
+                className={cn('mr-2 h-4 w-4', isResending && 'animate-spin')}
+                aria-hidden="true"
+              />
+              {isResending
+                ? 'Sending email...'
+                : hasResent
+                  ? 'Verification email sent'
+                  : 'Resend verification email'}
             </Button>
-            <Button type="button" variant="outline" className="w-full" onClick={onLogout} disabled={isLoggingOut}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={onLogout}
+              disabled={isLoggingOut}
+            >
               <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
               {isLoggingOut ? 'Signing out...' : 'Sign out'}
             </Button>

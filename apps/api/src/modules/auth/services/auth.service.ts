@@ -35,7 +35,9 @@ export class AuthService {
     lastName: string;
     password: string;
   }) {
-    const existing = await this.usersRepository.findByEmail(dto.email.toLowerCase());
+    const existing = await this.usersRepository.findByEmail(
+      dto.email.toLowerCase(),
+    );
     if (existing) {
       throw new AppConflictException(
         'An account with this email address already exists',
@@ -59,7 +61,10 @@ export class AuthService {
     this.mailService
       .sendEmailVerification(user.email, user.firstName, emailVerificationToken)
       .catch((err: unknown) => {
-        this.logger.error(`Failed to send verification email to ${user.email}`, err);
+        this.logger.error(
+          `Failed to send verification email to ${user.email}`,
+          err,
+        );
       });
 
     this.logger.log(`New user registered: ${user.email}`);
@@ -73,7 +78,10 @@ export class AuthService {
       throw new AppUnauthorizedException('User not found', 'USER_NOT_FOUND');
     }
     if (user.emailVerified) {
-      throw new AppBadRequestException('Email is already verified', 'ALREADY_VERIFIED');
+      throw new AppBadRequestException(
+        'Email is already verified',
+        'ALREADY_VERIFIED',
+      );
     }
 
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
@@ -84,7 +92,10 @@ export class AuthService {
     this.mailService
       .sendEmailVerification(user.email, user.firstName, emailVerificationToken)
       .catch((err: unknown) => {
-        this.logger.error(`Failed to resend verification email to ${user.email}`, err);
+        this.logger.error(
+          `Failed to resend verification email to ${user.email}`,
+          err,
+        );
       });
 
     this.logger.log(`Resent verification email to: ${user.email}`);
@@ -93,7 +104,9 @@ export class AuthService {
   // ─── Login ────────────────────────────────────────────────────────────────
 
   async login(dto: { email: string; password: string }) {
-    const user = await this.usersRepository.findByEmail(dto.email.toLowerCase());
+    const user = await this.usersRepository.findByEmail(
+      dto.email.toLowerCase(),
+    );
 
     if (!user || !(await bcrypt.compare(dto.password, user.passwordHash))) {
       throw new AppUnauthorizedException(
@@ -114,7 +127,13 @@ export class AuthService {
     if (!user) {
       throw new AppUnauthorizedException('User not found', 'USER_NOT_FOUND');
     }
-    const { passwordHash, emailVerificationToken, passwordResetToken, hashedRefreshToken, ...safeUser } = user;
+    const {
+      passwordHash,
+      emailVerificationToken,
+      passwordResetToken,
+      hashedRefreshToken,
+      ...safeUser
+    } = user;
     return safeUser;
   }
 
@@ -130,19 +149,25 @@ export class AuthService {
 
   // ─── Refresh Token ────────────────────────────────────────────────────────
 
-  async refreshTokens(
-    userId: string,
-    refreshToken: string,
-  ) {
+  async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.usersRepository.findById(userId);
 
     if (!user || !user.hashedRefreshToken) {
-      throw new AppUnauthorizedException('Session expired. Please log in again.', 'SESSION_EXPIRED');
+      throw new AppUnauthorizedException(
+        'Session expired. Please log in again.',
+        'SESSION_EXPIRED',
+      );
     }
 
-    const isTokenValid = await bcrypt.compare(refreshToken, user.hashedRefreshToken);
+    const isTokenValid = await bcrypt.compare(
+      refreshToken,
+      user.hashedRefreshToken,
+    );
     if (!isTokenValid) {
-      throw new AppUnauthorizedException('Invalid refresh token', 'INVALID_REFRESH_TOKEN');
+      throw new AppUnauthorizedException(
+        'Invalid refresh token',
+        'INVALID_REFRESH_TOKEN',
+      );
     }
 
     return this.generateTokens(user.id, user.email);
@@ -181,7 +206,10 @@ export class AuthService {
     this.mailService
       .sendPasswordReset(user.email, user.firstName, token)
       .catch((err: unknown) => {
-        this.logger.error(`Failed to send password reset email to ${user.email}`, err);
+        this.logger.error(
+          `Failed to send password reset email to ${user.email}`,
+          err,
+        );
       });
   }
 
@@ -235,14 +263,16 @@ export class AuthService {
         { sub: userId, email },
         {
           secret: this.configService.get<string>('jwt.secret'),
-          expiresIn: (this.configService.get<string>('jwt.expiresIn') ?? '15m') as any,
+          expiresIn: (this.configService.get<string>('jwt.expiresIn') ??
+            '15m') as any,
         },
       ),
       this.jwtService.signAsync(
         { sub: userId, email },
         {
           secret: this.configService.get<string>('jwt.refreshSecret'),
-          expiresIn: (this.configService.get<string>('jwt.refreshExpiresIn') ?? '7d') as any,
+          expiresIn: (this.configService.get<string>('jwt.refreshExpiresIn') ??
+            '7d') as any,
         },
       ),
     ]);

@@ -13,7 +13,11 @@ export class ActivitiesRepository {
     private readonly repository: Repository<Activity>,
   ) {}
 
-  async create(userId: string, opportunityId: string, data: CreateActivityDto): Promise<Activity> {
+  async create(
+    userId: string,
+    opportunityId: string,
+    data: CreateActivityDto,
+  ): Promise<Activity> {
     const activity = this.repository.create({
       ...data,
       userId,
@@ -23,7 +27,10 @@ export class ActivitiesRepository {
     return this.repository.save(activity);
   }
 
-  async findAllForOpportunity(userId: string, opportunityId: string): Promise<Activity[]> {
+  async findAllForOpportunity(
+    userId: string,
+    opportunityId: string,
+  ): Promise<Activity[]> {
     return this.repository.find({
       where: { userId, opportunityId },
       relations: { attachments: true },
@@ -33,16 +40,31 @@ export class ActivitiesRepository {
 
   async update(id: string, userId: string, data: UpdateActivityDto) {
     await this.repository.update({ id, userId }, data);
-    return this.repository.findOne({ where: { id, userId }, relations: { attachments: true } });
+    return this.repository.findOne({
+      where: { id, userId },
+      relations: { attachments: true },
+    });
   }
 
   async findOne(userId: string, opportunityId: string, activityId: string) {
-    return this.repository.findOne({ where: { id: activityId, userId, opportunityId }, relations: { attachments: true } });
+    return this.repository.findOne({
+      where: { id: activityId, userId, opportunityId },
+      relations: { attachments: true },
+    });
   }
 
-  async addAttachments(activityId: string, attachments: Array<Partial<ActivityAttachment>>) {
+  async addAttachments(
+    activityId: string,
+    attachments: Array<Partial<ActivityAttachment>>,
+  ) {
     const activity = await this.repository.findOneByOrFail({ id: activityId });
-    activity.attachments = [...(activity.attachments ?? []), ...attachments.map((attachment) => ({ ...attachment, activityId })) as ActivityAttachment[]];
+    activity.attachments = [
+      ...(activity.attachments ?? []),
+      ...(attachments.map((attachment) => ({
+        ...attachment,
+        activityId,
+      })) as ActivityAttachment[]),
+    ];
     return this.repository.save(activity);
   }
 }

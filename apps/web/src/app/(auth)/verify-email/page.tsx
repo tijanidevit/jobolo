@@ -16,7 +16,7 @@ function VerifyEmailContent() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
-  
+
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
   const hasAttempted = useRef(false);
@@ -38,9 +38,9 @@ function VerifyEmailContent() {
           setUser({ ...user, emailVerified: true });
         }
         setStatus('success');
-      } catch (err: any) {
+      } catch {
         setStatus('error');
-        setError(err.response?.data?.message || 'Failed to verify email. The link may have expired or is invalid.');
+        setError('Failed to verify email. The link may have expired or is invalid.');
       }
     };
 
@@ -53,7 +53,9 @@ function VerifyEmailContent() {
         <div className="flex flex-col items-center justify-center space-y-4 text-center py-8">
           <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
           <h2 className="text-xl font-semibold">Verifying your email</h2>
-          <p className="text-sm text-slate-600">Please wait while we verify your email address...</p>
+          <p className="text-sm text-slate-600">
+            Please wait while we verify your email address...
+          </p>
         </div>
       </CardContent>
     );
@@ -69,7 +71,7 @@ function VerifyEmailContent() {
           <Link
             href="/login"
             className={cn(
-              'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900'
+              'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900',
             )}
           >
             Return to sign in
@@ -85,16 +87,17 @@ function VerifyEmailContent() {
         <CheckCircle2 className="h-12 w-12 text-green-500" />
         <h2 className="text-xl font-semibold">Email Verified!</h2>
         <p className="text-sm text-slate-600">
-          Your email address has been successfully verified. You can now access all features of Jobolo.
+          Your email address has been successfully verified. You can now access all features of
+          Jobolo.
         </p>
-          <Link
-            href={isAuthenticated ? '/dashboard' : '/login'}
-            className={cn(
-              'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700'
-            )}
-          >
-            {isAuthenticated ? 'Continue to dashboard' : 'Sign in'}
-          </Link>
+        <Link
+          href={isAuthenticated ? '/dashboard' : '/login'}
+          className={cn(
+            'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700',
+          )}
+        >
+          {isAuthenticated ? 'Continue to dashboard' : 'Sign in'}
+        </Link>
       </div>
     </CardContent>
   );
@@ -109,12 +112,18 @@ export default function VerifyEmailPage() {
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Jobolo</h1>
             <p className="text-sm text-slate-500 mt-2">The Job Search Operating System</p>
           </div>
-          
+
           <Card>
             <CardHeader className="text-center">
               <CardTitle>Email Verification</CardTitle>
             </CardHeader>
-            <Suspense fallback={<div className="p-8 text-center text-slate-500"><Loader2 className="mx-auto h-8 w-8 animate-spin" /></div>}>
+            <Suspense
+              fallback={
+                <div className="p-8 text-center text-slate-500">
+                  <Loader2 className="mx-auto h-8 w-8 animate-spin" />
+                </div>
+              }
+            >
               <VerifyEmailContent />
             </Suspense>
           </Card>

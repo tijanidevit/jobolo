@@ -7,7 +7,10 @@ import { UsersController } from './controllers/users.controller.js';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), PassportModule.register({ defaultStrategy: 'jwt' })],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [UsersRepository, UsersService],
   controllers: [UsersController],
   exports: [UsersService, UsersRepository],

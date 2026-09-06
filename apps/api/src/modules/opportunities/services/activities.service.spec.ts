@@ -13,8 +13,14 @@ describe('ActivitiesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ActivitiesService,
-        { provide: ActivitiesRepository, useValue: mock<ActivitiesRepository>() },
-        { provide: OpportunitiesRepository, useValue: mock<OpportunitiesRepository>() },
+        {
+          provide: ActivitiesRepository,
+          useValue: mock<ActivitiesRepository>(),
+        },
+        {
+          provide: OpportunitiesRepository,
+          useValue: mock<OpportunitiesRepository>(),
+        },
       ],
     }).compile();
 
@@ -29,18 +35,32 @@ describe('ActivitiesService', () => {
       title: 'Recruiter followed up',
       occurredAt: new Date('2026-09-06T10:00:00.000Z'),
     };
-    const activity = { id: 'activity-1', opportunityId: 'opportunity-1', ...dto };
-    opportunitiesRepository.findOne.mockResolvedValueOnce({ id: 'opportunity-1' } as never);
+    const activity = {
+      id: 'activity-1',
+      opportunityId: 'opportunity-1',
+      ...dto,
+    };
+    opportunitiesRepository.findOne.mockResolvedValueOnce({
+      id: 'opportunity-1',
+    } as never);
     activitiesRepository.create.mockResolvedValueOnce(activity as never);
 
-    await expect(service.create('user-1', 'opportunity-1', dto)).resolves.toEqual(activity);
-    expect(activitiesRepository.create).toHaveBeenCalledWith('user-1', 'opportunity-1', dto);
+    await expect(
+      service.create('user-1', 'opportunity-1', dto),
+    ).resolves.toEqual(activity);
+    expect(activitiesRepository.create).toHaveBeenCalledWith(
+      'user-1',
+      'opportunity-1',
+      dto,
+    );
   });
 
   it('rejects activity access when the opportunity belongs to another user', async () => {
     opportunitiesRepository.findOne.mockResolvedValueOnce(null);
 
-    await expect(service.findAllForOpportunity('user-1', 'opportunity-1')).rejects.toThrow(NotFoundException);
+    await expect(
+      service.findAllForOpportunity('user-1', 'opportunity-1'),
+    ).rejects.toThrow(NotFoundException);
     expect(activitiesRepository.findAllForOpportunity).not.toHaveBeenCalled();
   });
 });

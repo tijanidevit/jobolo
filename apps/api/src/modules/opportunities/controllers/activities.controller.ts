@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Patch, Post, Res, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Res,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { mkdirSync } from 'node:fs';
 import type { Response } from 'express';
@@ -8,7 +19,10 @@ import { CurrentUser } from '../../../common/decorators/current-user.decorator.j
 import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import { ApiMessage } from '../../../common/decorators/api-message.decorator.js';
 import { CreateActivityDto } from '../dto/create-activity.dto.js';
-import { ActivitiesService, type UploadedActivityFile } from '../services/activities.service.js';
+import {
+  ActivitiesService,
+  type UploadedActivityFile,
+} from '../services/activities.service.js';
 import { UpdateActivityDto } from '../dto/update-activity.dto.js';
 
 const uploadDirectory = 'uploads/activities';
@@ -31,9 +45,11 @@ export class ActivitiesController {
   }
 
   @Post()
-  @UseInterceptors(FilesInterceptor('files', 5, {
-    limits: { fileSize: 10 * 1024 * 1024 },
-  }))
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
   @ApiMessage('Timeline activity created successfully')
   async create(
     @CurrentUser() user: IAuthenticatedUser,
@@ -41,7 +57,12 @@ export class ActivitiesController {
     @Body() dto: CreateActivityDto,
     @UploadedFiles() files: UploadedActivityFile[],
   ) {
-    return this.activitiesService.create(user.id, opportunityId, dto, files ?? []);
+    return this.activitiesService.create(
+      user.id,
+      opportunityId,
+      dto,
+      files ?? [],
+    );
   }
 
   @Patch(':activityId')
@@ -52,7 +73,12 @@ export class ActivitiesController {
     @Param('activityId') activityId: string,
     @Body() dto: UpdateActivityDto,
   ) {
-    return this.activitiesService.update(user.id, opportunityId, activityId, dto);
+    return this.activitiesService.update(
+      user.id,
+      opportunityId,
+      activityId,
+      dto,
+    );
   }
 
   @Get(':activityId/attachments/:storedName')
@@ -63,7 +89,12 @@ export class ActivitiesController {
     @Param('storedName') storedName: string,
     @Res() response: Response,
   ) {
-    const attachment = await this.activitiesService.getAttachment(user.id, opportunityId, activityId, storedName);
+    const attachment = await this.activitiesService.getAttachment(
+      user.id,
+      opportunityId,
+      activityId,
+      storedName,
+    );
     return response.type(attachment.mimeType).sendFile(attachment.path);
   }
 }

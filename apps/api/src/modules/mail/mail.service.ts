@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 
-
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
@@ -18,10 +17,12 @@ export class MailService {
     const user = configService.get<string>('mail.user') ?? '';
     const pass = configService.get<string>('mail.pass') ?? '';
     const fromName = configService.get<string>('mail.fromName') ?? 'Jobolo';
-    const fromEmail = configService.get<string>('mail.from') ?? 'noreply@jobolo.app';
+    const fromEmail =
+      configService.get<string>('mail.from') ?? 'noreply@jobolo.app';
 
     this.fromAddress = `"${fromName}" <${fromEmail}>`;
-    this.frontendUrl = configService.get<string>('app.frontendUrl') ?? 'http://localhost:3000';
+    this.frontendUrl =
+      configService.get<string>('app.frontendUrl') ?? 'http://localhost:3000';
 
     this.transporter = nodemailer.createTransport({
       host,
