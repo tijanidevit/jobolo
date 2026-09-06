@@ -9,6 +9,7 @@ import { getErrorMessage, isNotFoundError } from '@/features/opportunities/utils
 import { OpportunityDetailHeader } from '@/features/opportunities/components/opportunity-detail/opportunity-detail-header';
 import { OpportunityDetailSections } from '@/features/opportunities/components/opportunity-detail/opportunity-detail-sections';
 import { OpportunityTimeline } from '@/features/opportunities/components/opportunity-activity/opportunity-timeline';
+import { OpportunityNoteList } from '@/features/opportunities/components/opportunity-notes/opportunity-note-list';
 
 export default function OpportunityDetailPage() {
   const params = useParams<{ id: string }>();
@@ -38,7 +39,10 @@ export default function OpportunityDetailPage() {
       <OpportunityDetailHeader opportunity={opportunity} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.72fr)]">
-        <OpportunityDetailSections opportunity={opportunity} />
+        <div className="space-y-6">
+          <OpportunityDetailSections opportunity={opportunity} />
+          <OpportunityNoteList opportunityId={opportunity.id} />
+        </div>
 
         <div className="lg:sticky lg:top-6 lg:self-start">
           <Card>

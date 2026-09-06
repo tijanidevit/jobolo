@@ -28,6 +28,15 @@ export interface OpportunityActivityAttachment {
   createdAt: string;
 }
 
+export interface OpportunityNote {
+  id: string;
+  userId: string;
+  opportunityId: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Opportunity {
   id: string;
   userId: string;

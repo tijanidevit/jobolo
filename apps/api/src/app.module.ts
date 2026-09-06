@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { MailModule } from './modules/mail/mail.module.js';
 import { OpportunitiesModule } from './modules/opportunities/opportunities.module.js';
+import { NotesModule } from './modules/notes/notes.module.js';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { OpportunitiesModule } from './modules/opportunities/opportunities.modul
     AuthModule,
     UsersModule,
     OpportunitiesModule,
+    NotesModule,
   ],
   controllers: [AppController],
 })
