@@ -48,4 +48,12 @@ export const activitiesApi = {
     );
     return response.data;
   },
+
+  downloadAttachment: async (opportunityId: string, activityId: string, storedName: string) => {
+    const response = await api.get<Blob>(
+      `/opportunities/${opportunityId}/activities/${activityId}/attachments/${storedName}`,
+      { responseType: 'blob' },
+    );
+    return response.data;
+  },
 };
