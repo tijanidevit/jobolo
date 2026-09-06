@@ -7,7 +7,7 @@ import {
   IsNumber,
   Min,
   Max,
-  IsDateString,
+  IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { OPPORTUNITY_STATUSES } from '../constants.js';
@@ -84,12 +84,12 @@ export class CreateOpportunityDto {
 
   // --- Application Dates ---
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @Type(() => Date)
   dateDiscovered?: Date;
 
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   @Type(() => Date)
   dateApplied?: Date;
 
