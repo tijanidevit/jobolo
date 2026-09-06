@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiMessage } from './common/decorators/api-message.decorator.js';
 
 /**
  * Health check controller.
@@ -9,8 +10,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 @Controller('health')
 export class AppController {
   @Get()
-  @ApiOperation({ summary: 'API health check' })
-  @ApiResponse({ status: 200, description: 'API is running' })
+  @ApiMessage('API is running')
   check() {
     return {
       status: 'ok',

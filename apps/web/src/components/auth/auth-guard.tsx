@@ -43,7 +43,7 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
       await resendVerification();
       setHasResent(true);
     } catch (error: any) {
-      if (error.response?.data?.code === 'ALREADY_VERIFIED' && user) {
+      if (error.response?.data?.message === 'Email is already verified' && user) {
         // Backend knows user is verified, but frontend state is stale. Sync it up.
         setUser({ ...user, emailVerified: true });
       } else {

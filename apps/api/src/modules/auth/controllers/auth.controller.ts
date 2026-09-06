@@ -9,24 +9,21 @@ import {
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service.js';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { JwtRefreshGuard } from '../../../common/guards/jwt-refresh.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
+import { ApiMessage } from '../../../common/decorators/api-message.decorator.js';
 import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 import {
   RegisterDto,
   LoginDto,
   ForgotPasswordDto,
   ResetPasswordDto,
-  RefreshTokenDto,
   VerifyEmailDto,
 } from '../dto/auth.dto.js';
-import { AuthTokensResponse } from '../dto/auth-response.dto.js';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -35,110 +32,77 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new user account' })
-  @ApiResponse({ status: 201, description: 'Registration successful', type: AuthTokensResponse })
-  @ApiResponse({ status: 409, description: 'Email already exists' })
+  @ApiMessage('Registration successful. Please check your email to verify your account.')
   async register(@Body() dto: RegisterDto) {
     const tokens = await this.authService.register(dto);
-    return {
-      message: 'Registration successful. Please check your email to verify your account.',
-      data: { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken },
-    };
+    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Log in with email and password' })
-  @ApiResponse({ status: 200, description: 'Login successful', type: AuthTokensResponse })
-  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiMessage('Login successful')
   async login(@Body() dto: LoginDto) {
     const tokens = await this.authService.login(dto);
-    return {
-      message: 'Login successful',
-      data: { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken },
-    };
+    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Log out and invalidate refresh token' })
-  @ApiResponse({ status: 200, description: 'Logged out successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiMessage('Logged out successfully')
   async logout(@CurrentUser() user: IAuthenticatedUser) {
     await this.authService.logout(user.id);
-    return { message: 'Logged out successfully', data: null };
   }
 
   @Post('refresh')
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh access token using refresh token' })
-  @ApiResponse({ status: 200, description: 'Tokens refreshed', type: AuthTokensResponse })
-  @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
+  @ApiMessage('Tokens refreshed successfully')
   async refresh(
     @CurrentUser() user: IAuthenticatedUser & { refreshToken: string },
   ) {
     const tokens = await this.authService.refreshTokens(user.id, user.refreshToken);
-    return {
-      message: 'Tokens refreshed successfully',
-      data: { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken },
-    };
+    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   }
 
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Verify email address with token from email' })
-  @ApiResponse({ status: 200, description: 'Email verified successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+  @ApiMessage('Email verified successfully')
   async verifyEmail(@Body() dto: VerifyEmailDto) {
     await this.authService.verifyEmail(dto.token);
-    return { message: 'Email verified successfully', data: null };
   }
 
   @Post('resend-verification')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Resend verification email to the authenticated user' })
-  @ApiResponse({ status: 200, description: 'Verification email sent' })
+  @ApiMessage('Verification email sent successfully')
   async resendVerification(@CurrentUser() user: IAuthenticatedUser) {
     await this.authService.resendVerificationEmail(user.id);
-    return { message: 'Verification email sent successfully', data: null };
   }
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Request a password reset email' })
-  @ApiResponse({ status: 200, description: 'If the email exists, a reset link was sent' })
+  @ApiMessage('If an account with that email exists, a password reset link has been sent.')
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
     await this.authService.requestPasswordReset(dto.email);
-    return {
-      message: 'If an account with that email exists, a password reset link has been sent.',
-      data: null,
-    };
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Reset password using token from email' })
-  @ApiResponse({ status: 200, description: 'Password reset successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid or expired reset token' })
+  @ApiMessage('Password reset successfully. Please log in with your new password.')
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.authService.resetPassword(dto.token, dto.password);
-    return { message: 'Password reset successfully. Please log in with your new password.', data: null };
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Get current authenticated user identity (token check)' })
-  @ApiResponse({ status: 200, description: 'Authenticated user identity' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiMessage('Authenticated')
   async getMe(@CurrentUser() user: IAuthenticatedUser) {
     const safeUser = await this.authService.getMe(user.id);
-    return { message: 'Authenticated', data: safeUser };
+    return safeUser;
   }
 }

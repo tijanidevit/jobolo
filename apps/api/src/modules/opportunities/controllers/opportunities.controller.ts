@@ -10,13 +10,14 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { OpportunitiesService } from '../services/opportunities.service.js';
 import { CreateOpportunityDto } from '../dto/create-opportunity.dto.js';
 import { UpdateOpportunityDto } from '../dto/update-opportunity.dto.js';
 import { ChangeOpportunityStageDto } from '../dto/change-opportunity-stage.dto.js';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
+import { ApiMessage } from '../../../common/decorators/api-message.decorator.js';
 import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
 
 @ApiTags('Opportunities')
@@ -27,7 +28,7 @@ export class OpportunitiesController {
   constructor(private readonly opportunitiesService: OpportunitiesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new opportunity' })
+  @ApiMessage('Opportunity created successfully')
   async create(
     @CurrentUser() user: IAuthenticatedUser,
     @Body() createOpportunityDto: CreateOpportunityDto,
@@ -36,13 +37,13 @@ export class OpportunitiesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all opportunities for the current user' })
+  @ApiMessage('Opportunities retrieved successfully')
   async findAll(@CurrentUser() user: IAuthenticatedUser) {
     return this.opportunitiesService.findAllForUser(user.id);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a specific opportunity' })
+  @ApiMessage('Opportunity retrieved successfully')
   async findOne(
     @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
@@ -51,7 +52,7 @@ export class OpportunitiesController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update an opportunity' })
+  @ApiMessage('Opportunity updated successfully')
   async update(
     @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
@@ -61,7 +62,7 @@ export class OpportunitiesController {
   }
 
   @Patch(':id/stage')
-  @ApiOperation({ summary: 'Change the pipeline stage of an opportunity' })
+  @ApiMessage('Opportunity stage updated successfully')
   async changeStage(
     @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
@@ -71,8 +72,8 @@ export class OpportunitiesController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete an opportunity' })
+  @HttpCode(HttpStatus.OK)
+  @ApiMessage('Opportunity deleted successfully')
   async remove(
     @CurrentUser() user: IAuthenticatedUser,
     @Param('id') id: string,
