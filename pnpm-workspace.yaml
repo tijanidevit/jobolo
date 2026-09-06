@@ -3,7 +3,7 @@ packages:
   - "packages/*"
 allowBuilds:
   '@scarf/scarf': true
-  '@swc/core': set this to true or false
+  '@swc/core': true
   bcrypt: true
-  esbuild: set this to true or false
+  esbuild: true
   unrs-resolver: true

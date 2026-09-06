@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { EmailVerificationRequired } from './email-verification-required';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -18,12 +19,9 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
   const isInitialized = useAuthStore((state) => state.isInitialized);
   
   const user = useAuthStore((state) => state.user);
-  const setUser = useAuthStore((state) => state.setUser);
-  const { logout, resendVerification, isResendingVerification } = useAuth();
+  const { logout, resendVerification, isResendingVerification, isLoggingOut, isInitializing, refreshUser } = useAuth();
   const [hasResent, setHasResent] = useState(false);
-
-  // Call useAuth to trigger the initial fetch if needed
-  const { isInitializing } = useAuth();
+  const [resendError, setResendError] = useState<string | null>(null);
 
   useEffect(() => {
     // Public pages are always accessible — no redirects

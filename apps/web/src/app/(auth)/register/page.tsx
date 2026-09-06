@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 const registerSchema = z.object({
   firstName: z.string().min(2, 'First name is required'),
@@ -26,6 +26,7 @@ export default function RegisterPage() {
   const { register: registerAuth, isRegistering } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -140,10 +141,18 @@ export default function RegisterPage() {
                       <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                       <Input
                         id="password"
-                        type="password"
-                        className="pl-9"
+                        type={showPassword ? 'text' : 'password'}
+                        className="pl-9 pr-10"
                         {...register('password')}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((visible) => !visible)}
+                        className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
                     {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
                   </div>
