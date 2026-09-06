@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,6 +22,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
   const { login, isLoggingIn } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +43,7 @@ export default function LoginPage() {
     try {
       setError(null);
       await login(data);
-      // Redirection is handled by the useAuth mutation onSettled or by the AuthGuard
+      router.replace('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to sign in. Please check your credentials.');
     }

@@ -8,10 +8,14 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { authApi } from '@/features/auth/api/auth.api';
+import { useAuth } from '@/features/auth/hooks/use-auth';
+import { useAuthStore } from '@/features/auth/store/auth.store';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { refreshUser } = useAuth();
   
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +34,7 @@ function VerifyEmailContent() {
     const verifyToken = async () => {
       try {
         await authApi.verifyEmail({ token });
+        await refreshUser();
         setStatus('success');
       } catch (err: any) {
         setStatus('error');
@@ -81,12 +86,12 @@ function VerifyEmailContent() {
           Your email address has been successfully verified. You can now access all features of Jobolo.
         </p>
           <Link
-            href="/login"
+            href={isAuthenticated ? '/dashboard' : '/login'}
             className={cn(
               'mt-4 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700'
             )}
           >
-            Sign in
+            {isAuthenticated ? 'Continue to dashboard' : 'Sign in'}
           </Link>
       </div>
     </CardContent>

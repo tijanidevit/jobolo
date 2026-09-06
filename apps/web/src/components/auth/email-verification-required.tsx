@@ -87,7 +87,7 @@ export function EmailVerificationRequired({
           </div>
 
           <p className="text-center text-xs leading-5 text-slate-500">
-            Didn&apos;t receive it? Check your spam folder, then request a new link above.
+            Didn&apos;t receive it? Check your spam folder, or request a new link above.
           </p>
         </CardContent>
       </Card>

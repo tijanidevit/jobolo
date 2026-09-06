@@ -29,10 +29,7 @@ export const useAuth = () => {
   // Sync query data with store
   useEffect(() => {
     if (user !== undefined) {
-      const storeUser = useAuthStore.getState().user;
-      if (user?.id !== storeUser?.id) {
-        setUser(user);
-      }
+      setUser(user);
       if (!useAuthStore.getState().isInitialized) {
         setInitialized(true);
       }
@@ -41,17 +38,24 @@ export const useAuth = () => {
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (typeof window !== 'undefined') {
         Cookies.set('accessToken', data.data.accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
         Cookies.set('refreshToken', data.data.refreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       }
-      queryClient.invalidateQueries({ queryKey: ['me'] });
+      await queryClient.invalidateQueries({ queryKey: ['me'] });
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: authApi.register,
+    onSuccess: async (data) => {
+      if (typeof window !== 'undefined') {
+        Cookies.set('accessToken', data.data.accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+        Cookies.set('refreshToken', data.data.refreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      }
+      await queryClient.invalidateQueries({ queryKey: ['me'] });
+    },
   });
 
   const logoutMutation = useMutation({
@@ -76,6 +80,7 @@ export const useAuth = () => {
     register: registerMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
     resendVerification: resendVerificationMutation.mutateAsync,
+    refreshUser: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
     isLoggingIn: loginMutation.isPending,
     isRegistering: registerMutation.isPending,
     isLoggingOut: logoutMutation.isPending,

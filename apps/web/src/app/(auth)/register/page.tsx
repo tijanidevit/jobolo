@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,6 +24,7 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const router = useRouter();
   const { register: registerAuth, isRegistering } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -47,6 +49,7 @@ export default function RegisterPage() {
       setError(null);
       await registerAuth(data);
       setSuccess(true);
+      router.replace('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create account. Please try again.');
     }
