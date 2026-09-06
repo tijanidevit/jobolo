@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@jobolo/shared": ["../../packages/shared/src"]
     }
   },
   "include": [

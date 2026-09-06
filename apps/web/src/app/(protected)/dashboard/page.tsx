@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -19,10 +20,12 @@ export default function DashboardPage() {
             Here's what's happening with your job search today.
           </p>
         </div>
-        <Button>
+        <Link href="/opportunities?create=1">
+          <Button>
           <Plus className="mr-2 h-4 w-4" />
           Add Opportunity
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
