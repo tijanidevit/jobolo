@@ -9,6 +9,11 @@ export const opportunitiesApi = {
     return response.data;
   },
 
+  get: async (id: string) => {
+    const response = await api.get<ApiResponse<Opportunity>>(`/opportunities/${id}`);
+    return response.data;
+  },
+
   create: async (payload: OpportunityPayload) => {
     const response = await api.post<ApiResponse<Opportunity>>('/opportunities', payload);
     return response.data;

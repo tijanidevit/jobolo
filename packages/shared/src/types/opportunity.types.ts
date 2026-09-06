@@ -43,3 +43,38 @@ export type WorkArrangement = 'remote' | 'hybrid' | 'onsite';
 export type EmploymentType = 'full_time' | 'part_time' | 'contract' | 'freelance' | 'internship';
 
 export type PayFrequency = 'annual' | 'monthly' | 'weekly' | 'daily' | 'hourly';
+
+export type ActivityType =
+  | 'application'
+  | 'email'
+  | 'phone_call'
+  | 'whatsapp'
+  | 'linkedin_message'
+  | 'recruiter_screening'
+  | 'technical_interview'
+  | 'hr_interview'
+  | 'final_interview'
+  | 'assessment'
+  | 'offer'
+  | 'rejection'
+  | 'follow_up'
+  | 'note'
+  | 'status_change';
+
+export const ACTIVITY_TYPES: ActivityType[] = [
+  'application',
+  'email',
+  'phone_call',
+  'whatsapp',
+  'linkedin_message',
+  'recruiter_screening',
+  'technical_interview',
+  'hr_interview',
+  'final_interview',
+  'assessment',
+  'offer',
+  'rejection',
+  'follow_up',
+  'note',
+  'status_change',
+];

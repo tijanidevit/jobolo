@@ -1,10 +1,32 @@
 import type {
+  ActivityType,
   EmploymentType,
   OpportunityPriority,
   OpportunityStatus,
   PayFrequency,
   WorkArrangement,
 } from '@jobolo/shared';
+
+export interface OpportunityActivity {
+  id: string;
+  userId: string;
+  opportunityId: string;
+  type: ActivityType;
+  title: string;
+  description: string | null;
+  occurredAt: string;
+  createdAt: string;
+  attachments: OpportunityActivityAttachment[];
+}
+
+export interface OpportunityActivityAttachment {
+  id: string;
+  originalName: string;
+  storedName: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+}
 
 export interface Opportunity {
   id: string;

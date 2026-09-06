@@ -30,7 +30,11 @@ export function useOpportunities() {
 
   const changeStageMutation = useMutation({
     mutationFn: ({ id, stage }: { id: string; stage: OpportunityStatus }) => opportunitiesApi.changeStage(id, stage),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: opportunitiesQueryKey }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: opportunitiesQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['opportunities', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['opportunities', variables.id, 'activities'] });
+    },
   });
 
   return {

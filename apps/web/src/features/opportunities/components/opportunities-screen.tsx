@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AlertCircle, BriefcaseBusiness, ExternalLink, MapPin, Pencil, Plus, Trash2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, BriefcaseBusiness, ExternalLink, MapPin, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -29,7 +30,6 @@ function formatScore(value: number | null, label: string) {
 export function OpportunitiesScreen() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [isCreating, setIsCreating] = useState(searchParams.get('create') === '1');
   const [formError, setFormError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -40,11 +40,9 @@ export function OpportunitiesScreen() {
     error,
     refetch,
     createOpportunity,
-    updateOpportunity,
     deleteOpportunity,
     changeStage,
     isCreating: isSaving,
-    isUpdating,
     isDeleting,
     isChangingStage,
   } = useOpportunities();
@@ -54,7 +52,6 @@ export function OpportunitiesScreen() {
     : opportunities.filter((opportunity) => opportunity.stage === selectedStage);
 
   const closeForm = () => {
-    setEditingOpportunity(null);
     setIsCreating(false);
     setFormError(null);
     router.replace('/opportunities');
@@ -63,11 +60,7 @@ export function OpportunitiesScreen() {
   const saveOpportunity = async (payload: OpportunityPayload) => {
     try {
       setFormError(null);
-      if (editingOpportunity) {
-        await updateOpportunity({ id: editingOpportunity.id, payload });
-      } else {
-        await createOpportunity(payload);
-      }
+      await createOpportunity(payload);
       closeForm();
     } catch (saveError: unknown) {
       setFormError(getErrorMessage(saveError, 'We could not save this opportunity. Please try again.'));
@@ -96,12 +89,12 @@ export function OpportunitiesScreen() {
     }
   };
 
-  if (isCreating || editingOpportunity) {
+  if (isCreating) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <OpportunityForm
-          opportunity={editingOpportunity}
-          isSaving={isSaving || isUpdating}
+          opportunity={null}
+          isSaving={isSaving}
           onSubmit={saveOpportunity}
           onCancel={closeForm}
         />
@@ -161,7 +154,7 @@ export function OpportunitiesScreen() {
               key={opportunity.id}
               opportunity={opportunity}
               isDeleting={isDeleting && deletingId === opportunity.id}
-              onEdit={() => setEditingOpportunity(opportunity)}
+              onEdit={() => router.push(`/opportunities/${opportunity.id}/edit`)}
               onDelete={() => void removeOpportunity(opportunity)}
               onStageChange={(stage) => void updateStage(opportunity, stage)}
               isChangingStage={isChangingStage}
@@ -311,6 +304,9 @@ function OpportunityCard({
         <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
           {opportunity.jobUrl ? <a href={opportunity.jobUrl} target="_blank" rel="noreferrer" className="inline-flex items-center text-xs font-medium text-blue-600 hover:underline">View posting <ExternalLink className="ml-1 h-3 w-3" /></a> : <span />}
           <div className="flex gap-1">
+            <Link href={`/opportunities/${opportunity.id}`} className="inline-flex h-8 items-center gap-1 rounded-md px-3 text-xs font-medium text-blue-600 transition-colors hover:bg-slate-100">
+              View details <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
             <Button variant="ghost" size="icon" onClick={onEdit} aria-label={`Edit ${opportunity.jobTitle}`}><Pencil className="h-4 w-4" /></Button>
             <Button variant="ghost" size="icon" onClick={onDelete} disabled={isDeleting} aria-label={`Delete ${opportunity.jobTitle}`}><Trash2 className="h-4 w-4 text-red-500" /></Button>
           </div>

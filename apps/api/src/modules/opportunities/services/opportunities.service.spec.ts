@@ -2,11 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { OpportunitiesService } from './opportunities.service.js';
 import { OpportunitiesRepository } from '../repositories/opportunities.repository.js';
+import { ActivitiesRepository } from '../repositories/activities.repository.js';
 import { Opportunity } from '../entities/opportunity.entity.js';
 
 describe('OpportunitiesService', () => {
   let service: OpportunitiesService;
   let repository: Mocked<OpportunitiesRepository>;
+  let activitiesRepository: Mocked<ActivitiesRepository>;
 
   const mockUserId = 'user-123';
   const mockOpportunityId = 'opp-456';
@@ -19,11 +21,16 @@ describe('OpportunitiesService', () => {
           provide: OpportunitiesRepository,
           useValue: mock<OpportunitiesRepository>(),
         },
+        {
+          provide: ActivitiesRepository,
+          useValue: mock<ActivitiesRepository>(),
+        },
       ],
     }).compile();
 
     service = module.get<OpportunitiesService>(OpportunitiesService);
     repository = module.get(OpportunitiesRepository);
+    activitiesRepository = module.get(ActivitiesRepository);
   });
 
   describe('create', () => {
@@ -35,6 +42,7 @@ describe('OpportunitiesService', () => {
       const expectedOpp = { id: mockOpportunityId, ...createDto, userId: mockUserId } as Opportunity;
 
       repository.create.mockResolvedValueOnce(expectedOpp);
+      activitiesRepository.create.mockResolvedValueOnce({} as never);
 
       const result = await service.create(mockUserId, createDto);
 
@@ -73,6 +81,7 @@ describe('OpportunitiesService', () => {
 
       repository.findOne.mockResolvedValueOnce(existingOpp);
       repository.update.mockResolvedValueOnce(expectedResult as any);
+      activitiesRepository.create.mockResolvedValueOnce({} as never);
 
       const result = await service.update(mockOpportunityId, mockUserId, { companyName: 'New Name' });
 
@@ -94,6 +103,11 @@ describe('OpportunitiesService', () => {
       const result = await service.changeStage(mockOpportunityId, mockUserId, 'applied');
 
       expect(repository.update).toHaveBeenCalledWith(mockOpportunityId, mockUserId, { stage: 'applied' });
+      expect(activitiesRepository.create).toHaveBeenCalledWith(
+        mockUserId,
+        mockOpportunityId,
+        expect.objectContaining({ type: 'status_change' }),
+      );
       expect(result).toEqual(expectedResult);
     });
   });

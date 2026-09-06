@@ -1,11 +1,12 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { Controller, useForm, type Control, type FieldPath } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 import { cn } from '@/lib/utils';
 import { EMPLOYMENT_TYPES, OPPORTUNITY_PRIORITIES, OPPORTUNITY_STAGES, WORK_ARRANGEMENTS } from '../constants';
 import type { Opportunity, OpportunityPayload } from '../types';
@@ -86,6 +87,7 @@ function toPayload(values: OpportunityFormValues): OpportunityPayload {
 export function OpportunityForm({ opportunity, isSaving, onSubmit, onCancel }: OpportunityFormProps) {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<OpportunityFormValues>({
@@ -126,9 +128,9 @@ export function OpportunityForm({ opportunity, isSaving, onSubmit, onCancel }: O
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
-              <SelectField label="Stage" options={OPPORTUNITY_STAGES} {...register('stage')} />
-              <SelectField label="Work arrangement" options={WORK_ARRANGEMENTS} placeholder="Not set" {...register('workArrangement')} />
-              <SelectField label="Employment type" options={EMPLOYMENT_TYPES} placeholder="Not set" {...register('employmentType')} />
+              <SelectField label="Stage" name="stage" control={control} options={OPPORTUNITY_STAGES} />
+              <SelectField label="Work arrangement" name="workArrangement" control={control} options={WORK_ARRANGEMENTS} placeholder="Not set" />
+              <SelectField label="Employment type" name="employmentType" control={control} options={EMPLOYMENT_TYPES} placeholder="Not set" />
             </div>
           </section>
 
@@ -141,7 +143,7 @@ export function OpportunityForm({ opportunity, isSaving, onSubmit, onCancel }: O
               <Field label="Date applied" error={errors.dateApplied?.message}>
                 <Input className={inputClassName} {...register('dateApplied')} type="date" />
               </Field>
-              <SelectField label="Priority" options={OPPORTUNITY_PRIORITIES} placeholder="Not set" {...register('priority')} />
+              <SelectField label="Priority" name="priority" control={control} options={OPPORTUNITY_PRIORITIES} placeholder="Not set" />
             </div>
           </section>
 
@@ -212,19 +214,15 @@ interface SelectFieldProps extends React.SelectHTMLAttributes<HTMLSelectElement>
   label: string;
   options: ReadonlyArray<{ value: string; label: string }>;
   placeholder?: string;
+  name: FieldPath<OpportunityFormValues>;
+  control: Control<OpportunityFormValues>;
 }
 
-function SelectField({ label, options, placeholder = 'Select', className, ...props }: SelectFieldProps) {
+function SelectField({ label, options, placeholder = 'Select', name, control }: SelectFieldProps) {
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
-      <select
-        className={cn('h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-blue-500', className)}
-        {...props}
-      >
-        {placeholder && <option value="">{placeholder}</option>}
-        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-      </select>
+      <Controller control={control} name={name} render={({ field }) => <SearchableSelect value={field.value ?? ''} options={options} placeholder={placeholder} onChange={field.onChange} />} />
     </div>
   );
 }

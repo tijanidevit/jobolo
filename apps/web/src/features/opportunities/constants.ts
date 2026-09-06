@@ -1,4 +1,21 @@
-import type { OpportunityStatus } from '@jobolo/shared';
+import type { ActivityType, OpportunityStatus } from '@jobolo/shared';
+
+export const ACTIVITY_TYPES: Array<{ value: ActivityType; label: string }> = [
+  { value: 'application', label: 'Application' },
+  { value: 'email', label: 'Email' },
+  { value: 'phone_call', label: 'Phone call' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'linkedin_message', label: 'LinkedIn message' },
+  { value: 'recruiter_screening', label: 'Recruiter screening' },
+  { value: 'technical_interview', label: 'Technical interview' },
+  { value: 'hr_interview', label: 'HR interview' },
+  { value: 'final_interview', label: 'Final interview' },
+  { value: 'assessment', label: 'Assessment' },
+  { value: 'offer', label: 'Offer' },
+  { value: 'rejection', label: 'Rejection' },
+  { value: 'follow_up', label: 'Follow-up' },
+  { value: 'note', label: 'Note' },
+];
 
 export const OPPORTUNITY_STAGES: Array<{ value: OpportunityStatus; label: string }> = [
   { value: 'discovered', label: 'Discovered' },
