@@ -1,60 +1,58 @@
-import { useEffect } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
 import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 
 export const useAuth = () => {
+  const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const setInitialized = useAuthStore((state) => state.setInitialized);
   const logoutStore = useAuthStore((state) => state.logout);
   const queryClient = useQueryClient();
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  const { data: user, isLoading: isInitializing } = useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      try {
-        const token = typeof window !== 'undefined' ? Cookies.get('accessToken') : null;
-        if (!token) return null;
-        
-        const res = await authApi.getMe();
-        return res.data;
-      } catch (error) {
-        logoutStore();
-        return null;
-      }
-    },
-  });
-
-  // Sync query data with store
   useEffect(() => {
-    if (user !== undefined) {
-      setUser(user);
-      if (!useAuthStore.getState().isInitialized) {
-        setInitialized(true);
+    if (typeof window !== 'undefined') {
+      const token = Cookies.get('accessToken');
+      const storedUser = window.localStorage.getItem('authUser');
+
+      if (token && storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch {
+          logoutStore();
+        }
+      } else if (!token) {
+        setUser(null);
       }
+
+      setInitialized(true);
+      setIsInitializing(false);
     }
-  }, [user, setUser, setInitialized]);
+  }, [logoutStore, setInitialized, setUser]);
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       if (typeof window !== 'undefined') {
         Cookies.set('accessToken', data.data.accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
         Cookies.set('refreshToken', data.data.refreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       }
-      await queryClient.invalidateQueries({ queryKey: ['me'] });
+      setUser(data.data.user);
+      setInitialized(true);
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       if (typeof window !== 'undefined') {
         Cookies.set('accessToken', data.data.accessToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
         Cookies.set('refreshToken', data.data.refreshToken, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       }
-      await queryClient.invalidateQueries({ queryKey: ['me'] });
+      setUser(data.data.user);
+      setInitialized(true);
     },
   });
 
@@ -80,7 +78,6 @@ export const useAuth = () => {
     register: registerMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
     resendVerification: resendVerificationMutation.mutateAsync,
-    refreshUser: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
     isLoggingIn: loginMutation.isPending,
     isRegistering: registerMutation.isPending,
     isLoggingOut: logoutMutation.isPending,

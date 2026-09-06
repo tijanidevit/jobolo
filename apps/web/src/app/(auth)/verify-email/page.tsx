@@ -8,14 +8,14 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { authApi } from '@/features/auth/api/auth.api';
-import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const { refreshUser } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
   
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,9 @@ function VerifyEmailContent() {
     const verifyToken = async () => {
       try {
         await authApi.verifyEmail({ token });
-        await refreshUser();
+        if (user) {
+          setUser({ ...user, emailVerified: true });
+        }
         setStatus('success');
       } catch (err: any) {
         setStatus('error');
@@ -43,7 +45,7 @@ function VerifyEmailContent() {
     };
 
     verifyToken();
-  }, [token]);
+  }, [setUser, token, user]);
 
   if (status === 'loading') {
     return (

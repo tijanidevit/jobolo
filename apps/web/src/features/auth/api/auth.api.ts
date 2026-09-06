@@ -4,16 +4,12 @@ import { User } from '../store/auth.store';
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+  user: User;
 }
 
 export interface AuthResponse {
   message: string;
   data: AuthTokens;
-}
-
-export interface MeResponse {
-  message: string;
-  data: User;
 }
 
 export const authApi = {
@@ -29,11 +25,6 @@ export const authApi = {
   
   logout: async () => {
     const response = await api.post('/auth/logout');
-    return response.data;
-  },
-  
-  getMe: async () => {
-    const response = await api.get<MeResponse>('/auth/me');
     return response.data;
   },
   

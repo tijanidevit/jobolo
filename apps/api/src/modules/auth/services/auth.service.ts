@@ -63,7 +63,8 @@ export class AuthService {
       });
 
     this.logger.log(`New user registered: ${user.email}`);
-    return this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.email);
+    return { ...tokens, user: this.toAuthenticatedUser(user) };
   }
 
   async resendVerificationEmail(userId: string) {
@@ -102,7 +103,8 @@ export class AuthService {
     }
 
     this.logger.log(`User logged in: ${user.email}`);
-    return this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.email);
+    return { ...tokens, user: this.toAuthenticatedUser(user) };
   }
 
   // ─── Get Me ───────────────────────────────────────────────────────────────
@@ -205,6 +207,22 @@ export class AuthService {
 
     await this.usersRepository.save(user);
     this.logger.log(`Password reset completed for user: ${user.email}`);
+  }
+
+  private toAuthenticatedUser(user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    emailVerified: boolean;
+  }) {
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailVerified: user.emailVerified,
+    };
   }
 
   // ─── Token Generation ─────────────────────────────────────────────────────

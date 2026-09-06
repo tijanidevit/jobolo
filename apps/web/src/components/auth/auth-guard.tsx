@@ -19,7 +19,7 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
   const isInitialized = useAuthStore((state) => state.isInitialized);
   
   const user = useAuthStore((state) => state.user);
-  const { logout, resendVerification, isResendingVerification, isLoggingOut, isInitializing, refreshUser } = useAuth();
+  const { logout, resendVerification, isResendingVerification, isLoggingOut, isInitializing } = useAuth();
   const [hasResent, setHasResent] = useState(false);
   const [resendError, setResendError] = useState<string | null>(null);
 
@@ -46,7 +46,6 @@ export function AuthGuard({ children, requireAuth = true, publicPage = false }: 
         ? responseMessage
         : 'We could not send the verification email. Please try again.';
       setResendError(message);
-      await refreshUser();
     }
   };
 

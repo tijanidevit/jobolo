@@ -1,8 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '../api/users.api';
+import { useAuthStore } from '@/features/auth/store/auth.store';
 
 export const useProfile = () => {
   const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['profile'],
@@ -12,9 +14,16 @@ export const useProfile = () => {
   const updateProfileMutation = useMutation({
     mutationFn: usersApi.updateProfile,
     onSuccess: (updatedData) => {
-      // Optimistically update the profile and the 'me' query
       queryClient.setQueryData(['profile'], updatedData);
-      queryClient.invalidateQueries({ queryKey: ['me'] });
+      const profile = updatedData.data;
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser) {
+        setUser({
+          ...currentUser,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+        });
+      }
     },
   });
 

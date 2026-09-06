@@ -22,12 +22,22 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
   isInitialized: false,
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  setUser: (user) => {
+    if (typeof window !== 'undefined') {
+      if (user) {
+        window.localStorage.setItem('authUser', JSON.stringify(user));
+      } else {
+        window.localStorage.removeItem('authUser');
+      }
+    }
+    set({ user, isAuthenticated: !!user });
+  },
   setInitialized: (initialized) => set({ isInitialized: initialized }),
   logout: () => {
     if (typeof window !== 'undefined') {
       Cookies.remove('accessToken');
       Cookies.remove('refreshToken');
+      window.localStorage.removeItem('authUser');
     }
     set({ user: null, isAuthenticated: false });
   },

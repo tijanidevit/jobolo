@@ -34,16 +34,16 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @ApiMessage('Registration successful. Please check your email to verify your account.')
   async register(@Body() dto: RegisterDto) {
-    const tokens = await this.authService.register(dto);
-    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+    const result = await this.authService.register(dto);
+    return { accessToken: result.accessToken, refreshToken: result.refreshToken, user: result.user };
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiMessage('Login successful')
   async login(@Body() dto: LoginDto) {
-    const tokens = await this.authService.login(dto);
-    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+    const result = await this.authService.login(dto);
+    return { accessToken: result.accessToken, refreshToken: result.refreshToken, user: result.user };
   }
 
   @Post('logout')
