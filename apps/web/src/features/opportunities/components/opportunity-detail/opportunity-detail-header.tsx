@@ -2,13 +2,17 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, BriefcaseBusiness, CalendarDays, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, BriefcaseBusiness, CalendarClock, CalendarDays, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useChangeOpportunityStage } from '../../hooks/use-change-opportunity-stage';
 import { useDeleteOpportunity } from '../../hooks/use-delete-opportunity';
 import type { Opportunity } from '../../types';
 import { formatDate, formatValue } from '../../utils/opportunity.utils';
 import { OPPORTUNITY_STAGES } from '../../constants';
+
+function isOverdue(value: string | null) {
+  return value !== null && new Date(value).getTime() < Date.now();
+}
 
 export function OpportunityDetailHeader({ opportunity }: { opportunity: Opportunity }) {
   const router = useRouter();
@@ -63,41 +67,68 @@ export function OpportunityDetailHeader({ opportunity }: { opportunity: Opportun
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <select
-              aria-label="Opportunity stage"
-              value={opportunity.stage}
-              disabled={isChangingStage}
-              onChange={(event) =>
-                void changeStage({
-                  id: opportunity.id,
-                  stage: event.target.value as Opportunity['stage'],
-                })
-              }
-              className="h-9 rounded-full border border-blue-100 bg-blue-50 px-3 text-sm font-semibold text-blue-700 outline-none focus:ring-2 focus:ring-blue-200"
-            >
-              {OPPORTUNITY_STAGES.map((stage) => (
-                <option key={stage.value} value={stage.value}>
-                  {stage.label}
-                </option>
-              ))}
-            </select>
-            <Link
-              href={`/opportunities/${opportunity.id}/edit`}
-              className="inline-flex h-8 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-100"
-            >
-              <Pencil className="mr-2 h-3.5 w-3.5" />
-              Edit
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => void removeOpportunity()}
-              disabled={isDeleting}
-              aria-label="Delete opportunity"
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </Button>
+          <div className="flex flex-col items-stretch gap-3 lg:items-end">
+            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+              <select
+                aria-label="Opportunity stage"
+                value={opportunity.stage}
+                disabled={isChangingStage}
+                onChange={(event) =>
+                  void changeStage({
+                    id: opportunity.id,
+                    stage: event.target.value as Opportunity['stage'],
+                  })
+                }
+                className="h-9 rounded-full border border-blue-100 bg-blue-50 px-3 text-sm font-semibold text-blue-700 outline-none focus:ring-2 focus:ring-blue-200"
+              >
+                {OPPORTUNITY_STAGES.map((stage) => (
+                  <option key={stage.value} value={stage.value}>
+                    {stage.label}
+                  </option>
+                ))}
+              </select>
+              <Link
+                href={`/opportunities/${opportunity.id}/edit`}
+                className="inline-flex h-8 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-100"
+              >
+                <Pencil className="mr-2 h-3.5 w-3.5" />
+                Edit
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => void removeOpportunity()}
+                disabled={isDeleting}
+                aria-label="Delete opportunity"
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+            </div>
+            <div className="w-full max-w-sm rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-left">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-600">
+                Next action
+              </p>
+              {opportunity.nextAction ? (
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <p className="text-sm font-semibold text-slate-900">{opportunity.nextAction}</p>
+                  {opportunity.nextActionDueDate && (
+                    <span
+                      className={`inline-flex items-center gap-1.5 text-xs ${
+                        isOverdue(opportunity.nextActionDueDate)
+                          ? 'font-medium text-red-600'
+                          : 'text-slate-500'
+                      }`}
+                    >
+                      <CalendarClock className="h-3.5 w-3.5" />
+                      {isOverdue(opportunity.nextActionDueDate) ? 'Overdue · ' : ''}
+                      {formatDate(opportunity.nextActionDueDate)}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-slate-500">No next action set</p>
+              )}
+            </div>
           </div>
         </div>
       </header>
