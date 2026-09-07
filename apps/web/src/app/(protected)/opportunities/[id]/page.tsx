@@ -12,6 +12,7 @@ import { OpportunityTimeline } from '@/features/opportunities/components/opportu
 import { OpportunityNoteList } from '@/features/opportunities/components/opportunity-notes/opportunity-note-list';
 import { ContactList } from '@/features/contacts/components/contact-list';
 import { InterviewList } from '@/features/interviews/components/interview-list';
+import { TaskList } from '@/features/tasks/components/task-list';
 
 export default function OpportunityDetailPage() {
   const params = useParams<{ id: string }>();
@@ -45,6 +46,7 @@ export default function OpportunityDetailPage() {
           <OpportunityDetailSections opportunity={opportunity} />
           <ContactList opportunityId={opportunity.id} />
           <InterviewList opportunityId={opportunity.id} />
+          <TaskList opportunityId={opportunity.id} />
         </div>
 
         <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
