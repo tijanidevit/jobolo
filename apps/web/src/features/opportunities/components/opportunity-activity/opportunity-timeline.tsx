@@ -5,10 +5,8 @@ import { Activity, CalendarPlus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingState } from '@/components/ui/loading-state';
 import { useOpportunityTimeline } from '../../hooks/use-opportunity-timeline';
-import { useCreateOpportunityActivity } from '../../hooks/use-create-opportunity-activity';
-import { useUpdateOpportunityActivity } from '../../hooks/use-update-opportunity-activity';
 import type { OpportunityActivity } from '../../types';
-import { activityErrorMessage, type ActivityFormValues } from '../../utils/activity.utils';
+import { activityErrorMessage } from '../../utils/activity.utils';
 import { OpportunityActivityForm } from './opportunity-activity-form';
 import { OpportunityTimelineItem } from './opportunity-timeline-item';
 
@@ -24,23 +22,11 @@ export function OpportunityTimeline({ opportunityId }: { opportunityId: string }
     loadMore,
     isLoadingMore,
   } = useOpportunityTimeline(opportunityId);
-  const { createActivity, isCreating } = useCreateOpportunityActivity(opportunityId);
-  const { updateActivity, isUpdating } = useUpdateOpportunityActivity(opportunityId);
   const closeForm = () => {
     setFormActivity(undefined);
   };
   const openCreateForm = () => {
     setFormActivity(null);
-  };
-  const saveActivity = async (values: ActivityFormValues, files: File[]) => {
-    const payload = {
-      ...values,
-      type: values.type as OpportunityActivity['type'],
-      occurredAt: new Date(values.occurredAt).toISOString(),
-    };
-    if (formActivity) await updateActivity({ activityId: formActivity.id, payload });
-    else await createActivity({ payload, files });
-    closeForm();
   };
   return (
     <div className="border-t border-slate-100 bg-slate-50/70 px-5 py-5">
@@ -48,9 +34,8 @@ export function OpportunityTimeline({ opportunityId }: { opportunityId: string }
       {formActivity !== undefined && (
         <OpportunityActivityForm
           key={formActivity?.id ?? 'new'}
+          opportunityId={opportunityId}
           activity={formActivity ?? undefined}
-          isSaving={isCreating || isUpdating}
-          onSubmit={saveActivity}
           onCancel={closeForm}
         />
       )}

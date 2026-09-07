@@ -5,7 +5,8 @@ import { CreateActivityDto } from '../dto/create-activity.dto.js';
 import { UpdateActivityDto } from '../dto/update-activity.dto.js';
 import { randomUUID } from 'node:crypto';
 import { promises as fs } from 'node:fs';
-import { extname, join } from 'node:path';
+import { extname } from 'node:path';
+import { uploadDirectory, uploadFilePath } from '../../../common/files/upload-path.js';
 import type { PaginatedResponse } from '@jobolo/shared';
 import { MAX_PAGE_SIZE } from '../../../common/dto/pagination-query.dto.js';
 import type { Activity } from '../entities/activity.entity.js';
@@ -36,30 +37,7 @@ export class ActivitiesService {
       opportunityId,
       dto,
     );
-    if (files.length > 0) {
-      const attachmentData = await Promise.all(
-        files.map(async (file) => {
-          const storedName = `${Date.now()}-${randomUUID()}${extname(file.originalname)}`;
-          await fs.mkdir(join(process.cwd(), 'uploads', 'activities'), {
-            recursive: true,
-          });
-          await fs.writeFile(
-            join(process.cwd(), 'uploads', 'activities', storedName),
-            file.buffer,
-          );
-          return {
-            originalName: file.originalname,
-            storedName,
-            mimeType: file.mimetype,
-            size: file.size,
-          };
-        }),
-      );
-      await this.activitiesRepository.addAttachments(
-        activity.id,
-        attachmentData,
-      );
-    }
+    await this.storeAttachments(activity.id, files);
     return this.activitiesRepository.findOne(userId, opportunityId, activity.id);
   }
 
@@ -68,6 +46,7 @@ export class ActivitiesService {
     opportunityId: string,
     activityId: string,
     dto: UpdateActivityDto,
+    files: UploadedActivityFile[] = [],
   ) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
     const activity = await this.activitiesRepository.update(
@@ -77,7 +56,8 @@ export class ActivitiesService {
     );
     if (!activity || activity.opportunityId !== opportunityId)
       throw new NotFoundException('Activity not found');
-    return activity;
+    await this.storeAttachments(activity.id, files);
+    return this.activitiesRepository.findOne(userId, opportunityId, activity.id);
   }
 
   async findAllForOpportunity(
@@ -112,7 +92,7 @@ export class ActivitiesService {
     );
     if (!attachment) throw new NotFoundException('Attachment not found');
     return {
-      path: join(process.cwd(), 'uploads', 'activities', attachment.storedName),
+      path: uploadFilePath('activities', attachment.storedName),
       mimeType: attachment.mimeType,
     };
   }
@@ -126,5 +106,25 @@ export class ActivitiesService {
       userId,
     );
     if (!opportunity) throw new NotFoundException('Opportunity not found');
+  }
+
+  private async storeAttachments(activityId: string, files: UploadedActivityFile[]) {
+    if (files.length === 0) return;
+
+    const attachmentData = await Promise.all(
+      files.map(async (file) => {
+        const storedName = `${Date.now()}-${randomUUID()}${extname(file.originalname)}`;
+        await fs.mkdir(uploadDirectory('activities'), { recursive: true });
+        await fs.writeFile(uploadFilePath('activities', storedName), file.buffer);
+        return {
+          originalName: file.originalname,
+          storedName,
+          mimeType: file.mimetype,
+          size: file.size,
+        };
+      }),
+    );
+
+    await this.activitiesRepository.addAttachments(activityId, attachmentData);
   }
 }

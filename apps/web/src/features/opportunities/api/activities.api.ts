@@ -46,10 +46,22 @@ export const activitiesApi = {
     return response.data;
   },
 
-  update: async (opportunityId: string, activityId: string, payload: UpdateActivityPayload) => {
+  update: async (
+    opportunityId: string,
+    activityId: string,
+    payload: UpdateActivityPayload,
+    files: File[] = [],
+  ) => {
+    const formData = new FormData();
+    if (payload.type !== undefined) formData.append('type', payload.type);
+    if (payload.title !== undefined) formData.append('title', payload.title);
+    if (payload.description !== undefined) formData.append('description', payload.description);
+    if (payload.occurredAt !== undefined) formData.append('occurredAt', payload.occurredAt);
+    files.forEach((file) => formData.append('files', file));
     const response = await api.patch<ApiResponse<OpportunityActivity>>(
       `/opportunities/${opportunityId}/activities/${activityId}`,
-      payload,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
     );
     return response.data;
   },

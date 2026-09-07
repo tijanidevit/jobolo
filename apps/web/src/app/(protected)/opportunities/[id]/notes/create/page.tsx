@@ -1,26 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
 import { OpportunityNoteForm } from '@/features/opportunities/components/opportunity-notes/opportunity-note-form';
-import { useCreateOpportunityNote } from '@/features/opportunities/hooks/use-create-opportunity-note';
 import { useOpportunity } from '@/features/opportunities/hooks/use-opportunity';
-import type { OpportunityNoteFormValues } from '@/features/opportunities/schemas/opportunity-note.schema';
 import { getErrorMessage, isNotFoundError } from '@/features/opportunities/utils/opportunity.utils';
 
 export default function OpportunityNoteCreatePage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { opportunity, isLoading, error, refetch } = useOpportunity(id);
-  const { createNote, isCreating } = useCreateOpportunityNote(id);
-
-  const save = async (values: OpportunityNoteFormValues, files: File[]) => {
-    await createNote({ payload: values, files });
-    router.replace(`/opportunities/${id}`);
-  };
 
   if (isLoading) return <LoadingState variant="page" message="Loading opportunity..." />;
   if (error || !opportunity) {
@@ -43,10 +34,7 @@ export default function OpportunityNoteCreatePage() {
         Back to opportunity
       </Link>
       <OpportunityNoteForm
-        title="Add note"
-        isSaving={isCreating}
-        onSubmit={save}
-        cancelHref={`/opportunities/${id}`}
+        opportunityId={id}
       />
     </div>
   );

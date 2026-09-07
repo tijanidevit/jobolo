@@ -1,10 +1,8 @@
 'use client';
 
-'use client';
-
+import { useRouter } from 'next/navigation';
 import { Controller, useForm, type Control, type FieldPath } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -17,6 +15,8 @@ import {
   WORK_ARRANGEMENTS,
 } from '../../constants';
 import type { Opportunity, OpportunityPayload } from '../../types';
+import { useCreateOpportunity } from '../../hooks/use-create-opportunity';
+import { useUpdateOpportunity } from '../../hooks/use-update-opportunity';
 import {
   opportunityFormSchema,
   type OpportunityFormValues,
@@ -24,10 +24,6 @@ import {
 
 interface OpportunityFormProps {
   opportunity?: Opportunity | null;
-  isSaving: boolean;
-  onSubmit: (payload: OpportunityPayload) => Promise<void>;
-  onCancel?: () => void;
-  cancelHref?: string;
 }
 
 const inputClassName = 'bg-white';
@@ -98,11 +94,11 @@ function toPayload(values: OpportunityFormValues): OpportunityPayload {
 
 export function OpportunityForm({
   opportunity,
-  isSaving,
-  onSubmit,
-  onCancel,
-  cancelHref,
 }: OpportunityFormProps) {
+  const router = useRouter();
+  const { createOpportunity, isCreating } = useCreateOpportunity();
+  const { updateOpportunity, isUpdating } = useUpdateOpportunity(opportunity?.id ?? '');
+  const isSaving = isCreating || isUpdating;
   const {
     register,
     control,
@@ -113,7 +109,15 @@ export function OpportunityForm({
     defaultValues: defaultValues(opportunity),
   });
 
-  const submit = async (values: OpportunityFormValues) => onSubmit(toPayload(values));
+  const submit = async (values: OpportunityFormValues) => {
+    if (opportunity) await updateOpportunity(toPayload(values));
+    else await createOpportunity(toPayload(values));
+
+    router.replace(opportunity ? `/opportunities/${opportunity.id}` : '/opportunities');
+  };
+  const cancel = () => {
+    router.push(opportunity ? `/opportunities/${opportunity.id}` : '/opportunities');
+  };
 
   return (
     <Card className="border-blue-100 shadow-md">
@@ -289,18 +293,9 @@ export function OpportunityForm({
           </Field>
         </CardContent>
         <CardFooter className="justify-end gap-3 border-t border-slate-100 pt-6">
-          {cancelHref ? (
-            <Link
-              href={cancelHref}
-              className="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400 disabled:pointer-events-none disabled:opacity-50"
-            >
-              Cancel
-            </Link>
-          ) : (
-            <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-              Cancel
-            </Button>
-          )}
+          <Button type="button" variant="outline" onClick={cancel} disabled={isSaving}>
+            Cancel
+          </Button>
           <Button type="submit" disabled={isSaving}>
             {isSaving ? 'Saving...' : opportunity ? 'Save changes' : 'Create opportunity'}
           </Button>

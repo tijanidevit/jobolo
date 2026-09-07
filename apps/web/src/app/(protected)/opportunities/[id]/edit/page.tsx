@@ -1,27 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
 import { useOpportunity } from '@/features/opportunities/hooks/use-opportunity';
-import { useUpdateOpportunity } from '@/features/opportunities/hooks/use-update-opportunity';
-import type { OpportunityPayload } from '@/features/opportunities/types';
 import { getErrorMessage, isNotFoundError } from '@/features/opportunities/utils/opportunity.utils';
 import { OpportunityForm } from '@/features/opportunities/components/opportunity-form/opportunity-form';
 
 export default function OpportunityEditPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { opportunity, isLoading, error, refetch } = useOpportunity(id);
-  const { updateOpportunity, isUpdating } = useUpdateOpportunity(id);
-
-  const save = async (payload: OpportunityPayload) => {
-    await updateOpportunity(payload)
-      .then(() => router.push(`/opportunities/${id}`))
-      .catch(() => undefined);
-  };
 
   if (isLoading) {
     return <LoadingState variant="page" message="Loading opportunity..." />;
@@ -57,9 +47,6 @@ export default function OpportunityEditPage() {
       </div>
       <OpportunityForm
         opportunity={opportunity}
-        isSaving={isUpdating}
-        onSubmit={save}
-        cancelHref={`/opportunities/${id}`}
       />
     </div>
   );

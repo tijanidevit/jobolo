@@ -12,7 +12,7 @@ function renderInline(text: string): ReactNode[] {
   });
 }
 
-export function OpportunityRichText({ text }: { text: string }) {
+export function RichText({ text }: { text: string }) {
   return (
     <div className="space-y-1 text-sm leading-5 text-slate-500">
       {text.split('\n').map((line, index) => {

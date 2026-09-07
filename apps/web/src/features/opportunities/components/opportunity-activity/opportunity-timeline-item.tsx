@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Clock3, FileText, Loader2, Pencil } from 'lucide-react';
-import { ActivityRichText } from './activity-rich-text';
+import { Clock3, Pencil } from 'lucide-react';
+import { AttachmentDownloadButton } from '@/components/ui/attachment';
+import { RichText } from '@/components/ui/rich-text';
 import { cn } from '@/lib/utils';
 import { activitiesApi } from '../../api/activities.api';
 import type { OpportunityActivity } from '../../types';
@@ -39,18 +39,22 @@ export function OpportunityTimelineItem({
           </div>
           {activity.description && (
             <div className="mt-2">
-              <ActivityRichText text={activity.description} />
+              <RichText text={activity.description} />
             </div>
           )}
           {activity.attachments?.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {activity.attachments.map((attachment) => (
-                <AttachmentButton
+                <AttachmentDownloadButton
                   key={attachment.id}
-                  opportunityId={activity.opportunityId}
-                  activityId={activity.id}
-                  storedName={attachment.storedName}
                   fileName={attachment.originalName}
+                  onDownload={() =>
+                    activitiesApi.downloadAttachment(
+                      activity.opportunityId,
+                      activity.id,
+                      attachment.storedName,
+                    )
+                  }
                 />
               ))}
             </div>
@@ -67,53 +71,5 @@ export function OpportunityTimelineItem({
         </time>
       </div>
     </li>
-  );
-}
-
-function AttachmentButton({
-  opportunityId,
-  activityId,
-  storedName,
-  fileName,
-}: {
-  opportunityId: string;
-  activityId: string;
-  storedName: string;
-  fileName: string;
-}) {
-  const [isOpening, setIsOpening] = useState(false);
-
-  const openAttachment = async () => {
-    const tab = window.open('about:blank', '_blank');
-    setIsOpening(true);
-    try {
-      const blob = await activitiesApi.downloadAttachment(opportunityId, activityId, storedName);
-      const url = URL.createObjectURL(blob);
-      if (tab) tab.location.href = url;
-      else window.open(url, '_blank');
-      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
-    } catch {
-      tab?.close();
-    } finally {
-      setIsOpening(false);
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={() => void openAttachment()}
-      disabled={isOpening}
-      className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-blue-200 hover:text-blue-600 disabled:opacity-60"
-    >
-      <span className="shrink-0">
-        {isOpening ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-        ) : (
-          <FileText className="h-3.5 w-3.5" />
-        )}
-      </span>
-      <span className="truncate">{fileName}</span>
-    </button>
   );
 }

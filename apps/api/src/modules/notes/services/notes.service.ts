@@ -8,7 +8,8 @@ import { MAX_PAGE_SIZE } from '../../../common/dto/pagination-query.dto.js';
 import type { Note } from '../entities/note.entity.js';
 import { randomUUID } from 'node:crypto';
 import { promises as fs } from 'node:fs';
-import { extname, join } from 'node:path';
+import { extname } from 'node:path';
+import { uploadDirectory, uploadFilePath } from '../../../common/files/upload-path.js';
 
 export interface UploadedNoteFile {
   originalname: string;
@@ -92,7 +93,7 @@ export class NotesService {
     if (!attachment) throw new NotFoundException('Attachment not found');
 
     return {
-      path: join(process.cwd(), 'uploads', 'notes', attachment.storedName),
+      path: uploadFilePath('notes', attachment.storedName),
       mimeType: attachment.mimeType,
     };
   }
@@ -114,8 +115,8 @@ export class NotesService {
     const attachmentData = await Promise.all(
       files.map(async (file) => {
         const storedName = `${Date.now()}-${randomUUID()}${extname(file.originalname)}`;
-        await fs.mkdir(join(process.cwd(), 'uploads', 'notes'), { recursive: true });
-        await fs.writeFile(join(process.cwd(), 'uploads', 'notes', storedName), file.buffer);
+        await fs.mkdir(uploadDirectory('notes'), { recursive: true });
+        await fs.writeFile(uploadFilePath('notes', storedName), file.buffer);
         return {
           originalName: file.originalname,
           storedName,

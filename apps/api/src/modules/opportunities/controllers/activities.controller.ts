@@ -12,7 +12,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { mkdirSync } from 'node:fs';
 import type { Response } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
@@ -26,9 +25,6 @@ import {
 } from '../services/activities.service.js';
 import { UpdateActivityDto } from '../dto/update-activity.dto.js';
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto.js';
-
-const uploadDirectory = 'uploads/activities';
-mkdirSync(uploadDirectory, { recursive: true });
 
 @ApiTags('Opportunity Timeline')
 @ApiBearerAuth()
@@ -74,18 +70,25 @@ export class ActivitiesController {
   }
 
   @Patch(':activityId')
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
   @ApiMessage('Timeline activity updated successfully')
   async update(
     @CurrentUser() user: IAuthenticatedUser,
     @Param('opportunityId') opportunityId: string,
     @Param('activityId') activityId: string,
     @Body() dto: UpdateActivityDto,
+    @UploadedFiles() files: UploadedActivityFile[],
   ) {
     return this.activitiesService.update(
       user.id,
       opportunityId,
       activityId,
       dto,
+      files ?? [],
     );
   }
 

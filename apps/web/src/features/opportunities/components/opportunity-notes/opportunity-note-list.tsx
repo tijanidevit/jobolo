@@ -2,18 +2,17 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { FileText, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { FileText, Pencil, Plus, Trash2 } from 'lucide-react';
+import { AttachmentDownloadButton } from '@/components/ui/attachment';
 import { Button } from '@/components/ui/button';
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
 import { useDeleteOpportunityNote } from '../../hooks/use-delete-opportunity-note';
 import { useOpportunityNotes } from '../../hooks/use-opportunity-notes';
-import { useUpdateOpportunityNote } from '../../hooks/use-update-opportunity-note';
 import { notesApi } from '../../api/notes.api';
-import type { OpportunityNote, OpportunityNoteAttachment } from '../../types';
+import type { OpportunityNote } from '../../types';
 import { OpportunityNoteForm } from './opportunity-note-form';
-import type { OpportunityNoteFormValues } from '../../schemas/opportunity-note.schema';
-import { OpportunityRichText } from '../shared/rich-text';
+import { RichText } from '@/components/ui/rich-text';
 import { formatDate, getErrorMessage } from '../../utils/opportunity.utils';
 
 export function OpportunityNoteList({ opportunityId }: { opportunityId: string }) {
@@ -28,20 +27,10 @@ export function OpportunityNoteList({ opportunityId }: { opportunityId: string }
     isLoadingMore,
   } = useOpportunityNotes(opportunityId);
   const { deleteNote, isDeleting } = useDeleteOpportunityNote(opportunityId);
-  const { updateNote, isUpdating } = useUpdateOpportunityNote(
-    opportunityId,
-    editingNote?.id ?? '',
-  );
 
   const removeNote = async (note: OpportunityNote) => {
     if (!window.confirm('Delete this note?')) return;
     await deleteNote(note.id).catch(() => undefined);
-  };
-
-  const saveEdit = async (values: OpportunityNoteFormValues, files: File[]) => {
-    if (!editingNote) return;
-    await updateNote({ payload: values, files });
-    setEditingNote(null);
   };
 
   return (
@@ -69,10 +58,8 @@ export function OpportunityNoteList({ opportunityId }: { opportunityId: string }
         <div className="mt-5">
           <OpportunityNoteForm
             key={editingNote.id}
-            title="Edit note"
-            initialContent={editingNote.content}
-            isSaving={isUpdating}
-            onSubmit={saveEdit}
+            opportunityId={opportunityId}
+            note={editingNote}
             onCancel={() => setEditingNote(null)}
           />
         </div>
@@ -101,15 +88,16 @@ export function OpportunityNoteList({ opportunityId }: { opportunityId: string }
               key={note.id}
               className="rounded-lg border border-slate-200 bg-slate-50/70 p-4"
             >
-              <OpportunityRichText text={note.content} />
+              <RichText text={note.content} />
               {note.attachments?.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {note.attachments.map((attachment) => (
-                    <NoteAttachmentButton
+                    <AttachmentDownloadButton
                       key={attachment.id}
-                      opportunityId={opportunityId}
-                      noteId={note.id}
-                      attachment={attachment}
+                      fileName={attachment.originalName}
+                      onDownload={() =>
+                        notesApi.downloadAttachment(opportunityId, note.id, attachment.storedName)
+                      }
                     />
                   ))}
                 </div>
@@ -153,45 +141,5 @@ export function OpportunityNoteList({ opportunityId }: { opportunityId: string }
         </div>
       )}
     </section>
-  );
-}
-
-function NoteAttachmentButton({
-  opportunityId,
-  noteId,
-  attachment,
-}: {
-  opportunityId: string;
-  noteId: string;
-  attachment: OpportunityNoteAttachment;
-}) {
-  const [isOpening, setIsOpening] = useState(false);
-
-  const openAttachment = async () => {
-    const tab = window.open('about:blank', '_blank');
-    setIsOpening(true);
-    try {
-      const blob = await notesApi.downloadAttachment(opportunityId, noteId, attachment.storedName);
-      const url = URL.createObjectURL(blob);
-      if (tab) tab.location.href = url;
-      else window.open(url, '_blank');
-      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
-    } catch {
-      tab?.close();
-    } finally {
-      setIsOpening(false);
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={() => void openAttachment()}
-      disabled={isOpening}
-      className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-blue-200 hover:text-blue-600 disabled:opacity-60"
-    >
-      {isOpening ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
-      <span className="truncate">{attachment.originalName}</span>
-    </button>
   );
 }

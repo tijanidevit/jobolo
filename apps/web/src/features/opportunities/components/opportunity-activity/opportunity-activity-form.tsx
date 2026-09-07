@@ -2,10 +2,14 @@
 
 import { useState, type FormEvent } from 'react';
 import { Loader2, Save, X } from 'lucide-react';
+import { AttachmentPicker } from '@/components/ui/attachment';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { ACTIVITY_TYPES } from '../../constants';
+import { useCreateOpportunityActivity } from '../../hooks/use-create-opportunity-activity';
+import { useUpdateOpportunityActivity } from '../../hooks/use-update-opportunity-activity';
 import type { OpportunityActivity } from '../../types';
 import {
   activityFormSchema,
@@ -14,28 +18,25 @@ import {
 } from '../../utils/activity.utils';
 
 interface OpportunityActivityFormProps {
+  opportunityId: string;
   activity?: OpportunityActivity;
-  isSaving: boolean;
-  onSubmit: (values: ActivityFormValues, files: File[]) => Promise<void>;
   onCancel: () => void;
 }
 
 export function OpportunityActivityForm({
+  opportunityId,
   activity,
-  isSaving,
-  onSubmit,
   onCancel,
 }: OpportunityActivityFormProps) {
+  const { createActivity, isCreating } = useCreateOpportunityActivity(opportunityId);
+  const { updateActivity, isUpdating } = useUpdateOpportunityActivity(opportunityId);
+  const isSaving = isCreating || isUpdating;
   const [values, setValues] = useState<ActivityFormValues>(() => activityFormValues(activity));
   const [files, setFiles] = useState<File[]>([]);
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const update = <K extends keyof ActivityFormValues>(field: K, value: ActivityFormValues[K]) =>
     setValues((current) => ({ ...current, [field]: value }));
-  const addFormat = (format: 'bold' | 'italic' | 'list') => {
-    const additions = { bold: '**text**', italic: '_text_', list: '\n- item' };
-    update('description', `${values.description}${additions[format]}`);
-  };
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const result = activityFormSchema.safeParse(values);
@@ -44,7 +45,14 @@ export function OpportunityActivityForm({
       return;
     }
     setValidationError(null);
-    await onSubmit(result.data, files);
+    const payload = {
+      ...result.data,
+      type: result.data.type as OpportunityActivity['type'],
+      occurredAt: new Date(result.data.occurredAt).toISOString(),
+    };
+    if (activity) await updateActivity({ activityId: activity.id, payload, files });
+    else await createActivity({ payload, files });
+    onCancel();
   };
 
   return (
@@ -91,50 +99,19 @@ export function OpportunityActivityForm({
       </label>
       <label className="block space-y-1.5 text-xs font-medium text-slate-600">
         Details <span className="font-normal text-slate-400">(optional)</span>
-        <div className="flex gap-1 border-b border-slate-200 pb-1">
-          <button
-            type="button"
-            onClick={() => addFormat('bold')}
-            className="rounded px-2 py-1 text-xs font-bold text-slate-500 hover:bg-slate-100"
-          >
-            B
-          </button>
-          <button
-            type="button"
-            onClick={() => addFormat('italic')}
-            className="rounded px-2 py-1 text-xs italic text-slate-500 hover:bg-slate-100"
-          >
-            I
-          </button>
-          <button
-            type="button"
-            onClick={() => addFormat('list')}
-            className="rounded px-2 py-1 text-xs text-slate-500 hover:bg-slate-100"
-          >
-            List
-          </button>
-        </div>
-        <textarea
+        <RichTextEditor
+          id="activity-details"
           value={values.description}
-          onChange={(event) => update('description', event.target.value)}
-          className="min-h-24 w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-100"
+          onChange={(value) => update('description', value)}
+          disabled={isSaving}
           placeholder="Capture what happened. Use - item or 1. item for lists."
         />
       </label>
-      {!activity && (
-        <label className="block space-y-1.5 text-xs font-medium text-slate-600">
-          Attachments{' '}
-          <span className="font-normal text-slate-400">(optional, up to 5 files / 10 MB each)</span>
-          <Input
-            type="file"
-            multiple
-            onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
-          />
-          {files.length > 0 && (
-            <p className="text-xs text-slate-500">{files.map((file) => file.name).join(', ')}</p>
-          )}
-        </label>
-      )}
+      <label className="block space-y-1.5 text-xs font-medium text-slate-600">
+        Attachments{' '}
+        <span className="font-normal text-slate-400">(optional, up to 5 new files / 10 MB each)</span>
+        <AttachmentPicker files={files} onChange={setFiles} disabled={isSaving} />
+      </label>
       {validationError && (
         <p className="text-xs text-red-600" role="alert">
           {validationError}
