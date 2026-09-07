@@ -5,6 +5,7 @@ export interface UserSkill {
 }
 
 export interface SkillInsight {
+  id: string | null;
   skill: string;
   demandCount: number;
   demandPercentage: number;
@@ -13,7 +14,5 @@ export interface SkillInsight {
 }
 
 export interface SkillIntelligence {
-  analyzedOpportunities: number;
-  profile: UserSkill[];
   skills: SkillInsight[];
 }

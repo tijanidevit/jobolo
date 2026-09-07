@@ -553,6 +553,33 @@ Use:
 
 A page should ideally read like a composition of meaningful components and feature hooks rather than a large procedural implementation.
 
+The Opportunities frontend is the canonical reference for this composition model. Use
+it when creating or refactoring frontend features:
+
+- Route pages compose screens and own only route-level state such as URL filters, view
+  selection, and loading/error/empty branching.
+- Feature components are grouped by action or screen responsibility, for example
+  `opportunity-list`, `opportunity-detail`, `opportunity-form`, and
+  `opportunity-activity`.
+- Domain components own their intrinsic actions and state. An opportunity card owns
+  its edit link, stage mutation, delete mutation, confirmation, and pending state; a
+  parent should not pass those props when the card can determine them itself.
+- Forms own their form state, validation, submit transformation, mutation hook,
+  pending/error state, and post-submit navigation.
+- Server operations use one hook per responsibility, such as
+  `useCreateOpportunity`, `useUpdateOpportunity`, `useDeleteOpportunity`, and
+  `useChangeOpportunityStage`. Do not combine unrelated actions and flags into one
+  feature hook.
+- Use `Link` for ordinary navigation. Reserve `useRouter` for imperative navigation
+  after behavior such as a successful mutation.
+- Use shared UI primitives from `src/components/ui` for cross-feature behavior such as
+  loading, errors, searchable selects, rich text, and attachments.
+- Keep TanStack Query as the source of truth for server data and invalidate the affected
+  query family after mutations.
+
+See `docs/architecture/FRONTEND_ARCHITECTURE.md` and `.claude/frontend.md` for the
+complete frontend conventions.
+
 ---
 
 # 12. Reuse and Abstraction

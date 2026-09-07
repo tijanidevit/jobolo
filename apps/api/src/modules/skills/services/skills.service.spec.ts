@@ -23,7 +23,6 @@ describe('SkillsService', () => {
     );
     const result = await service.getIntelligence('user-1');
 
-    expect(result.analyzedOpportunities).toBe(2);
     expect(
       result.skills.find((skill) => skill.skill === 'TypeScript'),
     ).toMatchObject({
@@ -35,5 +34,17 @@ describe('SkillsService', () => {
     expect(
       result.skills.find((skill) => skill.skill === 'React'),
     ).toMatchObject({ demandCount: 1 });
+
+    const demandSorted = await service.getIntelligence('user-1', 'demand-desc');
+    expect(demandSorted.skills[0]).toMatchObject({
+      skill: 'TypeScript',
+      demandCount: 2,
+    });
+
+    const leastProficient = await service.getIntelligence('user-1', 'proficiency-asc');
+    expect(leastProficient.skills[0]).toMatchObject({
+      skill: 'React',
+      proficiency: null,
+    });
   });
 });

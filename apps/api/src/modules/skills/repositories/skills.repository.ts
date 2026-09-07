@@ -16,12 +16,14 @@ export class SkillsRepository {
 
   async replaceForUser(
     userId: string,
-    skills: Array<{ skill: string; proficiency: number }>,
+    skills: Array<{ id?: string; skill: string; proficiency: number }>,
   ) {
+    const existing = await this.repository.find({ where: { userId }, select: { id: true } });
+    const ownedIds = new Set(existing.map((item) => item.id));
     await this.repository.delete({ userId });
     if (skills.length === 0) return [];
     return this.repository.save(
-      skills.map((item) => this.repository.create({ userId, ...item })),
+      skills.map(({ id, ...item }) => this.repository.create({ userId, ...item, ...(id && ownedIds.has(id) ? { id } : {}) })),
     );
   }
 }
