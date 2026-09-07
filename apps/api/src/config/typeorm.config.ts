@@ -7,6 +7,7 @@ import { ActivityAttachment } from '../modules/opportunities/entities/activity-a
 import { Note } from '../modules/notes/entities/note.entity.js';
 import { NoteAttachment } from '../modules/notes/entities/note-attachment.entity.js';
 import { Contact } from '../modules/contacts/entities/contact.entity.js';
+import { Interview } from '../modules/interviews/entities/interview.entity.js';
 
 export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
@@ -18,7 +19,7 @@ export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
     database: configService.get<string>('database.name'),
     username: configService.get<string>('database.user'),
     password: configService.get<string>('database.pass'),
-    entities: [User, Opportunity, Activity, ActivityAttachment, Note, NoteAttachment, Contact],
+    entities: [User, Opportunity, Activity, ActivityAttachment, Note, NoteAttachment, Contact, Interview],
     migrations: ['dist/migrations/*.js'],
     migrationsRun: false,
     // synchronize is ONLY for development. NEVER use in production.

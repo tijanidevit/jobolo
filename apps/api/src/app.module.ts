@@ -13,6 +13,7 @@ import { MailModule } from './modules/mail/mail.module.js';
 import { OpportunitiesModule } from './modules/opportunities/opportunities.module.js';
 import { NotesModule } from './modules/notes/notes.module.js';
 import { ContactsModule } from './modules/contacts/contacts.module.js';
+import { InterviewsModule } from './modules/interviews/interviews.module.js';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ContactsModule } from './modules/contacts/contacts.module.js';
     OpportunitiesModule,
     NotesModule,
     ContactsModule,
+    InterviewsModule,
   ],
   controllers: [AppController],
 })
