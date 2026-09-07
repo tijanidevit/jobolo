@@ -1,0 +1,40 @@
+export interface SkillDefinition {
+  name: string;
+  aliases: string[];
+}
+
+export const SKILL_CATALOG: SkillDefinition[] = [
+  { name: 'JavaScript', aliases: ['javascript', 'js'] },
+  { name: 'TypeScript', aliases: ['typescript', 'ts'] },
+  { name: 'Node.js', aliases: ['node.js', 'nodejs', 'node js'] },
+  { name: 'React', aliases: ['react', 'react.js', 'reactjs'] },
+  { name: 'Next.js', aliases: ['next.js', 'nextjs', 'next js'] },
+  { name: 'Vue', aliases: ['vue', 'vue.js', 'vuejs'] },
+  { name: 'Angular', aliases: ['angular', 'angular.js'] },
+  { name: 'NestJS', aliases: ['nestjs', 'nest.js', 'nest js'] },
+  { name: 'Python', aliases: ['python'] },
+  { name: 'Java', aliases: ['java'] },
+  { name: 'C#', aliases: ['c#', 'c sharp'] },
+  { name: 'Go', aliases: ['golang'] },
+  { name: 'PHP', aliases: ['php'] },
+  { name: 'SQL', aliases: ['sql'] },
+  { name: 'PostgreSQL', aliases: ['postgresql', 'postgres'] },
+  { name: 'MySQL', aliases: ['mysql'] },
+  { name: 'MongoDB', aliases: ['mongodb', 'mongo db'] },
+  { name: 'Redis', aliases: ['redis'] },
+  { name: 'AWS', aliases: ['aws', 'amazon web services'] },
+  { name: 'Azure', aliases: ['azure', 'microsoft azure'] },
+  { name: 'Docker', aliases: ['docker'] },
+  { name: 'Kubernetes', aliases: ['kubernetes', 'k8s'] },
+  { name: 'GraphQL', aliases: ['graphql'] },
+  { name: 'REST APIs', aliases: ['rest api', 'restful api', 'rest apis'] },
+  { name: 'Git', aliases: ['git'] },
+  { name: 'CI/CD', aliases: ['ci/cd', 'continuous integration', 'continuous delivery'] },
+  { name: 'Terraform', aliases: ['terraform'] },
+  { name: 'Jest', aliases: ['jest'] },
+  { name: 'Cypress', aliases: ['cypress'] },
+  { name: 'Figma', aliases: ['figma'] },
+  { name: 'Agile', aliases: ['agile', 'scrum'] },
+  { name: 'Communication', aliases: ['communication', 'communicate effectively'] },
+  { name: 'Leadership', aliases: ['leadership', 'lead teams'] },
+];

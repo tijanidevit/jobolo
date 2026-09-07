@@ -17,6 +17,7 @@ import { InterviewsModule } from './modules/interviews/interviews.module.js';
 import { TasksModule } from './modules/tasks/tasks.module.js';
 import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
+import { SkillsModule } from './modules/skills/skills.module.js';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module.js';
     TasksModule,
     DashboardModule,
     AnalyticsModule,
+    SkillsModule,
   ],
   controllers: [AppController],
 })
