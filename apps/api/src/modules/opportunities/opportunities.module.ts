@@ -10,12 +10,9 @@ import { ActivitiesService } from './services/activities.service.js';
 import { OpportunitiesRepository } from './repositories/opportunities.repository.js';
 import { ActivitiesRepository } from './repositories/activities.repository.js';
 
-import { PassportModule } from '@nestjs/passport';
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([Opportunity, Activity, ActivityAttachment]),
-    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [OpportunitiesController, ActivitiesController],
   providers: [

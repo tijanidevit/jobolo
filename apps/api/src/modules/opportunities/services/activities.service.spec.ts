@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { mock } from 'vitest-mock-extended';
 import { NotFoundException } from '@nestjs/common';
 import { ActivitiesService } from './activities.service.js';
 import { ActivitiesRepository } from '../repositories/activities.repository.js';
@@ -9,24 +9,10 @@ describe('ActivitiesService', () => {
   let activitiesRepository: Mocked<ActivitiesRepository>;
   let opportunitiesRepository: Mocked<OpportunitiesRepository>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ActivitiesService,
-        {
-          provide: ActivitiesRepository,
-          useValue: mock<ActivitiesRepository>(),
-        },
-        {
-          provide: OpportunitiesRepository,
-          useValue: mock<OpportunitiesRepository>(),
-        },
-      ],
-    }).compile();
-
-    service = module.get(ActivitiesService);
-    activitiesRepository = module.get(ActivitiesRepository);
-    opportunitiesRepository = module.get(OpportunitiesRepository);
+  beforeEach(() => {
+    activitiesRepository = mock<ActivitiesRepository>();
+    opportunitiesRepository = mock<OpportunitiesRepository>();
+    service = new ActivitiesService(opportunitiesRepository, activitiesRepository);
   });
 
   it('creates an activity for an opportunity owned by the user', async () => {
@@ -44,6 +30,7 @@ describe('ActivitiesService', () => {
       id: 'opportunity-1',
     } as never);
     activitiesRepository.create.mockResolvedValueOnce(activity as never);
+    activitiesRepository.findAllForOpportunity.mockResolvedValueOnce([activity] as never);
 
     await expect(
       service.create('user-1', 'opportunity-1', dto),

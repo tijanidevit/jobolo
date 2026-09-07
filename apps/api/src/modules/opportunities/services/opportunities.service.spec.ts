@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { mock } from 'vitest-mock-extended';
 import { NotFoundException } from '@nestjs/common';
 import { OpportunitiesService } from './opportunities.service.js';
 import { OpportunitiesRepository } from '../repositories/opportunities.repository.js';
@@ -13,24 +13,10 @@ describe('OpportunitiesService', () => {
   const mockUserId = 'user-123';
   const mockOpportunityId = 'opp-456';
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        OpportunitiesService,
-        {
-          provide: OpportunitiesRepository,
-          useValue: mock<OpportunitiesRepository>(),
-        },
-        {
-          provide: ActivitiesRepository,
-          useValue: mock<ActivitiesRepository>(),
-        },
-      ],
-    }).compile();
-
-    service = module.get<OpportunitiesService>(OpportunitiesService);
-    repository = module.get(OpportunitiesRepository);
-    activitiesRepository = module.get(ActivitiesRepository);
+  beforeEach(() => {
+    repository = mock<OpportunitiesRepository>();
+    activitiesRepository = mock<ActivitiesRepository>();
+    service = new OpportunitiesService(repository, activitiesRepository);
   });
 
   describe('create', () => {

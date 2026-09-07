@@ -1,9 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { mock } from 'vitest-mock-extended';
 import { OpportunitiesController } from './opportunities.controller.js';
 import { OpportunitiesService } from '../services/opportunities.service.js';
 import { CreateOpportunityDto } from '../dto/create-opportunity.dto.js';
 import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
-import { PassportModule } from '@nestjs/passport';
 
 describe('OpportunitiesController', () => {
   let controller: OpportunitiesController;
@@ -22,20 +21,9 @@ describe('OpportunitiesController', () => {
     stage: 'discovered',
   };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
-      controllers: [OpportunitiesController],
-      providers: [
-        {
-          provide: OpportunitiesService,
-          useValue: mock<OpportunitiesService>(),
-        },
-      ],
-    }).compile();
-
-    controller = module.get<OpportunitiesController>(OpportunitiesController);
-    service = module.get(OpportunitiesService);
+  beforeEach(() => {
+    service = mock<OpportunitiesService>();
+    controller = new OpportunitiesController(service);
   });
 
   it('should create an opportunity and pass the correct userId', async () => {

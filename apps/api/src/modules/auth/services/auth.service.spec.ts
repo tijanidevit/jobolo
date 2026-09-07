@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { mock } from 'vitest-mock-extended';
+import type { Mock } from 'vitest';
 import { AuthService } from './auth.service.js';
 import { UsersRepository } from '../../users/repositories/users.repository.js';
 import { JwtService } from '@nestjs/jwt';
@@ -20,36 +21,15 @@ describe('AuthService', () => {
   let configService: Mocked<ConfigService>;
   let mailService: Mocked<MailService>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        {
-          provide: UsersRepository,
-          useValue: mock<UsersRepository>(),
-        },
-        {
-          provide: JwtService,
-          useValue: mock<JwtService>(),
-        },
-        {
-          provide: ConfigService,
-          useValue: mock<ConfigService>(),
-        },
-        {
-          provide: MailService,
-          useValue: mock<MailService>(),
-        },
-      ],
-    }).compile();
+  beforeEach(() => {
+    usersRepository = mock<UsersRepository>();
+    jwtService = mock<JwtService>();
+    configService = mock<ConfigService>();
+    mailService = mock<MailService>();
+    authService = new AuthService(usersRepository, jwtService, configService, mailService);
 
-    authService = module.get<AuthService>(AuthService);
-    usersRepository = module.get(UsersRepository);
-    jwtService = module.get(JwtService);
-    configService = module.get(ConfigService);
-    mailService = module.get(MailService);
-
-    configService.get.mockImplementation((key: string) => {
+    const getConfig = configService.get as unknown as Mock;
+    getConfig.mockImplementation((key: string) => {
       const config: Record<string, string> = {
         'jwt.secret': 'test-secret',
         'jwt.expiresIn': '15m',

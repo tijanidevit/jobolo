@@ -23,11 +23,5 @@
     "node": ">=24.20.0",
     "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@12.2.1",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "@swc/core"
-    ]
-  }
+  "packageManager": "pnpm@12.2.1"
 }

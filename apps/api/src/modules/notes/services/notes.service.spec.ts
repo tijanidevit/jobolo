@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { mock } from 'vitest-mock-extended';
 import { NotFoundException } from '@nestjs/common';
 import { NotesService } from './notes.service.js';
 import { NotesRepository } from '../repositories/notes.repository.js';
@@ -9,21 +9,10 @@ describe('NotesService', () => {
   let notesRepository: Mocked<NotesRepository>;
   let opportunitiesRepository: Mocked<OpportunitiesRepository>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        NotesService,
-        { provide: NotesRepository, useValue: mock<NotesRepository>() },
-        {
-          provide: OpportunitiesRepository,
-          useValue: mock<OpportunitiesRepository>(),
-        },
-      ],
-    }).compile();
-
-    service = module.get(NotesService);
-    notesRepository = module.get(NotesRepository);
-    opportunitiesRepository = module.get(OpportunitiesRepository);
+  beforeEach(() => {
+    notesRepository = mock<NotesRepository>();
+    opportunitiesRepository = mock<OpportunitiesRepository>();
+    service = new NotesService(notesRepository, opportunitiesRepository);
   });
 
   it('creates a note for an opportunity owned by the user', async () => {
