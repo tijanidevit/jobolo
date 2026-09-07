@@ -15,6 +15,8 @@ import { NotesModule } from './modules/notes/notes.module.js';
 import { ContactsModule } from './modules/contacts/contacts.module.js';
 import { InterviewsModule } from './modules/interviews/interviews.module.js';
 import { TasksModule } from './modules/tasks/tasks.module.js';
+import { DashboardModule } from './modules/dashboard/dashboard.module.js';
+import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { TasksModule } from './modules/tasks/tasks.module.js';
     ContactsModule,
     InterviewsModule,
     TasksModule,
+    DashboardModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
 })
