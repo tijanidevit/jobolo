@@ -46,12 +46,24 @@ export class InterviewsRepository {
       {
         ...data,
         ...(data.type !== undefined ? { type: data.type.trim() } : {}),
-        ...(data.interviewers !== undefined ? { interviewers: data.interviewers.trim() || null } : {}),
-        ...(data.meetingLocation !== undefined ? { meetingLocation: data.meetingLocation.trim() || null } : {}),
-        ...(data.stage !== undefined ? { stage: data.stage.trim() || null } : {}),
-        ...(data.notes !== undefined ? { notes: data.notes.trim() || null } : {}),
-        ...(data.durationMinutes !== undefined ? { durationMinutes: data.durationMinutes ?? null } : {}),
-        ...(data.performanceRating !== undefined ? { performanceRating: data.performanceRating ?? null } : {}),
+        ...(data.interviewers !== undefined
+          ? { interviewers: data.interviewers.trim() || null }
+          : {}),
+        ...(data.meetingLocation !== undefined
+          ? { meetingLocation: data.meetingLocation.trim() || null }
+          : {}),
+        ...(data.stage !== undefined
+          ? { stage: data.stage.trim() || null }
+          : {}),
+        ...(data.notes !== undefined
+          ? { notes: data.notes.trim() || null }
+          : {}),
+        ...(data.durationMinutes !== undefined
+          ? { durationMinutes: data.durationMinutes ?? null }
+          : {}),
+        ...(data.performanceRating !== undefined
+          ? { performanceRating: data.performanceRating ?? null }
+          : {}),
       },
     );
     return this.findOne(id, userId, opportunityId);

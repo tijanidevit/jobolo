@@ -21,21 +21,41 @@ export class TasksService {
     return this.tasksRepository.create(userId, opportunityId, dto);
   }
 
-  async update(userId: string, opportunityId: string, taskId: string, dto: UpdateTaskDto) {
+  async update(
+    userId: string,
+    opportunityId: string,
+    taskId: string,
+    dto: UpdateTaskDto,
+  ) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const task = await this.tasksRepository.update(taskId, userId, opportunityId, dto);
+    const task = await this.tasksRepository.update(
+      taskId,
+      userId,
+      opportunityId,
+      dto,
+    );
     if (!task) throw new NotFoundException('Task not found');
     return task;
   }
 
   async remove(userId: string, opportunityId: string, taskId: string) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const removed = await this.tasksRepository.delete(taskId, userId, opportunityId);
+    const removed = await this.tasksRepository.delete(
+      taskId,
+      userId,
+      opportunityId,
+    );
     if (!removed) throw new NotFoundException('Task not found');
   }
 
-  private async ensureOpportunityBelongsToUser(userId: string, opportunityId: string) {
-    const opportunity = await this.opportunitiesRepository.findOne(opportunityId, userId);
+  private async ensureOpportunityBelongsToUser(
+    userId: string,
+    opportunityId: string,
+  ) {
+    const opportunity = await this.opportunitiesRepository.findOne(
+      opportunityId,
+      userId,
+    );
     if (!opportunity) throw new NotFoundException('Opportunity not found');
   }
 }

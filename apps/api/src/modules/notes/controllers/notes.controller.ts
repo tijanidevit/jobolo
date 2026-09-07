@@ -23,7 +23,10 @@ import { ApiMessage } from '../../../common/decorators/api-message.decorator.js'
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { CreateNoteDto } from '../dto/create-note.dto.js';
 import { UpdateNoteDto } from '../dto/update-note.dto.js';
-import { NotesService, type UploadedNoteFile } from '../services/notes.service.js';
+import {
+  NotesService,
+  type UploadedNoteFile,
+} from '../services/notes.service.js';
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto.js';
 
 @ApiTags('Opportunity Notes')
@@ -78,7 +81,13 @@ export class NotesController {
     @Body() dto: UpdateNoteDto,
     @UploadedFiles() files: UploadedNoteFile[],
   ) {
-    return this.notesService.update(user.id, opportunityId, noteId, dto, files ?? []);
+    return this.notesService.update(
+      user.id,
+      opportunityId,
+      noteId,
+      dto,
+      files ?? [],
+    );
   }
 
   @Delete(':noteId')

@@ -17,15 +17,8 @@ import { formatDate, getErrorMessage } from '../../utils/opportunity.utils';
 
 export function OpportunityNoteList({ opportunityId }: { opportunityId: string }) {
   const [editingNote, setEditingNote] = useState<OpportunityNote | null>(null);
-  const {
-    notes,
-    isLoading,
-    error,
-    refetch,
-    hasNextPage,
-    loadMore,
-    isLoadingMore,
-  } = useOpportunityNotes(opportunityId);
+  const { notes, isLoading, error, refetch, hasNextPage, loadMore, isLoadingMore } =
+    useOpportunityNotes(opportunityId);
   const { deleteNote, isDeleting } = useDeleteOpportunityNote(opportunityId);
 
   const removeNote = async (note: OpportunityNote) => {

@@ -9,7 +9,10 @@ import type { Note } from '../entities/note.entity.js';
 import { randomUUID } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import { extname } from 'node:path';
-import { uploadDirectory, uploadFilePath } from '../../../common/files/upload-path.js';
+import {
+  uploadDirectory,
+  uploadFilePath,
+} from '../../../common/files/upload-path.js';
 
 export interface UploadedNoteFile {
   originalname: string;
@@ -88,8 +91,14 @@ export class NotesService {
     storedName: string,
   ) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const note = await this.notesRepository.findOne(userId, opportunityId, noteId);
-    const attachment = note?.attachments.find((item) => item.storedName === storedName);
+    const note = await this.notesRepository.findOne(
+      userId,
+      opportunityId,
+      noteId,
+    );
+    const attachment = note?.attachments.find(
+      (item) => item.storedName === storedName,
+    );
     if (!attachment) throw new NotFoundException('Attachment not found');
 
     return {

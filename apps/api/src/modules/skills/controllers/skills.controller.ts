@@ -16,13 +16,22 @@ export class SkillsController {
 
   @Get('profile')
   @ApiMessage('Skill profile retrieved successfully')
-  profile(@CurrentUser() user: IAuthenticatedUser) { return this.skillsService.getProfile(user.id); }
+  profile(@CurrentUser() user: IAuthenticatedUser) {
+    return this.skillsService.getProfile(user.id);
+  }
 
   @Put('profile')
   @ApiMessage('Skill profile updated successfully')
-  updateProfile(@CurrentUser() user: IAuthenticatedUser, @Body() dto: UpdateSkillProfileDto) { return this.skillsService.replaceProfile(user.id, dto.skills); }
+  updateProfile(
+    @CurrentUser() user: IAuthenticatedUser,
+    @Body() dto: UpdateSkillProfileDto,
+  ) {
+    return this.skillsService.replaceProfile(user.id, dto.skills);
+  }
 
   @Get('intelligence')
   @ApiMessage('Skill intelligence retrieved successfully')
-  intelligence(@CurrentUser() user: IAuthenticatedUser) { return this.skillsService.getIntelligence(user.id); }
+  intelligence(@CurrentUser() user: IAuthenticatedUser) {
+    return this.skillsService.getIntelligence(user.id);
+  }
 }

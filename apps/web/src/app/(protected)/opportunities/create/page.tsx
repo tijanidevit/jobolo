@@ -16,9 +16,7 @@ export default function OpportunityCreatePage() {
           Back to opportunities
         </Link>
       </div>
-      <OpportunityForm
-        opportunity={null}
-      />
+      <OpportunityForm opportunity={null} />
     </div>
   );
 }

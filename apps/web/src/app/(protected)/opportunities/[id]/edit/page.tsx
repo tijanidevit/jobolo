@@ -45,9 +45,7 @@ export default function OpportunityEditPage() {
           Back to opportunity
         </Link>
       </div>
-      <OpportunityForm
-        opportunity={opportunity}
-      />
+      <OpportunityForm opportunity={opportunity} />
     </div>
   );
 }

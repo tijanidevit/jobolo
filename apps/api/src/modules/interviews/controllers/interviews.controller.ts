@@ -53,7 +53,12 @@ export class InterviewsController {
     @Param('interviewId') interviewId: string,
     @Body() dto: UpdateInterviewDto,
   ) {
-    return this.interviewsService.update(user.id, opportunityId, interviewId, dto);
+    return this.interviewsService.update(
+      user.id,
+      opportunityId,
+      interviewId,
+      dto,
+    );
   }
 
   @Delete(':interviewId')

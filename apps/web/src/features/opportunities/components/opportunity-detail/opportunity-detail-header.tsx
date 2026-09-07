@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, BriefcaseBusiness, CalendarClock, CalendarDays, MapPin, Pencil, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  BriefcaseBusiness,
+  CalendarClock,
+  CalendarDays,
+  MapPin,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { useChangeOpportunityStage } from '../../hooks/use-change-opportunity-stage';
@@ -70,21 +78,21 @@ export function OpportunityDetailHeader({ opportunity }: { opportunity: Opportun
 
           <div className="flex flex-col items-stretch gap-3 lg:items-end">
             <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <div className="min-w-44">
-              <SearchableSelect
-                value={opportunity.stage}
-                options={OPPORTUNITY_STAGES}
-                disabled={isChangingStage}
-                onChange={(stage) =>
-                  void changeStage({
-                    id: opportunity.id,
-                    stage: stage as Opportunity['stage'],
-                  })
-                }
-                placeholder="Select stage"
-                searchPlaceholder="Search stages..."
-              />
-            </div>
+              <div className="min-w-44">
+                <SearchableSelect
+                  value={opportunity.stage}
+                  options={OPPORTUNITY_STAGES}
+                  disabled={isChangingStage}
+                  onChange={(stage) =>
+                    void changeStage({
+                      id: opportunity.id,
+                      stage: stage as Opportunity['stage'],
+                    })
+                  }
+                  placeholder="Select stage"
+                  searchPlaceholder="Search stages..."
+                />
+              </div>
               <Link
                 href={`/opportunities/${opportunity.id}/edit`}
                 className="inline-flex h-8 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-100"

@@ -8,7 +8,10 @@ import { NotesRepository } from './repositories/notes.repository.js';
 import { NotesService } from './services/notes.service.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Note, NoteAttachment]), OpportunitiesModule],
+  imports: [
+    TypeOrmModule.forFeature([Note, NoteAttachment]),
+    OpportunitiesModule,
+  ],
   controllers: [NotesController],
   providers: [NotesService, NotesRepository],
 })

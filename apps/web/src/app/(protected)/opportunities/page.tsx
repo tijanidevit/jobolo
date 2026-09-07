@@ -11,7 +11,10 @@ import type { OpportunityStatus } from '@jobolo/shared';
 import { getErrorMessage } from '@/features/opportunities/utils/opportunity.utils';
 import { OpportunityGrid } from '@/features/opportunities/components/opportunity-list/opportunity-grid';
 import { OpportunityPipeline } from '@/features/opportunities/components/opportunity-list/opportunity-pipeline';
-import { getOpportunityFilters, OpportunityFiltersPanel } from '@/features/opportunities/components/opportunity-list/opportunity-filters';
+import {
+  getOpportunityFilters,
+  OpportunityFiltersPanel,
+} from '@/features/opportunities/components/opportunity-list/opportunity-filters';
 import {
   OpportunitiesEmptyState,
   EmptyStageState,
@@ -42,8 +45,20 @@ export default function OpportunitiesPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href="/opportunities/kanban" className="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"><Columns3 className="mr-2 h-4 w-4" />Kanban view</Link>
-          <Link href="/opportunities/create" className="inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"><Plus className="mr-2 h-4 w-4" />Add opportunity</Link>
+          <Link
+            href="/opportunities/kanban"
+            className="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
+          >
+            <Columns3 className="mr-2 h-4 w-4" />
+            Kanban view
+          </Link>
+          <Link
+            href="/opportunities/create"
+            className="inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add opportunity
+          </Link>
         </div>
       </header>
 
@@ -69,7 +84,10 @@ export default function OpportunitiesPage() {
           {visibleOpportunities.length === 0 ? (
             <EmptyStageState onShowAll={() => setSelectedStage('all')} />
           ) : (
-            <OpportunityGrid key={`${searchParams.toString()}-${selectedStage}`} opportunities={visibleOpportunities} />
+            <OpportunityGrid
+              key={`${searchParams.toString()}-${selectedStage}`}
+              opportunities={visibleOpportunities}
+            />
           )}
         </>
       )}

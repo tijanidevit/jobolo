@@ -28,7 +28,10 @@ export class TasksController {
 
   @Get()
   @ApiMessage('Opportunity tasks retrieved successfully')
-  findAll(@CurrentUser() user: IAuthenticatedUser, @Param('opportunityId') opportunityId: string) {
+  findAll(
+    @CurrentUser() user: IAuthenticatedUser,
+    @Param('opportunityId') opportunityId: string,
+  ) {
     return this.tasksService.findAllForOpportunity(user.id, opportunityId);
   }
 
@@ -56,7 +59,11 @@ export class TasksController {
   @Delete(':taskId')
   @HttpCode(HttpStatus.OK)
   @ApiMessage('Task deleted successfully')
-  remove(@CurrentUser() user: IAuthenticatedUser, @Param('opportunityId') opportunityId: string, @Param('taskId') taskId: string) {
+  remove(
+    @CurrentUser() user: IAuthenticatedUser,
+    @Param('opportunityId') opportunityId: string,
+    @Param('taskId') taskId: string,
+  ) {
     return this.tasksService.remove(user.id, opportunityId, taskId);
   }
 }

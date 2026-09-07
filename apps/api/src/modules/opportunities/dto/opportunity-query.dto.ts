@@ -1,6 +1,19 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
-import type { EmploymentType, OpportunityPriority, OpportunityStatus, WorkArrangement } from '@jobolo/shared';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
+import type {
+  EmploymentType,
+  OpportunityPriority,
+  OpportunityStatus,
+  WorkArrangement,
+} from '@jobolo/shared';
 import { OPPORTUNITY_STATUSES } from '../constants.js';
 
 export class OpportunityQueryDto {

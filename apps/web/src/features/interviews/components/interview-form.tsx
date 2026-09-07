@@ -62,12 +62,18 @@ export function InterviewForm({
     const payload = {
       type: result.data.type,
       scheduledAt: new Date(result.data.scheduledAt).toISOString(),
-      ...(result.data.durationMinutes ? { durationMinutes: Number(result.data.durationMinutes) } : {}),
+      ...(result.data.durationMinutes
+        ? { durationMinutes: Number(result.data.durationMinutes) }
+        : {}),
       ...(result.data.interviewers.trim() ? { interviewers: result.data.interviewers.trim() } : {}),
-      ...(result.data.meetingLocation.trim() ? { meetingLocation: result.data.meetingLocation.trim() } : {}),
+      ...(result.data.meetingLocation.trim()
+        ? { meetingLocation: result.data.meetingLocation.trim() }
+        : {}),
       ...(result.data.stage.trim() ? { stage: result.data.stage.trim() } : {}),
       ...(result.data.notes.trim() ? { notes: result.data.notes.trim() } : {}),
-      ...(result.data.performanceRating ? { performanceRating: Number(result.data.performanceRating) } : {}),
+      ...(result.data.performanceRating
+        ? { performanceRating: Number(result.data.performanceRating) }
+        : {}),
     };
     if (interview) await updateInterview({ interviewId: interview.id, payload });
     else await createInterview(payload);
@@ -80,50 +86,110 @@ export function InterviewForm({
         <p className="text-sm font-semibold text-slate-800">
           {interview ? 'Edit interview' : 'Schedule interview'}
         </p>
-        <button type="button" onClick={onCancel} className="text-slate-400 hover:text-slate-700" aria-label="Close interview form">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-slate-400 hover:text-slate-700"
+          aria-label="Close interview form"
+        >
           <X className="h-4 w-4" />
         </button>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           Type
-          <SearchableSelect value={values.type} options={interviewTypeOptions} onChange={(value) => update('type', value)} searchPlaceholder="Find interview type..." />
+          <SearchableSelect
+            value={values.type}
+            options={interviewTypeOptions}
+            onChange={(value) => update('type', value)}
+            searchPlaceholder="Find interview type..."
+          />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           Date and time
-          <Input type="datetime-local" value={values.scheduledAt} onChange={(event) => update('scheduledAt', event.target.value)} disabled={isSaving} />
+          <Input
+            type="datetime-local"
+            value={values.scheduledAt}
+            onChange={(event) => update('scheduledAt', event.target.value)}
+            disabled={isSaving}
+          />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           Duration (minutes)
-          <Input type="number" min="1" max="1440" value={values.durationMinutes} onChange={(event) => update('durationMinutes', event.target.value)} placeholder="60" disabled={isSaving} />
+          <Input
+            type="number"
+            min="1"
+            max="1440"
+            value={values.durationMinutes}
+            onChange={(event) => update('durationMinutes', event.target.value)}
+            placeholder="60"
+            disabled={isSaving}
+          />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           Pipeline stage
-          <Input value={values.stage} onChange={(event) => update('stage', event.target.value)} placeholder="Technical interview" disabled={isSaving} />
+          <Input
+            value={values.stage}
+            onChange={(event) => update('stage', event.target.value)}
+            placeholder="Technical interview"
+            disabled={isSaving}
+          />
         </label>
       </div>
       <label className="block space-y-1.5 text-xs font-medium text-slate-600">
         Interviewers <span className="font-normal text-slate-400">(optional)</span>
-        <Input value={values.interviewers} onChange={(event) => update('interviewers', event.target.value)} placeholder="Sarah Johnson, John Smith" disabled={isSaving} />
+        <Input
+          value={values.interviewers}
+          onChange={(event) => update('interviewers', event.target.value)}
+          placeholder="Sarah Johnson, John Smith"
+          disabled={isSaving}
+        />
       </label>
       <label className="block space-y-1.5 text-xs font-medium text-slate-600">
         Meeting location <span className="font-normal text-slate-400">(optional)</span>
-        <Input value={values.meetingLocation} onChange={(event) => update('meetingLocation', event.target.value)} placeholder="https://meet.google.com/... or Office 4B" disabled={isSaving} />
+        <Input
+          value={values.meetingLocation}
+          onChange={(event) => update('meetingLocation', event.target.value)}
+          placeholder="https://meet.google.com/... or Office 4B"
+          disabled={isSaving}
+        />
       </label>
       <label className="block space-y-1.5 text-xs font-medium text-slate-600">
         Notes <span className="font-normal text-slate-400">(optional)</span>
-        <RichTextEditor id="interview-notes" value={values.notes} onChange={(value) => update('notes', value)} disabled={isSaving} placeholder="Capture preparation notes, questions, or takeaways." />
+        <RichTextEditor
+          id="interview-notes"
+          value={values.notes}
+          onChange={(value) => update('notes', value)}
+          disabled={isSaving}
+          placeholder="Capture preparation notes, questions, or takeaways."
+        />
       </label>
       {interview && (
         <label className="block space-y-1.5 text-xs font-medium text-slate-600">
           Performance rating <span className="font-normal text-slate-400">(1–5, optional)</span>
-          <Input type="number" min="1" max="5" value={values.performanceRating} onChange={(event) => update('performanceRating', event.target.value)} placeholder="4" disabled={isSaving} />
+          <Input
+            type="number"
+            min="1"
+            max="5"
+            value={values.performanceRating}
+            onChange={(event) => update('performanceRating', event.target.value)}
+            placeholder="4"
+            disabled={isSaving}
+          />
         </label>
       )}
-      {validationError && <p className="text-xs text-red-600" role="alert">{validationError}</p>}
+      {validationError && (
+        <p className="text-xs text-red-600" role="alert">
+          {validationError}
+        </p>
+      )}
       <div className="flex justify-end">
         <Button type="submit" size="sm" disabled={isSaving}>
-          {isSaving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
+          {isSaving ? (
+            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Save className="mr-1.5 h-3.5 w-3.5" />
+          )}
           {interview ? 'Save changes' : 'Save interview'}
         </Button>
       </div>

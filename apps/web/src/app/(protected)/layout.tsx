@@ -4,7 +4,15 @@ import { AuthGuard } from '@/components/auth/auth-guard';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { LogOut, LayoutDashboard, Briefcase, User, Settings, BarChart3, BrainCircuit } from 'lucide-react';
+import {
+  LogOut,
+  LayoutDashboard,
+  Briefcase,
+  User,
+  Settings,
+  BarChart3,
+  BrainCircuit,
+} from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 

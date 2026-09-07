@@ -32,7 +32,10 @@ export class OpportunitiesService {
     return opportunity;
   }
 
-  async findAllForUser(userId: string, query: OpportunityQueryDto = {}): Promise<Opportunity[]> {
+  async findAllForUser(
+    userId: string,
+    query: OpportunityQueryDto = {},
+  ): Promise<Opportunity[]> {
     return this.opportunitiesRepository.findAllForUser(userId, query);
   }
 

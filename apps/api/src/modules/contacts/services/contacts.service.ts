@@ -40,12 +40,22 @@ export class ContactsService {
 
   async remove(userId: string, opportunityId: string, contactId: string) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const removed = await this.contactsRepository.delete(contactId, userId, opportunityId);
+    const removed = await this.contactsRepository.delete(
+      contactId,
+      userId,
+      opportunityId,
+    );
     if (!removed) throw new NotFoundException('Contact not found');
   }
 
-  private async ensureOpportunityBelongsToUser(userId: string, opportunityId: string) {
-    const opportunity = await this.opportunitiesRepository.findOne(opportunityId, userId);
+  private async ensureOpportunityBelongsToUser(
+    userId: string,
+    opportunityId: string,
+  ) {
+    const opportunity = await this.opportunitiesRepository.findOne(
+      opportunityId,
+      userId,
+    );
     if (!opportunity) throw new NotFoundException('Opportunity not found');
   }
 }

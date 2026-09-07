@@ -109,7 +109,9 @@ export function OpportunityActivityForm({
       </label>
       <label className="block space-y-1.5 text-xs font-medium text-slate-600">
         Attachments{' '}
-        <span className="font-normal text-slate-400">(optional, up to 5 new files / 10 MB each)</span>
+        <span className="font-normal text-slate-400">
+          (optional, up to 5 new files / 10 MB each)
+        </span>
         <AttachmentPicker files={files} onChange={setFiles} disabled={isSaving} />
       </label>
       {validationError && (

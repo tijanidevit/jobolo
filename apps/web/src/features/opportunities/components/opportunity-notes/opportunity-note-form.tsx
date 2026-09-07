@@ -24,11 +24,7 @@ interface OpportunityNoteFormProps {
   onCancel?: () => void;
 }
 
-export function OpportunityNoteForm({
-  opportunityId,
-  note,
-  onCancel,
-}: OpportunityNoteFormProps) {
+export function OpportunityNoteForm({ opportunityId, note, onCancel }: OpportunityNoteFormProps) {
   const router = useRouter();
   const { createNote, isCreating } = useCreateOpportunityNote(opportunityId);
   const { updateNote, isUpdating } = useUpdateOpportunityNote(opportunityId, note?.id ?? '');

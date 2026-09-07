@@ -20,7 +20,10 @@ export class OpportunitiesRepository {
     return this.repository.findOne({ where: { id, userId } });
   }
 
-  async findAllForUser(userId: string, query: OpportunityQueryDto = {}): Promise<Opportunity[]> {
+  async findAllForUser(
+    userId: string,
+    query: OpportunityQueryDto = {},
+  ): Promise<Opportunity[]> {
     const builder = this.repository
       .createQueryBuilder('opportunity')
       .where('opportunity.userId = :userId', { userId })
@@ -32,16 +35,46 @@ export class OpportunitiesRepository {
         { search: `%${query.q.trim()}%` },
       );
     }
-    if (query.companyName) builder.andWhere('opportunity.companyName LIKE :companyName', { companyName: `%${query.companyName.trim()}%` });
-    if (query.jobTitle) builder.andWhere('opportunity.jobTitle LIKE :jobTitle', { jobTitle: `%${query.jobTitle.trim()}%` });
-    if (query.companyCountry) builder.andWhere('opportunity.companyCountry = :companyCountry', { companyCountry: query.companyCountry });
-    if (query.source) builder.andWhere('opportunity.source LIKE :source', { source: `%${query.source.trim()}%` });
-    if (query.stage) builder.andWhere('opportunity.stage = :stage', { stage: query.stage });
-    if (query.priority) builder.andWhere('opportunity.priority = :priority', { priority: query.priority });
-    if (query.workArrangement) builder.andWhere('opportunity.workArrangement = :workArrangement', { workArrangement: query.workArrangement });
-    if (query.employmentType) builder.andWhere('opportunity.employmentType = :employmentType', { employmentType: query.employmentType });
-    if (query.salaryMin !== undefined) builder.andWhere('(opportunity.salaryRangeMax IS NULL OR opportunity.salaryRangeMax >= :salaryMin)', { salaryMin: query.salaryMin });
-    if (query.salaryMax !== undefined) builder.andWhere('(opportunity.salaryRangeMin IS NULL OR opportunity.salaryRangeMin <= :salaryMax)', { salaryMax: query.salaryMax });
+    if (query.companyName)
+      builder.andWhere('opportunity.companyName LIKE :companyName', {
+        companyName: `%${query.companyName.trim()}%`,
+      });
+    if (query.jobTitle)
+      builder.andWhere('opportunity.jobTitle LIKE :jobTitle', {
+        jobTitle: `%${query.jobTitle.trim()}%`,
+      });
+    if (query.companyCountry)
+      builder.andWhere('opportunity.companyCountry = :companyCountry', {
+        companyCountry: query.companyCountry,
+      });
+    if (query.source)
+      builder.andWhere('opportunity.source LIKE :source', {
+        source: `%${query.source.trim()}%`,
+      });
+    if (query.stage)
+      builder.andWhere('opportunity.stage = :stage', { stage: query.stage });
+    if (query.priority)
+      builder.andWhere('opportunity.priority = :priority', {
+        priority: query.priority,
+      });
+    if (query.workArrangement)
+      builder.andWhere('opportunity.workArrangement = :workArrangement', {
+        workArrangement: query.workArrangement,
+      });
+    if (query.employmentType)
+      builder.andWhere('opportunity.employmentType = :employmentType', {
+        employmentType: query.employmentType,
+      });
+    if (query.salaryMin !== undefined)
+      builder.andWhere(
+        '(opportunity.salaryRangeMax IS NULL OR opportunity.salaryRangeMax >= :salaryMin)',
+        { salaryMin: query.salaryMin },
+      );
+    if (query.salaryMax !== undefined)
+      builder.andWhere(
+        '(opportunity.salaryRangeMin IS NULL OR opportunity.salaryRangeMin <= :salaryMax)',
+        { salaryMax: query.salaryMax },
+      );
 
     return builder.getMany();
   }

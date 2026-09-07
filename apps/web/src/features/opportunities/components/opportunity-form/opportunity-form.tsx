@@ -92,9 +92,7 @@ function toPayload(values: OpportunityFormValues): OpportunityPayload {
   };
 }
 
-export function OpportunityForm({
-  opportunity,
-}: OpportunityFormProps) {
+export function OpportunityForm({ opportunity }: OpportunityFormProps) {
   const router = useRouter();
   const { createOpportunity, isCreating } = useCreateOpportunity();
   const { updateOpportunity, isUpdating } = useUpdateOpportunity(opportunity?.id ?? '');

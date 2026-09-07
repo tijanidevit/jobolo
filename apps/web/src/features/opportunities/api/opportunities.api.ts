@@ -5,7 +5,9 @@ import type { OpportunityStatus } from '@jobolo/shared';
 
 export const opportunitiesApi = {
   list: async (filters: OpportunityFilters = {}) => {
-    const response = await api.get<ApiResponse<Opportunity[]>>('/opportunities', { params: filters });
+    const response = await api.get<ApiResponse<Opportunity[]>>('/opportunities', {
+      params: filters,
+    });
     return response.data;
   },
 

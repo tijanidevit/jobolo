@@ -57,7 +57,9 @@ export function ContactForm({
     <Card>
       <CardHeader>
         <CardTitle>{contact ? 'Edit contact' : 'Add contact'}</CardTitle>
-        <p className="text-sm text-slate-500">Keep the people connected to this opportunity close.</p>
+        <p className="text-sm text-slate-500">
+          Keep the people connected to this opportunity close.
+        </p>
       </CardHeader>
       <form onSubmit={handleSubmit(submit)}>
         <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -65,19 +67,42 @@ export function ContactForm({
             <Input {...register('name')} placeholder="Sarah Johnson" disabled={isSaving} />
           </Field>
           <Field label="Job title" error={errors.jobTitle?.message}>
-            <Input {...register('jobTitle')} placeholder="Technical Recruiter" disabled={isSaving} />
+            <Input
+              {...register('jobTitle')}
+              placeholder="Technical Recruiter"
+              disabled={isSaving}
+            />
           </Field>
           <Field label="Email" error={errors.email?.message}>
-            <Input {...register('email')} type="email" placeholder="sarah@example.com" disabled={isSaving} />
+            <Input
+              {...register('email')}
+              type="email"
+              placeholder="sarah@example.com"
+              disabled={isSaving}
+            />
           </Field>
           <Field label="Phone" error={errors.phone?.message}>
-            <Input {...register('phone')} type="tel" placeholder="+1 555 123 4567" disabled={isSaving} />
+            <Input
+              {...register('phone')}
+              type="tel"
+              placeholder="+1 555 123 4567"
+              disabled={isSaving}
+            />
           </Field>
           <Field label="LinkedIn" error={errors.linkedin?.message}>
-            <Input {...register('linkedin')} type="url" placeholder="https://linkedin.com/in/..." disabled={isSaving} />
+            <Input
+              {...register('linkedin')}
+              type="url"
+              placeholder="https://linkedin.com/in/..."
+              disabled={isSaving}
+            />
           </Field>
           <Field label="Relationship" error={errors.relationship?.message}>
-            <Input {...register('relationship')} placeholder="Recruiter, hiring manager..." disabled={isSaving} />
+            <Input
+              {...register('relationship')}
+              placeholder="Recruiter, hiring manager..."
+              disabled={isSaving}
+            />
           </Field>
           <div className="sm:col-span-2">
             <Field label="Notes" error={errors.notes?.message}>
@@ -95,7 +120,9 @@ export function ContactForm({
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save contact'}</Button>
+          <Button type="submit" disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save contact'}
+          </Button>
         </CardFooter>
       </form>
     </Card>

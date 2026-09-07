@@ -12,7 +12,10 @@ describe('ActivitiesService', () => {
   beforeEach(() => {
     activitiesRepository = mock<ActivitiesRepository>();
     opportunitiesRepository = mock<OpportunitiesRepository>();
-    service = new ActivitiesService(opportunitiesRepository, activitiesRepository);
+    service = new ActivitiesService(
+      opportunitiesRepository,
+      activitiesRepository,
+    );
   });
 
   it('creates an activity for an opportunity owned by the user', async () => {

@@ -21,14 +21,17 @@ function noteFormData(payload: CreateOpportunityNotePayload, files: File[]) {
 
 export const notesApi = {
   list: async (opportunityId: string, page = 1, limit = OPPORTUNITY_PAGE_SIZE) => {
-    const response = await api.get<OpportunityNotePage>(
-      `/opportunities/${opportunityId}/notes`,
-      { params: { page, limit } },
-    );
+    const response = await api.get<OpportunityNotePage>(`/opportunities/${opportunityId}/notes`, {
+      params: { page, limit },
+    });
     return response.data;
   },
 
-  create: async (opportunityId: string, payload: CreateOpportunityNotePayload, files: File[] = []) => {
+  create: async (
+    opportunityId: string,
+    payload: CreateOpportunityNotePayload,
+    files: File[] = [],
+  ) => {
     const response = await api.post<ApiResponse<OpportunityNote>>(
       `/opportunities/${opportunityId}/notes`,
       noteFormData(payload, files),

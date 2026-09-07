@@ -29,14 +29,14 @@ export default function OpportunityNoteEditPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link href={`/opportunities/${id}`} className="mb-5 inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600">
+      <Link
+        href={`/opportunities/${id}`}
+        className="mb-5 inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600"
+      >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to opportunity
       </Link>
-      <OpportunityNoteForm
-        opportunityId={id}
-        note={note}
-      />
+      <OpportunityNoteForm opportunityId={id} note={note} />
     </div>
   );
 }

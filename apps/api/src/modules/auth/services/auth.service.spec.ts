@@ -26,7 +26,12 @@ describe('AuthService', () => {
     jwtService = mock<JwtService>();
     configService = mock<ConfigService>();
     mailService = mock<MailService>();
-    authService = new AuthService(usersRepository, jwtService, configService, mailService);
+    authService = new AuthService(
+      usersRepository,
+      jwtService,
+      configService,
+      mailService,
+    );
 
     const getConfig = configService.get as unknown as Mock;
     getConfig.mockImplementation((key: string) => {

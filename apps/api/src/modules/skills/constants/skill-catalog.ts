@@ -29,12 +29,18 @@ export const SKILL_CATALOG: SkillDefinition[] = [
   { name: 'GraphQL', aliases: ['graphql'] },
   { name: 'REST APIs', aliases: ['rest api', 'restful api', 'rest apis'] },
   { name: 'Git', aliases: ['git'] },
-  { name: 'CI/CD', aliases: ['ci/cd', 'continuous integration', 'continuous delivery'] },
+  {
+    name: 'CI/CD',
+    aliases: ['ci/cd', 'continuous integration', 'continuous delivery'],
+  },
   { name: 'Terraform', aliases: ['terraform'] },
   { name: 'Jest', aliases: ['jest'] },
   { name: 'Cypress', aliases: ['cypress'] },
   { name: 'Figma', aliases: ['figma'] },
   { name: 'Agile', aliases: ['agile', 'scrum'] },
-  { name: 'Communication', aliases: ['communication', 'communicate effectively'] },
+  {
+    name: 'Communication',
+    aliases: ['communication', 'communicate effectively'],
+  },
   { name: 'Leadership', aliases: ['leadership', 'lead teams'] },
 ];

@@ -14,14 +14,8 @@ export function OpportunityTimeline({ opportunityId }: { opportunityId: string }
   const [formActivity, setFormActivity] = useState<OpportunityActivity | null | undefined>(
     undefined,
   );
-  const {
-    activities,
-    isLoading,
-    error,
-    hasNextPage,
-    loadMore,
-    isLoadingMore,
-  } = useOpportunityTimeline(opportunityId);
+  const { activities, isLoading, error, hasNextPage, loadMore, isLoadingMore } =
+    useOpportunityTimeline(opportunityId);
   const closeForm = () => {
     setFormActivity(undefined);
   };

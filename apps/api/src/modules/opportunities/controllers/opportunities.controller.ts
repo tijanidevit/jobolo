@@ -44,7 +44,9 @@ export class OpportunitiesController {
     @CurrentUser() user: IAuthenticatedUser,
     @Query() query?: OpportunityQueryDto,
   ) {
-    return query ? this.opportunitiesService.findAllForUser(user.id, query) : this.opportunitiesService.findAllForUser(user.id);
+    return query
+      ? this.opportunitiesService.findAllForUser(user.id, query)
+      : this.opportunitiesService.findAllForUser(user.id);
   }
 
   @Get(':id')

@@ -35,17 +35,37 @@ export class ContactsRepository {
     );
   }
 
-  async update(id: string, userId: string, opportunityId: string, data: UpdateContactDto) {
-    await this.repository.update({ id, userId, opportunityId }, {
-      ...data,
-      ...(data.name !== undefined ? { name: data.name.trim() } : {}),
-      ...(data.jobTitle !== undefined ? { jobTitle: data.jobTitle.trim() || null } : {}),
-      ...(data.email !== undefined ? { email: data.email.trim() || null } : {}),
-      ...(data.phone !== undefined ? { phone: data.phone.trim() || null } : {}),
-      ...(data.linkedin !== undefined ? { linkedin: data.linkedin.trim() || null } : {}),
-      ...(data.relationship !== undefined ? { relationship: data.relationship.trim() || null } : {}),
-      ...(data.notes !== undefined ? { notes: data.notes.trim() || null } : {}),
-    });
+  async update(
+    id: string,
+    userId: string,
+    opportunityId: string,
+    data: UpdateContactDto,
+  ) {
+    await this.repository.update(
+      { id, userId, opportunityId },
+      {
+        ...data,
+        ...(data.name !== undefined ? { name: data.name.trim() } : {}),
+        ...(data.jobTitle !== undefined
+          ? { jobTitle: data.jobTitle.trim() || null }
+          : {}),
+        ...(data.email !== undefined
+          ? { email: data.email.trim() || null }
+          : {}),
+        ...(data.phone !== undefined
+          ? { phone: data.phone.trim() || null }
+          : {}),
+        ...(data.linkedin !== undefined
+          ? { linkedin: data.linkedin.trim() || null }
+          : {}),
+        ...(data.relationship !== undefined
+          ? { relationship: data.relationship.trim() || null }
+          : {}),
+        ...(data.notes !== undefined
+          ? { notes: data.notes.trim() || null }
+          : {}),
+      },
+    );
     return this.findOne(id, userId, opportunityId);
   }
 

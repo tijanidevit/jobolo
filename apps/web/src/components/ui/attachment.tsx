@@ -42,10 +42,7 @@ interface AttachmentDownloadButtonProps {
   onDownload: () => Promise<Blob>;
 }
 
-export function AttachmentDownloadButton({
-  fileName,
-  onDownload,
-}: AttachmentDownloadButtonProps) {
+export function AttachmentDownloadButton({ fileName, onDownload }: AttachmentDownloadButtonProps) {
   const [isOpening, setIsOpening] = useState(false);
 
   const openAttachment = async () => {

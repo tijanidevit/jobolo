@@ -28,7 +28,9 @@ export function ContactList({ opportunityId }: { opportunityId: string }) {
       <CardHeader className="flex flex-row items-center justify-between gap-3">
         <div>
           <CardTitle className="text-base">Contacts</CardTitle>
-          <p className="mt-1 text-sm text-slate-500">Recruiters, hiring managers, and interviewers.</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Recruiters, hiring managers, and interviewers.
+          </p>
         </div>
         {!isAdding && !editingContact && (
           <Button variant="outline" size="sm" onClick={() => setIsAdding(true)}>
@@ -62,7 +64,9 @@ export function ContactList({ opportunityId }: { opportunityId: string }) {
         {!isLoading && !error && visibleContacts.length === 0 && !isAdding && !editingContact && (
           <div className="rounded-lg border border-dashed border-slate-200 px-4 py-7 text-center">
             <p className="text-sm font-medium text-slate-700">No contacts yet</p>
-            <p className="mt-1 text-xs text-slate-500">Add the people involved in this opportunity.</p>
+            <p className="mt-1 text-xs text-slate-500">
+              Add the people involved in this opportunity.
+            </p>
           </div>
         )}
         {!isLoading && !error && visibleContacts.length > 0 && (
@@ -108,23 +112,60 @@ function ContactCard({
               {contact.jobTitle}
             </p>
           )}
-          {contact.relationship && <p className="mt-2 text-xs font-medium text-blue-600">{contact.relationship}</p>}
+          {contact.relationship && (
+            <p className="mt-2 text-xs font-medium text-blue-600">{contact.relationship}</p>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={onEdit} aria-label={`Edit ${contact.name}`}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={onDelete} disabled={isDeleting} aria-label={`Delete ${contact.name}`}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onDelete}
+            disabled={isDeleting}
+            aria-label={`Delete ${contact.name}`}
+          >
             <Trash2 className="h-3.5 w-3.5 text-red-500" />
           </Button>
         </div>
       </div>
       <div className="mt-3 space-y-1 text-xs text-slate-600">
-        {contact.email && <a className="flex items-center gap-1.5 hover:text-blue-600" href={`mailto:${contact.email}`}><Mail className="h-3.5 w-3.5" />{contact.email}</a>}
-        {contact.phone && <a className="flex items-center gap-1.5 hover:text-blue-600" href={`tel:${contact.phone}`}><Phone className="h-3.5 w-3.5" />{contact.phone}</a>}
-        {contact.linkedin && <a className="block truncate text-blue-600 hover:underline" href={contact.linkedin} target="_blank" rel="noreferrer">LinkedIn profile</a>}
+        {contact.email && (
+          <a
+            className="flex items-center gap-1.5 hover:text-blue-600"
+            href={`mailto:${contact.email}`}
+          >
+            <Mail className="h-3.5 w-3.5" />
+            {contact.email}
+          </a>
+        )}
+        {contact.phone && (
+          <a
+            className="flex items-center gap-1.5 hover:text-blue-600"
+            href={`tel:${contact.phone}`}
+          >
+            <Phone className="h-3.5 w-3.5" />
+            {contact.phone}
+          </a>
+        )}
+        {contact.linkedin && (
+          <a
+            className="block truncate text-blue-600 hover:underline"
+            href={contact.linkedin}
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn profile
+          </a>
+        )}
       </div>
-      {contact.notes && <p className="mt-3 whitespace-pre-wrap border-t border-slate-200 pt-3 text-xs leading-5 text-slate-600">{contact.notes}</p>}
+      {contact.notes && (
+        <p className="mt-3 whitespace-pre-wrap border-t border-slate-200 pt-3 text-xs leading-5 text-slate-600">
+          {contact.notes}
+        </p>
+      )}
     </article>
   );
 }

@@ -6,11 +6,20 @@ export class AddOpportunityNextAction1760000007000 implements MigrationInterface
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.addColumn(
       'opportunities',
-      new TableColumn({ name: 'nextAction', type: 'varchar', length: '500', isNullable: true }),
+      new TableColumn({
+        name: 'nextAction',
+        type: 'varchar',
+        length: '500',
+        isNullable: true,
+      }),
     );
     await queryRunner.addColumn(
       'opportunities',
-      new TableColumn({ name: 'nextActionDueDate', type: 'datetime', isNullable: true }),
+      new TableColumn({
+        name: 'nextActionDueDate',
+        type: 'datetime',
+        isNullable: true,
+      }),
     );
   }
 

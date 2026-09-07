@@ -13,7 +13,10 @@ export class InterviewsService {
 
   async findAllForOpportunity(userId: string, opportunityId: string) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    return this.interviewsRepository.findAllForOpportunity(userId, opportunityId);
+    return this.interviewsRepository.findAllForOpportunity(
+      userId,
+      opportunityId,
+    );
   }
 
   async create(userId: string, opportunityId: string, dto: CreateInterviewDto) {
@@ -40,12 +43,22 @@ export class InterviewsService {
 
   async remove(userId: string, opportunityId: string, interviewId: string) {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
-    const removed = await this.interviewsRepository.delete(interviewId, userId, opportunityId);
+    const removed = await this.interviewsRepository.delete(
+      interviewId,
+      userId,
+      opportunityId,
+    );
     if (!removed) throw new NotFoundException('Interview not found');
   }
 
-  private async ensureOpportunityBelongsToUser(userId: string, opportunityId: string) {
-    const opportunity = await this.opportunitiesRepository.findOne(opportunityId, userId);
+  private async ensureOpportunityBelongsToUser(
+    userId: string,
+    opportunityId: string,
+  ) {
+    const opportunity = await this.opportunitiesRepository.findOne(
+      opportunityId,
+      userId,
+    );
     if (!opportunity) throw new NotFoundException('Opportunity not found');
   }
 }

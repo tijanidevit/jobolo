@@ -18,7 +18,11 @@ export const interviewsApi = {
     return response.data;
   },
 
-  update: async (opportunityId: string, interviewId: string, payload: Partial<InterviewPayload>) => {
+  update: async (
+    opportunityId: string,
+    interviewId: string,
+    payload: Partial<InterviewPayload>,
+  ) => {
     const response = await api.patch<ApiResponse<Interview>>(
       `/opportunities/${opportunityId}/interviews/${interviewId}`,
       payload,

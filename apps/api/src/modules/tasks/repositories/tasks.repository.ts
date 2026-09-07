@@ -35,15 +35,26 @@ export class TasksRepository {
     );
   }
 
-  async update(id: string, userId: string, opportunityId: string, data: UpdateTaskDto) {
+  async update(
+    id: string,
+    userId: string,
+    opportunityId: string,
+    data: UpdateTaskDto,
+  ) {
     await this.repository.update(
       { id, userId, opportunityId },
       {
         ...data,
         ...(data.title !== undefined ? { title: data.title.trim() } : {}),
-        ...(data.description !== undefined ? { description: data.description.trim() || null } : {}),
-        ...(data.dueDate !== undefined ? { dueDate: data.dueDate ?? null } : {}),
-        ...(data.reminderAt !== undefined ? { reminderAt: data.reminderAt ?? null } : {}),
+        ...(data.description !== undefined
+          ? { description: data.description.trim() || null }
+          : {}),
+        ...(data.dueDate !== undefined
+          ? { dueDate: data.dueDate ?? null }
+          : {}),
+        ...(data.reminderAt !== undefined
+          ? { reminderAt: data.reminderAt ?? null }
+          : {}),
       },
     );
     return this.findOne(id, userId, opportunityId);

@@ -18,7 +18,12 @@ export class CreateOpportunityNoteAttachments1760000003000 implements MigrationI
           },
           { name: 'noteId', type: 'varchar', length: '36' },
           { name: 'originalName', type: 'varchar', length: '255' },
-          { name: 'storedName', type: 'varchar', length: '255', isUnique: true },
+          {
+            name: 'storedName',
+            type: 'varchar',
+            length: '255',
+            isUnique: true,
+          },
           { name: 'mimeType', type: 'varchar', length: '255' },
           { name: 'size', type: 'int' },
           { name: 'createdAt', type: 'datetime', default: 'CURRENT_TIMESTAMP' },

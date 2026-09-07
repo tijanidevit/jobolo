@@ -57,7 +57,10 @@ export class NotesRepository {
     });
   }
 
-  async addAttachments(id: string, attachments: Array<Partial<NoteAttachment>>) {
+  async addAttachments(
+    id: string,
+    attachments: Array<Partial<NoteAttachment>>,
+  ) {
     const note = await this.repository.findOneByOrFail({ id });
     note.attachments = [
       ...(note.attachments ?? []),
@@ -75,7 +78,8 @@ export class NotesRepository {
     opportunityId: string,
     data: UpdateNoteDto,
   ) {
-    const updateData = data.content === undefined ? {} : { content: data.content.trim() };
+    const updateData =
+      data.content === undefined ? {} : { content: data.content.trim() };
     await this.repository.update({ id, userId, opportunityId }, updateData);
     return this.findOne(id, userId, opportunityId);
   }

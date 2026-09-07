@@ -19,8 +19,19 @@ describe('DashboardService', () => {
     today.setHours(12, 0, 0, 0);
 
     opportunitiesRepository.find.mockResolvedValue([
-      { id: 'opportunity-1', stage: 'applied', dateApplied: now, nextAction: 'Follow up', nextActionDueDate: today },
-      { id: 'opportunity-2', stage: 'offer', dateApplied: null, nextAction: null },
+      {
+        id: 'opportunity-1',
+        stage: 'applied',
+        dateApplied: now,
+        nextAction: 'Follow up',
+        nextActionDueDate: today,
+      },
+      {
+        id: 'opportunity-2',
+        stage: 'offer',
+        dateApplied: null,
+        nextAction: null,
+      },
     ] as Opportunity[]);
     tasksRepository.find.mockResolvedValue([
       { id: 'task-1', status: 'pending', dueDate: yesterday },

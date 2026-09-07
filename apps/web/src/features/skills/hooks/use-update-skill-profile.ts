@@ -4,6 +4,13 @@ import { skillIntelligenceQueryKey } from './use-skill-intelligence';
 
 export function useUpdateSkillProfile() {
   const queryClient = useQueryClient();
-  const mutation = useMutation({ mutationFn: skillsApi.updateProfile, onSuccess: () => queryClient.invalidateQueries({ queryKey: skillIntelligenceQueryKey }) });
-  return { updateProfile: mutation.mutateAsync, isUpdating: mutation.isPending, error: mutation.error };
+  const mutation = useMutation({
+    mutationFn: skillsApi.updateProfile,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: skillIntelligenceQueryKey }),
+  });
+  return {
+    updateProfile: mutation.mutateAsync,
+    isUpdating: mutation.isPending,
+    error: mutation.error,
+  };
 }
