@@ -2,7 +2,7 @@
 
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
-import { AdvancedAnalytics } from '@/features/analytics/components/advanced-analytics';
+import { AdvancedAnalytics } from '@/features/analytics/components/analytics-advanced/advanced-analytics';
 import { AnalyticsBreakdownCard } from '@/features/analytics/components/analytics-overview/analytics-breakdown-card';
 import { AnalyticsHeader } from '@/features/analytics/components/analytics-overview/analytics-header';
 import { AnalyticsMetrics } from '@/features/analytics/components/analytics-overview/analytics-metrics';

@@ -237,6 +237,88 @@ export class AnalyticsService {
             left.label.localeCompare(right.label),
         );
     };
+    const careerPerformanceRows = (key: 'jobTitle' | 'companyCountry') => {
+      const groups = new Map<
+        string,
+        {
+          applications: number;
+          responses: number;
+          interviews: number;
+          offers: number;
+          salaryTotal: number;
+          salaryCount: number;
+          currencies: Set<string>;
+        }
+      >();
+      for (const opportunity of applications) {
+        const label = opportunity[key]?.trim() || 'Unspecified';
+        const group = groups.get(label) ?? {
+          applications: 0,
+          responses: 0,
+          interviews: 0,
+          offers: 0,
+          salaryTotal: 0,
+          salaryCount: 0,
+          currencies: new Set<string>(),
+        };
+        group.applications += 1;
+        if (
+          transitions.some(
+            (transition) =>
+              transition.opportunityId === opportunity.id &&
+              RESPONSE_STAGES.has(transition.to),
+          )
+        )
+          group.responses += 1;
+        if (
+          interviews.some(
+            (interview) => interview.opportunityId === opportunity.id,
+          )
+        )
+          group.interviews += 1;
+        if (OFFER_STAGES.has(opportunity.stage)) group.offers += 1;
+        const salary = salaryValue(opportunity);
+        if (salary !== null) {
+          group.salaryTotal += salary;
+          group.salaryCount += 1;
+          if (opportunity.currency) group.currencies.add(opportunity.currency);
+        }
+        groups.set(label, group);
+      }
+      return [...groups.entries()]
+        .map(([label, group]) => ({
+          label,
+          applications: group.applications,
+          responses: group.responses,
+          interviews: group.interviews,
+          offers: group.offers,
+          responseRate: Number(
+            ((group.responses / group.applications) * 100).toFixed(1),
+          ),
+          interviewRate: Number(
+            ((group.interviews / group.applications) * 100).toFixed(1),
+          ),
+          offerRate: Number(
+            ((group.offers / group.applications) * 100).toFixed(1),
+          ),
+          averageSalary:
+            group.salaryCount > 0
+              ? Number((group.salaryTotal / group.salaryCount).toFixed(2))
+              : null,
+          salaryCurrency:
+            group.currencies.size === 1
+              ? [...group.currencies][0]
+              : group.currencies.size > 1
+                ? 'Mixed'
+                : null,
+        }))
+        .sort(
+          (left, right) =>
+            right.interviewRate - left.interviewRate ||
+            right.applications - left.applications ||
+            left.label.localeCompare(right.label),
+        );
+    };
     const salaryValues = opportunities
       .map(salaryValue)
       .filter((value): value is number => value !== null);
@@ -296,6 +378,15 @@ export class AnalyticsService {
         successByRole: successRows('jobTitle'),
         successByCompanySize: successRows('companySize'),
       },
+      careerIntelligence: {
+        rolePerformance: careerPerformanceRows('jobTitle'),
+        countryPerformance: careerPerformanceRows('companyCountry'),
+      },
     };
+  }
+
+  async getCareerIntelligence(userId: string) {
+    const overview = await this.getOverview(userId);
+    return overview.careerIntelligence;
   }
 }

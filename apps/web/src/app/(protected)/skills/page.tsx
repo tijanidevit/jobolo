@@ -24,11 +24,6 @@ export default function SkillsPage() {
   }
 
   return (
-    <SkillIntelligence
-      key={sort}
-      intelligence={intelligence}
-      sort={sort}
-      onSortChange={setSort}
-    />
+    <SkillIntelligence key={sort} intelligence={intelligence} sort={sort} onSortChange={setSort} />
   );
 }

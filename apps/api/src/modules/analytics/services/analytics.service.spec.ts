@@ -45,6 +45,10 @@ describe('AnalyticsService', () => {
       label: 'Unspecified',
       count: 1,
     });
+    expect(result.careerIntelligence.rolePerformance[0]).toMatchObject({
+      label: 'Unspecified',
+      applications: 2,
+    });
   });
 
   it('calculates conversion, response timing, and salary analytics', async () => {
@@ -107,5 +111,15 @@ describe('AnalyticsService', () => {
     expect(
       result.advanced.successBySource.find((row) => row.label === 'Referral'),
     ).toMatchObject({ responseRate: 100 });
+    expect(result.careerIntelligence.rolePerformance[0]).toMatchObject({
+      label: 'Backend Engineer',
+      interviewRate: 100,
+      averageSalary: 90000,
+      salaryCurrency: 'USD',
+    });
+    expect(result.careerIntelligence.countryPerformance[0]).toMatchObject({
+      label: 'Nigeria',
+      interviewRate: 50,
+    });
   });
 });

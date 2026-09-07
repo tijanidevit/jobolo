@@ -7,7 +7,8 @@ import { toSkillPayload, useSkillEditor } from './skill-editor-context';
 import type { UserSkill } from '../../types';
 
 export function SkillRow({ skill }: { skill: UserSkill }) {
-  const { skills, setSkills, clearDraftSkills, updateSkills, isUpdating, demandFor } = useSkillEditor();
+  const { skills, setSkills, clearDraftSkills, updateSkills, isUpdating, demandFor } =
+    useSkillEditor();
   const [isEditing, setIsEditing] = useState(false);
   const [editingName, setEditingName] = useState(skill.skill);
   const currentSkill = skills.find((item) => item.id === skill.id) ?? skill;
@@ -20,7 +21,8 @@ export function SkillRow({ skill }: { skill: UserSkill }) {
       skills.some(
         (item) => item.id !== currentSkill.id && item.skill.toLowerCase() === name.toLowerCase(),
       )
-    ) return;
+    )
+      return;
 
     await updateSkills(
       toSkillPayload(
@@ -96,7 +98,9 @@ export function SkillRow({ skill }: { skill: UserSkill }) {
           </div>
         ) : (
           <div className="flex min-w-0 items-center gap-3">
-            <span className="truncate text-sm font-semibold text-slate-700">{currentSkill.skill}</span>
+            <span className="truncate text-sm font-semibold text-slate-700">
+              {currentSkill.skill}
+            </span>
             <span className="shrink-0 text-sm font-semibold text-slate-900">
               <span className="mr-1 text-xs font-normal text-slate-500">Proficiency</span>
               {currentSkill.proficiency}%

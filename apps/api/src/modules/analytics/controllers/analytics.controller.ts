@@ -18,4 +18,10 @@ export class AnalyticsController {
   overview(@CurrentUser() user: IAuthenticatedUser) {
     return this.analyticsService.getOverview(user.id);
   }
+
+  @Get('career-intelligence')
+  @ApiMessage('Career intelligence retrieved successfully')
+  careerIntelligence(@CurrentUser() user: IAuthenticatedUser) {
+    return this.analyticsService.getCareerIntelligence(user.id);
+  }
 }

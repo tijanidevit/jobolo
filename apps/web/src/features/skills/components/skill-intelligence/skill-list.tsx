@@ -6,7 +6,9 @@ export function SkillList({ skills }: { skills: UserSkill[] }) {
 
   return (
     <div className="space-y-3">
-      {skills.map((skill) => <SkillRow key={skill.id} skill={skill} />)}
+      {skills.map((skill) => (
+        <SkillRow key={skill.id} skill={skill} />
+      ))}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   Settings,
   BarChart3,
   BrainCircuit,
+  ChartNoAxesCombined,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Opportunities', href: '/opportunities', icon: Briefcase },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+    { name: 'Career intelligence', href: '/career-intelligence', icon: ChartNoAxesCombined },
     { name: 'Skills', href: '/skills', icon: BrainCircuit },
     { name: 'Profile', href: '/profile', icon: User },
     { name: 'Settings', href: '/settings', icon: Settings },
