@@ -12,6 +12,7 @@ import { UsersModule } from './modules/users/users.module.js';
 import { MailModule } from './modules/mail/mail.module.js';
 import { OpportunitiesModule } from './modules/opportunities/opportunities.module.js';
 import { NotesModule } from './modules/notes/notes.module.js';
+import { ContactsModule } from './modules/contacts/contacts.module.js';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { NotesModule } from './modules/notes/notes.module.js';
     UsersModule,
     OpportunitiesModule,
     NotesModule,
+    ContactsModule,
   ],
   controllers: [AppController],
 })
