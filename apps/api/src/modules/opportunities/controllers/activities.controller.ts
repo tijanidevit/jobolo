@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UploadedFiles,
   UseGuards,
@@ -24,6 +25,7 @@ import {
   type UploadedActivityFile,
 } from '../services/activities.service.js';
 import { UpdateActivityDto } from '../dto/update-activity.dto.js';
+import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto.js';
 
 const uploadDirectory = 'uploads/activities';
 mkdirSync(uploadDirectory, { recursive: true });
@@ -40,8 +42,14 @@ export class ActivitiesController {
   async findAll(
     @CurrentUser() user: IAuthenticatedUser,
     @Param('opportunityId') opportunityId: string,
+    @Query() query: PaginationQueryDto,
   ) {
-    return this.activitiesService.findAllForOpportunity(user.id, opportunityId);
+    return this.activitiesService.findAllForOpportunity(
+      user.id,
+      opportunityId,
+      query.page,
+      query.limit,
+    );
   }
 
   @Post()

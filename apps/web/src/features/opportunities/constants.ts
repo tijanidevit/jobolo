@@ -1,5 +1,7 @@
 import type { ActivityType, OpportunityStatus } from '@jobolo/shared';
 
+export const OPPORTUNITY_PAGE_SIZE = 35;
+
 export const ACTIVITY_TYPES: Array<{ value: ActivityType; label: string }> = [
   { value: 'application', label: 'Application' },
   { value: 'email', label: 'Email' },

@@ -18,8 +18,8 @@ export default function OpportunityNoteEditPage() {
   const { updateNote, isUpdating } = useUpdateOpportunityNote(id, noteId);
   const note = notes.find((item) => item.id === noteId);
 
-  const save = async (values: OpportunityNoteFormValues) => {
-    await updateNote(values);
+  const save = async (values: OpportunityNoteFormValues, files: File[]) => {
+    await updateNote({ payload: values, files });
     router.replace(`/opportunities/${id}`);
   };
 

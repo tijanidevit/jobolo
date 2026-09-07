@@ -6,6 +6,9 @@ import { UpdateActivityDto } from '../dto/update-activity.dto.js';
 import { randomUUID } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import { extname, join } from 'node:path';
+import type { PaginatedResponse } from '@jobolo/shared';
+import { MAX_PAGE_SIZE } from '../../../common/dto/pagination-query.dto.js';
+import type { Activity } from '../entities/activity.entity.js';
 
 export interface UploadedActivityFile {
   originalname: string;
@@ -57,9 +60,7 @@ export class ActivitiesService {
         attachmentData,
       );
     }
-    return this.activitiesRepository
-      .findAllForOpportunity(userId, opportunityId)
-      .then((items) => items.find((item) => item.id === activity.id));
+    return this.activitiesRepository.findOne(userId, opportunityId, activity.id);
   }
 
   async update(
@@ -79,11 +80,18 @@ export class ActivitiesService {
     return activity;
   }
 
-  async findAllForOpportunity(userId: string, opportunityId: string) {
+  async findAllForOpportunity(
+    userId: string,
+    opportunityId: string,
+    page = 1,
+    limit = MAX_PAGE_SIZE,
+  ): Promise<PaginatedResponse<Activity>> {
     await this.ensureOpportunityBelongsToUser(userId, opportunityId);
     return this.activitiesRepository.findAllForOpportunity(
       userId,
       opportunityId,
+      page,
+      limit,
     );
   }
 

@@ -35,6 +35,16 @@ export interface OpportunityNote {
   content: string;
   createdAt: string;
   updatedAt: string;
+  attachments: OpportunityNoteAttachment[];
+}
+
+export interface OpportunityNoteAttachment {
+  id: string;
+  originalName: string;
+  storedName: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
 }
 
 export interface Opportunity {

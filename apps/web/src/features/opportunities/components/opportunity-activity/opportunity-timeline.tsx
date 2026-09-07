@@ -16,7 +16,14 @@ export function OpportunityTimeline({ opportunityId }: { opportunityId: string }
   const [formActivity, setFormActivity] = useState<OpportunityActivity | null | undefined>(
     undefined,
   );
-  const { activities, isLoading, error } = useOpportunityTimeline(opportunityId);
+  const {
+    activities,
+    isLoading,
+    error,
+    hasNextPage,
+    loadMore,
+    isLoadingMore,
+  } = useOpportunityTimeline(opportunityId);
   const { createActivity, isCreating } = useCreateOpportunityActivity(opportunityId);
   const { updateActivity, isUpdating } = useUpdateOpportunityActivity(opportunityId);
   const closeForm = () => {
@@ -51,6 +58,9 @@ export function OpportunityTimeline({ opportunityId }: { opportunityId: string }
         activities={activities}
         isLoading={isLoading}
         error={error}
+        hasNextPage={hasNextPage}
+        onLoadMore={() => void loadMore()}
+        isLoadingMore={isLoadingMore}
         onEdit={(activity) => {
           setFormActivity(activity);
         }}
@@ -78,11 +88,17 @@ function TimelineContent({
   activities,
   isLoading,
   error,
+  hasNextPage,
+  onLoadMore,
+  isLoadingMore,
   onEdit,
 }: {
   activities: OpportunityActivity[];
   isLoading: boolean;
   error: unknown;
+  hasNextPage: boolean;
+  onLoadMore: () => void;
+  isLoadingMore: boolean;
   onEdit: (activity: OpportunityActivity) => void;
 }) {
   if (isLoading) return <LoadingState message="Loading timeline..." className="py-3" />;
@@ -103,14 +119,27 @@ function TimelineContent({
       </div>
     );
   return (
-    <ol className="space-y-4">
-      {activities.map((activity) => (
-        <OpportunityTimelineItem
-          key={activity.id}
-          activity={activity}
-          onEdit={() => onEdit(activity)}
-        />
-      ))}
-    </ol>
+    <>
+      <ol className="space-y-4">
+        {activities.map((activity) => (
+          <OpportunityTimelineItem
+            key={activity.id}
+            activity={activity}
+            onEdit={() => onEdit(activity)}
+          />
+        ))}
+      </ol>
+      {hasNextPage && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-5 w-full"
+          onClick={onLoadMore}
+          disabled={isLoadingMore}
+        >
+          {isLoadingMore ? 'Loading more...' : 'Load more activities'}
+        </Button>
+      )}
+    </>
   );
 }

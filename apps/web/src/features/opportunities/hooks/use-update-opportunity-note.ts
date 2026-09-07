@@ -5,8 +5,8 @@ import { opportunityNotesQueryKey } from './use-opportunity-notes';
 export function useUpdateOpportunityNote(opportunityId: string, noteId: string) {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (payload: UpdateOpportunityNotePayload) =>
-      notesApi.update(opportunityId, noteId, payload),
+    mutationFn: ({ payload, files }: { payload: UpdateOpportunityNotePayload; files?: File[] }) =>
+      notesApi.update(opportunityId, noteId, payload, files),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: opportunityNotesQueryKey(opportunityId) }),
   });

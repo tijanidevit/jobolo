@@ -41,13 +41,13 @@ export default function OpportunityDetailPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.72fr)]">
         <div className="space-y-6">
           <OpportunityDetailSections opportunity={opportunity} />
-          <OpportunityNoteList opportunityId={opportunity.id} />
         </div>
 
-        <div className="lg:sticky lg:top-6 lg:self-start">
+        <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
           <Card>
             <OpportunityTimeline opportunityId={opportunity.id} />
           </Card>
+          <OpportunityNoteList opportunityId={opportunity.id} />
         </div>
       </div>
     </div>

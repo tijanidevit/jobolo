@@ -17,8 +17,8 @@ export default function OpportunityNoteCreatePage() {
   const { opportunity, isLoading, error, refetch } = useOpportunity(id);
   const { createNote, isCreating } = useCreateOpportunityNote(id);
 
-  const save = async (values: OpportunityNoteFormValues) => {
-    await createNote(values);
+  const save = async (values: OpportunityNoteFormValues, files: File[]) => {
+    await createNote({ payload: values, files });
     router.replace(`/opportunities/${id}`);
   };
 

@@ -19,6 +19,7 @@ describe('NotesService', () => {
     const note = { id: 'note-1', content: 'Remember the team structure.' };
     opportunitiesRepository.findOne.mockResolvedValueOnce({ id: 'opportunity-1' } as never);
     notesRepository.create.mockResolvedValueOnce(note as never);
+    notesRepository.findOne.mockResolvedValueOnce(note as never);
 
     await expect(
       service.create('user-1', 'opportunity-1', { content: 'Remember the team structure.' }),

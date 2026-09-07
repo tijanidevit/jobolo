@@ -30,7 +30,7 @@ describe('ActivitiesService', () => {
       id: 'opportunity-1',
     } as never);
     activitiesRepository.create.mockResolvedValueOnce(activity as never);
-    activitiesRepository.findAllForOpportunity.mockResolvedValueOnce([activity] as never);
+    activitiesRepository.findOne.mockResolvedValueOnce(activity as never);
 
     await expect(
       service.create('user-1', 'opportunity-1', dto),

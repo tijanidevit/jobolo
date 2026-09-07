@@ -1,6 +1,10 @@
 import type { ApiResponse } from '@jobolo/shared';
 import { api } from '@/lib/axios';
 import type { OpportunityActivity } from '../types';
+import { OPPORTUNITY_PAGE_SIZE } from '../constants';
+import type { PaginationMeta } from '@jobolo/shared';
+
+type OpportunityActivityPage = ApiResponse<OpportunityActivity[]> & { meta: PaginationMeta };
 
 export interface CreateActivityPayload {
   type: OpportunityActivity['type'];
@@ -17,9 +21,10 @@ export interface UpdateActivityPayload {
 }
 
 export const activitiesApi = {
-  list: async (opportunityId: string) => {
-    const response = await api.get<ApiResponse<OpportunityActivity[]>>(
+  list: async (opportunityId: string, page = 1, limit = OPPORTUNITY_PAGE_SIZE) => {
+    const response = await api.get<OpportunityActivityPage>(
       `/opportunities/${opportunityId}/activities`,
+      { params: { page, limit } },
     );
     return response.data;
   },
