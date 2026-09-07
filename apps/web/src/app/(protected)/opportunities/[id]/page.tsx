@@ -10,6 +10,7 @@ import { OpportunityDetailHeader } from '@/features/opportunities/components/opp
 import { OpportunityDetailSections } from '@/features/opportunities/components/opportunity-detail/opportunity-detail-sections';
 import { OpportunityTimeline } from '@/features/opportunities/components/opportunity-activity/opportunity-timeline';
 import { OpportunityNoteList } from '@/features/opportunities/components/opportunity-notes/opportunity-note-list';
+import { ContactList } from '@/features/contacts/components/contact-list';
 
 export default function OpportunityDetailPage() {
   const params = useParams<{ id: string }>();
@@ -41,6 +42,7 @@ export default function OpportunityDetailPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.72fr)]">
         <div className="space-y-6">
           <OpportunityDetailSections opportunity={opportunity} />
+          <ContactList opportunityId={opportunity.id} />
         </div>
 
         <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
