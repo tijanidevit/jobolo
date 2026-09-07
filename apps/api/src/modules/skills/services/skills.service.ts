@@ -54,7 +54,9 @@ export class SkillsService {
     }
 
     const catalogSkills = SKILL_CATALOG.map((definition) => {
-      const profileSkill = profileBySkill.get(this.normalizeSkill(definition.name));
+      const profileSkill = profileBySkill.get(
+        this.normalizeSkill(definition.name),
+      );
       return {
         id: profileSkill?.id ?? null,
         skill: profileSkill?.skill ?? definition.name,
@@ -63,8 +65,20 @@ export class SkillsService {
       };
     });
     const customSkills = profile
-      .filter((item) => !SKILL_CATALOG.some((definition) => this.normalizeSkill(definition.name) === this.normalizeSkill(item.skill)))
-      .map((item) => ({ id: item.id, skill: item.skill, demandCount: 0, proficiency: item.proficiency }));
+      .filter(
+        (item) =>
+          !SKILL_CATALOG.some(
+            (definition) =>
+              this.normalizeSkill(definition.name) ===
+              this.normalizeSkill(item.skill),
+          ),
+      )
+      .map((item) => ({
+        id: item.id,
+        skill: item.skill,
+        demandCount: 0,
+        proficiency: item.proficiency,
+      }));
     const skills = [...catalogSkills, ...customSkills]
       .map((item) => {
         const { id, skill, demandCount, proficiency } = item;
@@ -81,22 +95,20 @@ export class SkillsService {
         };
       })
       .filter((item) => item.demandCount > 0 || item.proficiency !== null)
-      .sort(
-        (left, right) => {
-          const leftValue = sort.startsWith('proficiency')
-            ? (left.proficiency ?? 0)
-            : left.demandPercentage;
-          const rightValue = sort.startsWith('proficiency')
-            ? (right.proficiency ?? 0)
-            : right.demandPercentage;
-          const direction = sort.endsWith('desc') ? -1 : 1;
+      .sort((left, right) => {
+        const leftValue = sort.startsWith('proficiency')
+          ? (left.proficiency ?? 0)
+          : left.demandPercentage;
+        const rightValue = sort.startsWith('proficiency')
+          ? (right.proficiency ?? 0)
+          : right.demandPercentage;
+        const direction = sort.endsWith('desc') ? -1 : 1;
 
-          return (
-            (leftValue - rightValue) * direction ||
-            left.skill.localeCompare(right.skill)
-          );
-        },
-      );
+        return (
+          (leftValue - rightValue) * direction ||
+          left.skill.localeCompare(right.skill)
+        );
+      });
 
     return { skills };
   }

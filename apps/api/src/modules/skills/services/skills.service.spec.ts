@@ -41,7 +41,10 @@ describe('SkillsService', () => {
       demandCount: 2,
     });
 
-    const leastProficient = await service.getIntelligence('user-1', 'proficiency-asc');
+    const leastProficient = await service.getIntelligence(
+      'user-1',
+      'proficiency-asc',
+    );
     expect(leastProficient.skills[0]).toMatchObject({
       skill: 'React',
       proficiency: null,

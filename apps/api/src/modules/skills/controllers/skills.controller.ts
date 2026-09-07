@@ -32,5 +32,4 @@ export class SkillsController {
   ) {
     return this.skillsService.replaceSkills(user.id, dto.skills);
   }
-
 }
