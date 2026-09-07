@@ -31,7 +31,18 @@ export class OpportunitiesRepository {
     userId: string,
     updateData: Partial<Opportunity>,
   ): Promise<UpdateResult> {
-    return this.repository.update({ id, userId }, updateData);
+    return this.repository.update(
+      { id, userId },
+      {
+        ...updateData,
+        ...(updateData.nextAction !== undefined
+          ? { nextAction: updateData.nextAction?.trim() || null }
+          : {}),
+        ...(updateData.nextActionDueDate !== undefined
+          ? { nextActionDueDate: updateData.nextActionDueDate ?? null }
+          : {}),
+      },
+    );
   }
 
   async delete(id: string, userId: string): Promise<boolean> {

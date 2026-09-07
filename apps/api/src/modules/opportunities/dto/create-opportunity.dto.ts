@@ -174,4 +174,14 @@ export class CreateOpportunityDto {
   @IsOptional()
   @IsEnum(['low', 'medium', 'high'])
   priority?: OpportunityPriority;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  nextAction?: string;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  nextActionDueDate?: Date | null;
 }

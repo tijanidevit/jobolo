@@ -133,6 +133,12 @@ export class Opportunity {
   @Column({ type: 'varchar', length: 20, nullable: true })
   priority: OpportunityPriority | null;
 
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  nextAction: string | null;
+
+  @Column({ type: 'datetime', nullable: true })
+  nextActionDueDate: Date | null;
+
   // --- Metadata ---
   @CreateDateColumn()
   createdAt: Date;

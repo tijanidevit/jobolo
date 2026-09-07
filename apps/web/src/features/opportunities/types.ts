@@ -82,6 +82,8 @@ export interface Opportunity {
   interestScore: number | null;
   confidenceScore: number | null;
   priority: OpportunityPriority | null;
+  nextAction: string | null;
+  nextActionDueDate: string | null;
   createdAt: string;
   updatedAt: string;
 }

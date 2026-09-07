@@ -13,6 +13,7 @@ import { OpportunityNoteList } from '@/features/opportunities/components/opportu
 import { ContactList } from '@/features/contacts/components/contact-list';
 import { InterviewList } from '@/features/interviews/components/interview-list';
 import { TaskList } from '@/features/tasks/components/task-list';
+import { OpportunityNextAction } from '@/features/opportunities/components/opportunity-detail/opportunity-next-action';
 
 export default function OpportunityDetailPage() {
   const params = useParams<{ id: string }>();
@@ -44,6 +45,7 @@ export default function OpportunityDetailPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.72fr)]">
         <div className="space-y-6">
           <OpportunityDetailSections opportunity={opportunity} />
+          <OpportunityNextAction opportunity={opportunity} />
           <ContactList opportunityId={opportunity.id} />
           <InterviewList opportunityId={opportunity.id} />
           <TaskList opportunityId={opportunity.id} />
