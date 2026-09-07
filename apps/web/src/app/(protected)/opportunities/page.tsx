@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Columns3, Plus } from 'lucide-react';
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
 import { useOpportunities } from '@/features/opportunities/hooks/use-opportunities';
@@ -36,13 +36,10 @@ export default function OpportunitiesPage() {
             Keep every promising role and its context in one place.
           </p>
         </div>
-        <Link
-          href="/opportunities/create"
-          className="inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add opportunity
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/opportunities/kanban" className="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"><Columns3 className="mr-2 h-4 w-4" />Kanban view</Link>
+          <Link href="/opportunities/create" className="inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"><Plus className="mr-2 h-4 w-4" />Add opportunity</Link>
+        </div>
       </header>
 
       {error && (
