@@ -70,6 +70,17 @@ describe('OpportunitiesService', () => {
     });
   });
 
+  describe('findAllForUser', () => {
+    it('passes advanced filters to the repository', async () => {
+      const opportunities = [{ id: mockOpportunityId }] as Opportunity[];
+      const filters = { q: 'backend', stage: 'interview' as const, salaryMin: 100000 };
+      repository.findAllForUser.mockResolvedValueOnce(opportunities);
+
+      await expect(service.findAllForUser(mockUserId, filters)).resolves.toEqual(opportunities);
+      expect(repository.findAllForUser).toHaveBeenCalledWith(mockUserId, filters);
+    });
+  });
+
   describe('update', () => {
     it('should verify existence and update the opportunity', async () => {
       const existingOpp = {

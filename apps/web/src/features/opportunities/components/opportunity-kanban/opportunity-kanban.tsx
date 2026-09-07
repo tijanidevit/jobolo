@@ -6,6 +6,7 @@ import { ArrowRight, GripVertical } from 'lucide-react';
 import type { OpportunityStatus } from '@jobolo/shared';
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 import { useChangeOpportunityStage } from '../../hooks/use-change-opportunity-stage';
 import { useOpportunities } from '../../hooks/use-opportunities';
 import { OPPORTUNITY_STAGES, getStageLabel } from '../../constants';
@@ -60,11 +61,11 @@ export function OpportunityKanban() {
 
 function KanbanCard({ opportunity, isDragging, onDragStart, onDragEnd, onStageChange }: { opportunity: Opportunity; isDragging: boolean; onDragStart: () => void; onDragEnd: () => void; onStageChange: (stage: OpportunityStatus) => void }) {
   return (
-    <article draggable onDragStart={onDragStart} onDragEnd={onDragEnd} className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md ${isDragging ? 'cursor-grabbing opacity-50' : 'cursor-grab'}`}>
+    <article draggable onDragStart={onDragStart} onDragEnd={onDragEnd} className={`flex h-56 flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md ${isDragging ? 'cursor-grabbing opacity-50' : 'cursor-grab'}`}>
       <div className="flex items-start gap-2"><GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-slate-300" aria-hidden="true" /><div className="min-w-0 flex-1"><Link href={`/opportunities/${opportunity.id}`} className="block truncate text-sm font-semibold text-slate-900 hover:text-blue-600">{opportunity.jobTitle}</Link><p className="mt-1 truncate text-xs font-medium text-slate-500">{opportunity.companyName}</p></div></div>
       {(opportunity.location || opportunity.workArrangement) && <p className="mt-3 truncate text-xs text-slate-500">{[opportunity.location, opportunity.workArrangement].filter(Boolean).join(' · ')}</p>}
       {opportunity.nextAction && <p className="mt-3 line-clamp-2 text-xs font-medium text-blue-700">Next: {opportunity.nextAction}</p>}
-      <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-100 pt-3"><label className="sr-only" htmlFor={`kanban-stage-${opportunity.id}`}>Move {opportunity.jobTitle} to stage</label><select id={`kanban-stage-${opportunity.id}`} value={opportunity.stage} onChange={(event) => onStageChange(event.target.value as OpportunityStatus)} className="min-w-0 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200">{OPPORTUNITY_STAGES.map((stage) => <option key={stage.value} value={stage.value}>{getStageLabel(stage.value)}</option>)}</select><Link href={`/opportunities/${opportunity.id}`} className="inline-flex shrink-0 items-center text-xs font-medium text-blue-600 hover:underline">Open <ArrowRight className="ml-1 h-3 w-3" /></Link></div>
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-slate-100 pt-3"><label className="sr-only" htmlFor={`kanban-stage-${opportunity.id}`}>Move {opportunity.jobTitle} to stage</label><div className="min-w-0 flex-1"><SearchableSelect value={opportunity.stage} options={OPPORTUNITY_STAGES} onChange={(value) => onStageChange(value as OpportunityStatus)} placeholder={getStageLabel(opportunity.stage)} searchPlaceholder="Search stages..." /></div><Link href={`/opportunities/${opportunity.id}`} className="inline-flex shrink-0 items-center text-xs font-medium text-blue-600 hover:underline">Open <ArrowRight className="ml-1 h-3 w-3" /></Link></div>
     </article>
   );
 }

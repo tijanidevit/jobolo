@@ -94,3 +94,17 @@ export type OpportunityPayload = Partial<
   companyName: string;
   jobTitle: string;
 };
+
+export interface OpportunityFilters {
+  q?: string;
+  companyName?: string;
+  jobTitle?: string;
+  companyCountry?: string;
+  source?: string;
+  stage?: OpportunityStatus;
+  priority?: OpportunityPriority;
+  workArrangement?: WorkArrangement;
+  employmentType?: EmploymentType;
+  salaryMin?: number;
+  salaryMax?: number;
+}

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
 import { ApiMessage } from '../../../common/decorators/api-message.decorator.js';
 import type { IAuthenticatedUser } from '../../../common/decorators/current-user.decorator.js';
+import { OpportunityQueryDto } from '../dto/opportunity-query.dto.js';
 
 @ApiTags('Opportunities')
 @ApiBearerAuth()
@@ -38,8 +40,11 @@ export class OpportunitiesController {
 
   @Get()
   @ApiMessage('Opportunities retrieved successfully')
-  async findAll(@CurrentUser() user: IAuthenticatedUser) {
-    return this.opportunitiesService.findAllForUser(user.id);
+  async findAll(
+    @CurrentUser() user: IAuthenticatedUser,
+    @Query() query?: OpportunityQueryDto,
+  ) {
+    return query ? this.opportunitiesService.findAllForUser(user.id, query) : this.opportunitiesService.findAllForUser(user.id);
   }
 
   @Get(':id')

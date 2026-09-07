@@ -4,6 +4,7 @@ import { OPPORTUNITY_STAGES } from '../../constants';
 import type { Opportunity } from '../../types';
 import type { OpportunityStatus } from '@jobolo/shared';
 import { cn } from '@/lib/utils';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 
 const ACTIVE_STAGES = new Set<OpportunityStatus>([
   'discovered',
@@ -82,19 +83,21 @@ export function OpportunityPipeline({
           </label>
           <p className="text-xs text-slate-400">Choose a specific point in the lifecycle.</p>
         </div>
-        <select
-          id="pipeline-stage-filter"
-          value={selectedStage}
-          onChange={(event) => onSelectStage(event.target.value as OpportunityStatus | 'all')}
-          className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 sm:w-64"
-        >
-          <option value="all">All stages ({opportunities.length})</option>
-          {OPPORTUNITY_STAGES.map((stage) => (
-            <option key={stage.value} value={stage.value}>
-              {stage.label} ({countStage(stage.value)})
-            </option>
-          ))}
-        </select>
+        <div className="w-full sm:w-64">
+          <SearchableSelect
+            value={selectedStage}
+            onChange={(value) => onSelectStage(value as OpportunityStatus | 'all')}
+            options={[
+              { value: 'all', label: `All stages (${opportunities.length})` },
+              ...OPPORTUNITY_STAGES.map((stage) => ({
+                value: stage.value,
+                label: `${stage.label} (${countStage(stage.value)})`,
+              })),
+            ]}
+            placeholder="All stages"
+            searchPlaceholder="Search stages..."
+          />
+        </div>
       </div>
     </section>
   );

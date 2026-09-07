@@ -15,12 +15,14 @@ export function SearchableSelect({
   onChange,
   placeholder = 'Select an option',
   searchPlaceholder = 'Search options...',
+  disabled = false,
 }: {
   value: string;
   options: readonly SearchableSelectOption[];
   onChange: (value: string) => void;
   placeholder?: string;
   searchPlaceholder?: string;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -42,8 +44,9 @@ export function SearchableSelect({
     <div ref={containerRef} className="relative">
       <button
         type="button"
+        disabled={disabled}
         onClick={() => setOpen((current) => !current)}
-        className="flex h-10 w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-3 text-left text-sm font-medium text-slate-700 shadow-sm outline-none transition hover:border-blue-300 focus:ring-2 focus:ring-blue-100"
+        className="flex h-10 w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-3 text-left text-sm font-medium text-slate-700 shadow-sm outline-none transition hover:border-blue-300 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <span className={cn(!selected && 'text-slate-400')}>{selected?.label ?? placeholder}</span>
         <ChevronDown

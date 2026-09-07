@@ -11,6 +11,7 @@ import type { OpportunityStatus } from '@jobolo/shared';
 import { formatDate } from '../../utils/opportunity.utils';
 import { useDeleteOpportunity } from '../../hooks/use-delete-opportunity';
 import { useChangeOpportunityStage } from '../../hooks/use-change-opportunity-stage';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
@@ -52,19 +53,16 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
           <label className="sr-only" htmlFor={`stage-${opportunity.id}`}>
             Stage for {opportunity.jobTitle}
           </label>
-          <select
-            id={`stage-${opportunity.id}`}
-            value={opportunity.stage}
-            disabled={isChangingStage}
-            onChange={(event) => void updateStage(event.target.value as OpportunityStatus)}
-            className="max-w-36 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-          >
-            {OPPORTUNITY_STAGES.map((stage) => (
-              <option key={stage.value} value={stage.value}>
-                {getStageLabel(stage.value)}
-              </option>
-            ))}
-          </select>
+          <div className="max-w-36">
+            <SearchableSelect
+              value={opportunity.stage}
+              options={OPPORTUNITY_STAGES}
+              onChange={(value) => void updateStage(value as OpportunityStatus)}
+              disabled={isChangingStage}
+              placeholder={getStageLabel(opportunity.stage)}
+              searchPlaceholder="Search stages..."
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-5">

@@ -1,11 +1,11 @@
 import type { ApiResponse } from '@jobolo/shared';
 import { api } from '@/lib/axios';
-import type { Opportunity, OpportunityPayload } from '../types';
+import type { Opportunity, OpportunityFilters, OpportunityPayload } from '../types';
 import type { OpportunityStatus } from '@jobolo/shared';
 
 export const opportunitiesApi = {
-  list: async () => {
-    const response = await api.get<ApiResponse<Opportunity[]>>('/opportunities');
+  list: async (filters: OpportunityFilters = {}) => {
+    const response = await api.get<ApiResponse<Opportunity[]>>('/opportunities', { params: filters });
     return response.data;
   },
 

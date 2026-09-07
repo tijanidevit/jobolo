@@ -2,14 +2,16 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Columns3, Plus } from 'lucide-react';
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
 import { useOpportunities } from '@/features/opportunities/hooks/use-opportunities';
 import type { OpportunityStatus } from '@jobolo/shared';
 import { getErrorMessage } from '@/features/opportunities/utils/opportunity.utils';
-import { OpportunityCard } from '@/features/opportunities/components/opportunity-list/opportunity-card';
+import { OpportunityGrid } from '@/features/opportunities/components/opportunity-list/opportunity-grid';
 import { OpportunityPipeline } from '@/features/opportunities/components/opportunity-list/opportunity-pipeline';
+import { getOpportunityFilters, OpportunityFiltersPanel } from '@/features/opportunities/components/opportunity-list/opportunity-filters';
 import {
   OpportunitiesEmptyState,
   EmptyStageState,
@@ -17,7 +19,10 @@ import {
 
 export default function OpportunitiesPage() {
   const [selectedStage, setSelectedStage] = useState<OpportunityStatus | 'all'>('all');
-  const { opportunities, isLoading, error, refetch } = useOpportunities();
+  const searchParams = useSearchParams();
+  const { opportunities, isLoading, error, refetch } = useOpportunities(
+    getOpportunityFilters(new URLSearchParams(searchParams.toString())),
+  );
 
   const visibleOpportunities =
     selectedStage === 'all'
@@ -60,14 +65,11 @@ export default function OpportunitiesPage() {
             selectedStage={selectedStage}
             onSelectStage={setSelectedStage}
           />
+          <OpportunityFiltersPanel key={searchParams.toString()} />
           {visibleOpportunities.length === 0 ? (
             <EmptyStageState onShowAll={() => setSelectedStage('all')} />
           ) : (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {visibleOpportunities.map((opportunity) => (
-                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-              ))}
-            </div>
+            <OpportunityGrid key={`${searchParams.toString()}-${selectedStage}`} opportunities={visibleOpportunities} />
           )}
         </>
       )}

@@ -6,6 +6,7 @@ import { UpdateOpportunityDto } from '../dto/update-opportunity.dto.js';
 import { Opportunity } from '../entities/opportunity.entity.js';
 import { UpdateResult } from 'typeorm';
 import type { OpportunityStatus } from '@jobolo/shared';
+import type { OpportunityQueryDto } from '../dto/opportunity-query.dto.js';
 
 @Injectable()
 export class OpportunitiesService {
@@ -31,8 +32,8 @@ export class OpportunitiesService {
     return opportunity;
   }
 
-  async findAllForUser(userId: string): Promise<Opportunity[]> {
-    return this.opportunitiesRepository.findAllForUser(userId);
+  async findAllForUser(userId: string, query: OpportunityQueryDto = {}): Promise<Opportunity[]> {
+    return this.opportunitiesRepository.findAllForUser(userId, query);
   }
 
   private async getOpportunity(
