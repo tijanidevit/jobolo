@@ -8,6 +8,7 @@ import {
   Min,
   Max,
   IsDate,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { OPPORTUNITY_STATUSES } from '../constants.js';
@@ -103,6 +104,14 @@ export class CreateOpportunityDto {
   @IsString()
   @MaxLength(255)
   referral?: string;
+
+  @IsOptional()
+  @IsUUID()
+  resumeId?: string | null;
+
+  @IsOptional()
+  @IsUUID()
+  coverLetterId?: string | null;
 
   // --- Compensation ---
   @IsOptional()

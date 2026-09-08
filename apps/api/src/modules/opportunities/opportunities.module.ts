@@ -9,10 +9,18 @@ import { OpportunitiesService } from './services/opportunities.service.js';
 import { ActivitiesService } from './services/activities.service.js';
 import { OpportunitiesRepository } from './repositories/opportunities.repository.js';
 import { ActivitiesRepository } from './repositories/activities.repository.js';
+import { Resume } from '../resumes/entities/resume.entity.js';
+import { CoverLetter } from '../cover-letters/entities/cover-letter.entity.js';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Opportunity, Activity, ActivityAttachment]),
+    TypeOrmModule.forFeature([
+      Opportunity,
+      Activity,
+      ActivityAttachment,
+      Resume,
+      CoverLetter,
+    ]),
   ],
   controllers: [OpportunitiesController, ActivitiesController],
   providers: [

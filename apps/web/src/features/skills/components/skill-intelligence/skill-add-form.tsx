@@ -30,7 +30,7 @@ export function SkillAddForm() {
   };
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-2">
+    <div className="flex min-w-0 lg:max-w-90 flex-1 items-center gap-2">
       <Input
         value={name}
         onChange={(event) => setName(event.target.value)}

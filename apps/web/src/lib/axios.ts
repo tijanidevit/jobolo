@@ -35,6 +35,9 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 
 api.interceptors.request.use(
   (config) => {
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
     if (typeof window !== 'undefined') {
       const token = Cookies.get('accessToken');
       if (token && config.headers) {

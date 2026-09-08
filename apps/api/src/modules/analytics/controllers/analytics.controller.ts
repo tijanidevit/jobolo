@@ -24,4 +24,10 @@ export class AnalyticsController {
   careerIntelligence(@CurrentUser() user: IAuthenticatedUser) {
     return this.analyticsService.getCareerIntelligence(user.id);
   }
+
+  @Get('pulse')
+  @ApiMessage('Job search pulse retrieved successfully')
+  pulse(@CurrentUser() user: IAuthenticatedUser) {
+    return this.analyticsService.getPulse(user.id);
+  }
 }

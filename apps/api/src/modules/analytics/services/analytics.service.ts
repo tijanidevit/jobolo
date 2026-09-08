@@ -22,6 +22,11 @@ type StageTransition = {
   occurredAt: Date;
 };
 
+type PulsePeriod = {
+  start: Date;
+  end: Date;
+};
+
 @Injectable()
 export class AnalyticsService {
   constructor(
@@ -388,5 +393,118 @@ export class AnalyticsService {
   async getCareerIntelligence(userId: string) {
     const overview = await this.getOverview(userId);
     return overview.careerIntelligence;
+  }
+
+  async getPulse(userId: string) {
+    const [opportunities, interviews, activities] = await Promise.all([
+      this.opportunitiesRepository.find({ where: { userId } }),
+      this.interviewsRepository.find({ where: { userId } }),
+      this.activitiesRepository.find({ where: { userId } }),
+    ]);
+    const now = new Date();
+    const current: PulsePeriod = {
+      start: new Date(now.getTime() - 7 * 86_400_000),
+      end: now,
+    };
+    const previous: PulsePeriod = {
+      start: new Date(now.getTime() - 14 * 86_400_000),
+      end: current.start,
+    };
+    const transitions = activities
+      .filter((activity) => activity.type === 'status_change')
+      .map((activity) => {
+        const match = activity.description?.match(
+          /Stage changed from ([^ ]+) to ([^ ]+)/,
+        );
+        return match
+          ? {
+              opportunityId: activity.opportunityId,
+              to: match[2],
+              occurredAt: new Date(activity.occurredAt),
+            }
+          : null;
+      })
+      .filter(
+        (
+          transition,
+        ): transition is {
+          opportunityId: string;
+          to: string;
+          occurredAt: Date;
+        } => transition !== null,
+      );
+
+    const inPeriod = (value: Date, period: PulsePeriod) =>
+      value >= period.start && value < period.end;
+    const countDistinct = (ids: string[]) => new Set(ids).size;
+    const countFor = (period: PulsePeriod) => ({
+      applications: opportunities.filter(
+        (opportunity) =>
+          opportunity.dateApplied &&
+          inPeriod(new Date(opportunity.dateApplied), period),
+      ).length,
+      responses: countDistinct(
+        transitions
+          .filter(
+            (transition) =>
+              RESPONSE_STAGES.has(transition.to) &&
+              inPeriod(transition.occurredAt, period),
+          )
+          .map((transition) => transition.opportunityId),
+      ),
+      interviews: countDistinct(
+        interviews
+          .filter((interview) =>
+            inPeriod(new Date(interview.scheduledAt), period),
+          )
+          .map((interview) => interview.opportunityId),
+      ),
+      offers: countDistinct(
+        transitions
+          .filter(
+            (transition) =>
+              OFFER_STAGES.has(transition.to) &&
+              inPeriod(transition.occurredAt, period),
+          )
+          .map((transition) => transition.opportunityId),
+      ),
+    });
+    const currentCounts = countFor(current);
+    const previousCounts = countFor(previous);
+    const change = (currentValue: number, previousValue: number) =>
+      previousValue === 0
+        ? null
+        : Number(
+            (((currentValue - previousValue) / previousValue) * 100).toFixed(1),
+          );
+
+    return {
+      period: {
+        current: {
+          start: current.start.toISOString(),
+          end: current.end.toISOString(),
+        },
+        previous: {
+          start: previous.start.toISOString(),
+          end: previous.end.toISOString(),
+        },
+      },
+      metrics: Object.fromEntries(
+        Object.keys(currentCounts).map((key) => [
+          key,
+          {
+            current: currentCounts[key as keyof typeof currentCounts],
+            previous: previousCounts[key as keyof typeof previousCounts],
+            change: change(
+              currentCounts[key as keyof typeof currentCounts],
+              previousCounts[key as keyof typeof previousCounts],
+            ),
+          },
+        ]),
+      ) as Record<
+        keyof typeof currentCounts,
+        { current: number; previous: number; change: number | null }
+      >,
+    };
   }
 }

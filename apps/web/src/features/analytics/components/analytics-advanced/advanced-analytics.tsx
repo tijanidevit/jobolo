@@ -1,6 +1,10 @@
 import { Clock3, DollarSign, Gauge, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import type { AnalyticsAdvanced, AnalyticsGroupedMetric, AnalyticsSuccessMetric } from '../../types';
+import type {
+  AnalyticsAdvanced,
+  AnalyticsGroupedMetric,
+  AnalyticsSuccessMetric,
+} from '../../types';
 
 export function AdvancedAnalytics({ analytics }: { analytics: AnalyticsAdvanced }) {
   return (
@@ -14,13 +18,21 @@ export function AdvancedAnalytics({ analytics }: { analytics: AnalyticsAdvanced 
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <InsightCard label="Response rate" value={formatRate(analytics.responseRate)} icon={TrendingUp} />
+        <InsightCard
+          label="Response rate"
+          value={formatRate(analytics.responseRate)}
+          icon={TrendingUp}
+        />
         <InsightCard
           label="Interview conversion"
           value={formatRate(analytics.interviewConversionRate)}
           icon={Gauge}
         />
-        <InsightCard label="Offer conversion" value={formatRate(analytics.offerConversionRate)} icon={TrendingUp} />
+        <InsightCard
+          label="Offer conversion"
+          value={formatRate(analytics.offerConversionRate)}
+          icon={TrendingUp}
+        />
         <InsightCard
           label="Avg. time to response"
           value={formatDays(analytics.averageTimeToResponseDays)}
@@ -118,7 +130,8 @@ function MetricTable({
               <div key={row.label} className="flex items-center justify-between gap-4 text-sm">
                 <span className="truncate text-slate-700">{row.label}</span>
                 <span className="shrink-0 font-semibold text-slate-900">
-                  {formatValue(row)} <span className="font-normal text-slate-400">({row.count})</span>
+                  {formatValue(row)}{' '}
+                  <span className="font-normal text-slate-400">({row.count})</span>
                 </span>
               </div>
             ))}
@@ -136,7 +149,9 @@ function SuccessTable({ title, rows }: { title: string; rows: AnalyticsSuccessMe
       <CardContent className="space-y-4 p-5">
         <div>
           <h3 className="text-base font-semibold text-slate-900">Success {title.toLowerCase()}</h3>
-          <p className="mt-1 text-sm text-slate-500">Conversion rates from recorded applications.</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Conversion rates from recorded applications.
+          </p>
         </div>
         {rows.length === 0 ? (
           <p className="text-sm text-slate-500">No application data yet.</p>

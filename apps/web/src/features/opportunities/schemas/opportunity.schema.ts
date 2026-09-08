@@ -40,6 +40,8 @@ export const opportunityFormSchema = z.object({
     'expired',
   ]),
   source: z.string().max(255),
+  resumeId: z.string(),
+  coverLetterId: z.string(),
   dateDiscovered: z.string(),
   dateApplied: z.string(),
   currency: z.string().max(10),

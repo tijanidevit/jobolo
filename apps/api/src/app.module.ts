@@ -18,6 +18,10 @@ import { TasksModule } from './modules/tasks/tasks.module.js';
 import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 import { SkillsModule } from './modules/skills/skills.module.js';
+import { InsightsModule } from './modules/insights/insights.module.js';
+import { ResumesModule } from './modules/resumes/resumes.module.js';
+import { CoverLettersModule } from './modules/cover-letters/cover-letters.module.js';
+import { SalaryIntelligenceModule } from './modules/salary-intelligence/salary-intelligence.module.js';
 
 @Module({
   imports: [
@@ -39,6 +43,10 @@ import { SkillsModule } from './modules/skills/skills.module.js';
     DashboardModule,
     AnalyticsModule,
     SkillsModule,
+    InsightsModule,
+    ResumesModule,
+    CoverLettersModule,
+    SalaryIntelligenceModule,
   ],
   controllers: [AppController],
 })

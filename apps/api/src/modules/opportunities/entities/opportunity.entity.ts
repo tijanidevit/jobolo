@@ -9,6 +9,8 @@ import {
   Index,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity.js';
+import { Resume } from '../../resumes/entities/resume.entity.js';
+import { CoverLetter } from '../../cover-letters/entities/cover-letter.entity.js';
 import type {
   OpportunityStatus,
   OpportunityPriority,
@@ -85,6 +87,20 @@ export class Opportunity {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   referral: string | null;
+
+  @Column({ type: 'varchar', length: 36, nullable: true })
+  resumeId: string | null;
+
+  @ManyToOne(() => Resume, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'resumeId' })
+  resume: Resume | null;
+
+  @Column({ type: 'varchar', length: 36, nullable: true })
+  coverLetterId: string | null;
+
+  @ManyToOne(() => CoverLetter, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'coverLetterId' })
+  coverLetter: CoverLetter | null;
 
   // --- Compensation ---
   @Column({ type: 'varchar', length: 10, nullable: true })

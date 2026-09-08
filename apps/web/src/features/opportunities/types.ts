@@ -67,6 +67,8 @@ export interface Opportunity {
   dateApplied: string | null;
   source: string | null;
   referral: string | null;
+  resumeId: string | null;
+  coverLetterId: string | null;
   currency: string | null;
   salaryRangeMin: number | null;
   salaryRangeMax: number | null;

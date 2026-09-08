@@ -1,3 +1,4 @@
+import { afterEach, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 import { Repository } from 'typeorm';
 import { Interview } from '../../interviews/entities/interview.entity.js';
@@ -6,6 +7,8 @@ import { Opportunity } from '../../opportunities/entities/opportunity.entity.js'
 import { AnalyticsService } from './analytics.service.js';
 
 describe('AnalyticsService', () => {
+  afterEach(() => vi.useRealTimers());
+
   it('returns metrics and sorted distributions for the user', async () => {
     const opportunitiesRepository = mock<Repository<Opportunity>>();
     const interviewsRepository = mock<Repository<Interview>>();
@@ -120,6 +123,76 @@ describe('AnalyticsService', () => {
     expect(result.careerIntelligence.countryPerformance[0]).toMatchObject({
       label: 'Nigeria',
       interviewRate: 50,
+    });
+  });
+
+  it('compares current and previous seven-day pulse periods', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-09-07T12:00:00.000Z'));
+    const opportunitiesRepository = mock<Repository<Opportunity>>();
+    const interviewsRepository = mock<Repository<Interview>>();
+    const activitiesRepository = mock<Repository<Activity>>();
+    opportunitiesRepository.find.mockResolvedValue([
+      {
+        id: 'current-application',
+        dateApplied: new Date('2026-09-05T10:00:00.000Z'),
+      },
+      {
+        id: 'previous-application',
+        dateApplied: new Date('2026-08-30T10:00:00.000Z'),
+      },
+    ] as Opportunity[]);
+    interviewsRepository.find.mockResolvedValue([
+      {
+        opportunityId: 'current-application',
+        scheduledAt: new Date('2026-09-06T10:00:00.000Z'),
+      },
+      {
+        opportunityId: 'previous-application',
+        scheduledAt: new Date('2026-08-30T10:00:00.000Z'),
+      },
+    ] as Interview[]);
+    activitiesRepository.find.mockResolvedValue([
+      {
+        opportunityId: 'current-application',
+        type: 'status_change',
+        description: 'Stage changed from applied to interview',
+        occurredAt: new Date('2026-09-06T10:00:00.000Z'),
+      },
+      {
+        opportunityId: 'previous-application',
+        type: 'status_change',
+        description: 'Stage changed from applied to offer',
+        occurredAt: new Date('2026-08-30T10:00:00.000Z'),
+      },
+    ] as Activity[]);
+
+    const service = new AnalyticsService(
+      opportunitiesRepository,
+      interviewsRepository,
+      activitiesRepository,
+    );
+    const result = await service.getPulse('user-1');
+
+    expect(result.metrics.applications).toEqual({
+      current: 1,
+      previous: 1,
+      change: 0,
+    });
+    expect(result.metrics.responses).toEqual({
+      current: 1,
+      previous: 1,
+      change: 0,
+    });
+    expect(result.metrics.interviews).toEqual({
+      current: 1,
+      previous: 1,
+      change: 0,
+    });
+    expect(result.metrics.offers).toEqual({
+      current: 0,
+      previous: 1,
+      change: -100,
     });
   });
 });

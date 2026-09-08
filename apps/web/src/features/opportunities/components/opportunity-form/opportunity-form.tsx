@@ -17,6 +17,8 @@ import {
 import type { Opportunity, OpportunityPayload } from '../../types';
 import { useCreateOpportunity } from '../../hooks/use-create-opportunity';
 import { useUpdateOpportunity } from '../../hooks/use-update-opportunity';
+import { useResumes } from '@/features/resumes/hooks/use-resumes';
+import { useCoverLetters } from '@/features/cover-letters/hooks/use-cover-letters';
 import {
   opportunityFormSchema,
   type OpportunityFormValues,
@@ -63,6 +65,8 @@ function defaultValues(opportunity?: Opportunity | null): OpportunityFormValues 
     confidenceScore: numberValue(opportunity?.confidenceScore),
     priority: opportunity?.priority ?? '',
     jobDescription: emptyValue(opportunity?.jobDescription),
+    resumeId: opportunity?.resumeId ?? '',
+    coverLetterId: opportunity?.coverLetterId ?? '',
   };
 }
 
@@ -89,6 +93,8 @@ function toPayload(values: OpportunityFormValues): OpportunityPayload {
     confidenceScore: optionalNumber(values.confidenceScore),
     priority: values.priority || undefined,
     jobDescription: values.jobDescription || undefined,
+    resumeId: values.resumeId || null,
+    coverLetterId: values.coverLetterId || null,
   };
 }
 
@@ -96,6 +102,8 @@ export function OpportunityForm({ opportunity }: OpportunityFormProps) {
   const router = useRouter();
   const { createOpportunity, isCreating } = useCreateOpportunity();
   const { updateOpportunity, isUpdating } = useUpdateOpportunity(opportunity?.id ?? '');
+  const { resumes } = useResumes();
+  const { coverLetters } = useCoverLetters();
   const isSaving = isCreating || isUpdating;
   const {
     register,
@@ -198,6 +206,45 @@ export function OpportunityForm({ opportunity }: OpportunityFormProps) {
                 placeholder="Not set"
               />
             </div>
+            <Field label="Resume used" error={errors.resumeId?.message}>
+              <Controller
+                name="resumeId"
+                control={control}
+                render={({ field }) => (
+                  <SearchableSelect
+                    value={field.value}
+                    options={[
+                      { value: '', label: 'No resume selected' },
+                      ...resumes.map((resume) => ({ value: resume.id, label: resume.name })),
+                    ]}
+                    onChange={field.onChange}
+                    placeholder="Select a resume"
+                    searchPlaceholder="Search resumes..."
+                  />
+                )}
+              />
+            </Field>
+            <Field label="Cover letter used" error={errors.coverLetterId?.message}>
+              <Controller
+                name="coverLetterId"
+                control={control}
+                render={({ field }) => (
+                  <SearchableSelect
+                    value={field.value}
+                    options={[
+                      { value: '', label: 'No cover letter selected' },
+                      ...coverLetters.map((coverLetter) => ({
+                        value: coverLetter.id,
+                        label: coverLetter.name,
+                      })),
+                    ]}
+                    onChange={field.onChange}
+                    placeholder="Select a cover letter"
+                    searchPlaceholder="Search cover letters..."
+                  />
+                )}
+              />
+            </Field>
           </section>
 
           <section className="space-y-4 border-t border-slate-100 pt-6">

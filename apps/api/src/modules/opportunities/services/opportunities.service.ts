@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { OpportunitiesRepository } from '../repositories/opportunities.repository.js';
 import { ActivitiesRepository } from '../repositories/activities.repository.js';
 import { CreateOpportunityDto } from '../dto/create-opportunity.dto.js';
@@ -7,18 +9,26 @@ import { Opportunity } from '../entities/opportunity.entity.js';
 import { UpdateResult } from 'typeorm';
 import type { OpportunityStatus } from '@jobolo/shared';
 import type { OpportunityQueryDto } from '../dto/opportunity-query.dto.js';
+import { Resume } from '../../resumes/entities/resume.entity.js';
+import { CoverLetter } from '../../cover-letters/entities/cover-letter.entity.js';
 
 @Injectable()
 export class OpportunitiesService {
   constructor(
     private readonly opportunitiesRepository: OpportunitiesRepository,
     private readonly activitiesRepository: ActivitiesRepository,
+    @InjectRepository(Resume)
+    private readonly resumesRepository: Repository<Resume>,
+    @InjectRepository(CoverLetter)
+    private readonly coverLettersRepository: Repository<CoverLetter>,
   ) {}
 
   async create(
     userId: string,
     createDto: CreateOpportunityDto,
   ): Promise<Opportunity> {
+    await this.ensureResumeBelongsToUser(userId, createDto.resumeId);
+    await this.ensureCoverLetterBelongsToUser(userId, createDto.coverLetterId);
     const opportunity = await this.opportunitiesRepository.create({
       ...createDto,
       userId,
@@ -60,6 +70,8 @@ export class OpportunitiesService {
     updateDto: UpdateOpportunityDto,
   ): Promise<UpdateResult> {
     const opportunity = await this.getOpportunity(id, userId);
+    await this.ensureResumeBelongsToUser(userId, updateDto.resumeId);
+    await this.ensureCoverLetterBelongsToUser(userId, updateDto.coverLetterId);
     const result = await this.opportunitiesRepository.update(
       id,
       userId,
@@ -105,5 +117,27 @@ export class OpportunitiesService {
       description: `Stage changed from ${opportunity.stage} to ${nextStage}`,
       occurredAt: new Date(),
     });
+  }
+
+  private async ensureResumeBelongsToUser(
+    userId: string,
+    resumeId?: string | null,
+  ) {
+    if (!resumeId) return;
+    const resume = await this.resumesRepository.findOne({
+      where: { id: resumeId, userId },
+    });
+    if (!resume) throw new NotFoundException('Resume not found');
+  }
+
+  private async ensureCoverLetterBelongsToUser(
+    userId: string,
+    coverLetterId?: string | null,
+  ) {
+    if (!coverLetterId) return;
+    const coverLetter = await this.coverLettersRepository.findOne({
+      where: { id: coverLetterId, userId },
+    });
+    if (!coverLetter) throw new NotFoundException('Cover letter not found');
   }
 }
