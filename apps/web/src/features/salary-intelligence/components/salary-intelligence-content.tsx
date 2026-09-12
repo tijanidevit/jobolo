@@ -8,7 +8,7 @@ export function SalaryIntelligenceContent({ intelligence }: { intelligence: Sala
   const currency =
     intelligence.summary.currencies.length === 1 ? intelligence.summary.currencies[0] : null;
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="space-y-8">
       <SalaryIntelligenceHeader />
       <div className="grid gap-4 md:grid-cols-3">
         <SalarySummaryCard
