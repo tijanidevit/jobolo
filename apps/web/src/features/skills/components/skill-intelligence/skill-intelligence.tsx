@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { BrainCircuit } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getErrorMessage } from '@/features/opportunities/utils/opportunity.utils';
 import type { SkillSort } from '../../api/skills.api';
@@ -51,24 +50,10 @@ export function SkillIntelligence({
           ),
       }}
     >
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-        <header>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-600">
-            Intelligence
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
-            Skill intelligence
-          </h1>
-          <p className="mt-2 max-w-2xl text-slate-500">
-            Compare the skills requested in your saved opportunities with your current proficiency.
-          </p>
-        </header>
+      <div className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <BrainCircuit className="h-5 w-5 text-blue-600" />
-              Your skills
-            </CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base">Your skills</CardTitle>
             <CardDescription>
               Proficiency is your self-assessed skill level. Market demand shows how often a skill
               appears in your saved opportunity descriptions.

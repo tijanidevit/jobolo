@@ -4,7 +4,6 @@ import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
 import { AdvancedAnalytics } from '@/features/analytics/components/analytics-advanced/advanced-analytics';
 import { AnalyticsBreakdownCard } from '@/features/analytics/components/analytics-overview/analytics-breakdown-card';
-import { AnalyticsHeader } from '@/features/analytics/components/analytics-overview/analytics-header';
 import { AnalyticsMetrics } from '@/features/analytics/components/analytics-overview/analytics-metrics';
 import { useAnalyticsOverview } from '@/features/analytics/hooks/use-analytics-overview';
 
@@ -25,7 +24,6 @@ export default function AnalyticsInsightsPage() {
 
   return (
     <div className="space-y-8">
-      <AnalyticsHeader />
       <AnalyticsMetrics metrics={analytics.metrics} />
       <div className="grid gap-6 lg:grid-cols-2">
         <AnalyticsBreakdownCard

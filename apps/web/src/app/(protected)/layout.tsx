@@ -4,17 +4,7 @@ import { AuthGuard } from '@/components/auth/auth-guard';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import {
-  LogOut,
-  LayoutDashboard,
-  Briefcase,
-  User,
-  Settings,
-  BrainCircuit,
-  Lightbulb,
-  FileText,
-  Mail,
-} from 'lucide-react';
+import { LogOut, LayoutDashboard, Briefcase, User, Settings, Lightbulb } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -26,9 +16,6 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Opportunities', href: '/opportunities', icon: Briefcase },
     { name: 'Insights', href: '/insights', icon: Lightbulb },
-    { name: 'Resumes', href: '/resumes', icon: FileText },
-    { name: 'Cover letters', href: '/cover-letters', icon: Mail },
-    { name: 'Skills', href: '/skills', icon: BrainCircuit },
     { name: 'Profile', href: '/profile', icon: User },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];

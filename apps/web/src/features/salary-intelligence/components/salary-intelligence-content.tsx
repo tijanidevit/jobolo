@@ -1,6 +1,5 @@
 import type { SalaryIntelligence } from '../types';
 import { SalaryBreakdownCard } from './salary-breakdown-card';
-import { SalaryIntelligenceHeader } from './salary-intelligence-header';
 import { SalarySummaryCard, salarySummaryIcons } from './salary-summary-card';
 import { SalaryTrendCard } from './salary-trend-card';
 
@@ -9,7 +8,6 @@ export function SalaryIntelligenceContent({ intelligence }: { intelligence: Sala
     intelligence.summary.currencies.length === 1 ? intelligence.summary.currencies[0] : null;
   return (
     <div className="space-y-8">
-      <SalaryIntelligenceHeader />
       <div className="grid gap-4 md:grid-cols-3">
         <SalarySummaryCard
           label="Average target"
