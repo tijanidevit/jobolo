@@ -5,6 +5,7 @@ import appConfig from './config/app.config.js';
 import databaseConfig from './config/database.config.js';
 import jwtConfig from './config/jwt.config.js';
 import mailConfig from './config/mail.config.js';
+import aiConfig from './config/ai.config.js';
 import { typeOrmConfig } from './config/typeorm.config.js';
 import { AppController } from './app.controller.js';
 import { AuthModule } from './modules/auth/auth.module.js';
@@ -22,12 +23,13 @@ import { InsightsModule } from './modules/insights/insights.module.js';
 import { ResumesModule } from './modules/resumes/resumes.module.js';
 import { CoverLettersModule } from './modules/cover-letters/cover-letters.module.js';
 import { SalaryIntelligenceModule } from './modules/salary-intelligence/salary-intelligence.module.js';
+import { JobDescriptionAnalysisModule } from './modules/job-description-analysis/job-description-analysis.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, mailConfig],
+      load: [appConfig, databaseConfig, jwtConfig, mailConfig, aiConfig],
       envFilePath: ['.env.local', '.env'],
       cache: true,
     }),
@@ -47,6 +49,7 @@ import { SalaryIntelligenceModule } from './modules/salary-intelligence/salary-i
     ResumesModule,
     CoverLettersModule,
     SalaryIntelligenceModule,
+    JobDescriptionAnalysisModule,
   ],
   controllers: [AppController],
 })

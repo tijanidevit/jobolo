@@ -11,6 +11,7 @@ import { OpportunitiesRepository } from './repositories/opportunities.repository
 import { ActivitiesRepository } from './repositories/activities.repository.js';
 import { Resume } from '../resumes/entities/resume.entity.js';
 import { CoverLetter } from '../cover-letters/entities/cover-letter.entity.js';
+import { Task } from '../tasks/entities/task.entity.js';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CoverLetter } from '../cover-letters/entities/cover-letter.entity.js';
       ActivityAttachment,
       Resume,
       CoverLetter,
+      Task,
     ]),
   ],
   controllers: [OpportunitiesController, ActivitiesController],

@@ -25,6 +25,7 @@ export class InterviewsRepository {
         userId,
         opportunityId,
         ...data,
+        status: data.status ?? 'scheduled',
         interviewers: data.interviewers?.trim() || null,
         meetingLocation: data.meetingLocation?.trim() || null,
         stage: data.stage?.trim() || null,
@@ -46,6 +47,7 @@ export class InterviewsRepository {
       {
         ...data,
         ...(data.type !== undefined ? { type: data.type.trim() } : {}),
+        ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.interviewers !== undefined
           ? { interviewers: data.interviewers.trim() || null }
           : {}),

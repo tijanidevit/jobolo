@@ -7,6 +7,7 @@ import { Opportunity } from '../entities/opportunity.entity.js';
 import { Resume } from '../../resumes/entities/resume.entity.js';
 import { Repository } from 'typeorm';
 import { CoverLetter } from '../../cover-letters/entities/cover-letter.entity.js';
+import { Task } from '../../tasks/entities/task.entity.js';
 
 describe('OpportunitiesService', () => {
   let service: OpportunitiesService;
@@ -14,6 +15,7 @@ describe('OpportunitiesService', () => {
   let activitiesRepository: Mocked<ActivitiesRepository>;
   let resumesRepository: Mocked<Repository<Resume>>;
   let coverLettersRepository: Mocked<Repository<CoverLetter>>;
+  let tasksRepository: Mocked<Repository<Task>>;
 
   const mockUserId = 'user-123';
   const mockOpportunityId = 'opp-456';
@@ -23,11 +25,13 @@ describe('OpportunitiesService', () => {
     activitiesRepository = mock<ActivitiesRepository>();
     resumesRepository = mock<Repository<Resume>>();
     coverLettersRepository = mock<Repository<CoverLetter>>();
+    tasksRepository = mock<Repository<Task>>();
     service = new OpportunitiesService(
       repository,
       activitiesRepository,
       resumesRepository,
       coverLettersRepository,
+      tasksRepository,
     );
   });
 

@@ -52,7 +52,7 @@ export const opportunityFormSchema = z.object({
   interestScore: optionalNumber('Interest score', 0, 100),
   confidenceScore: optionalNumber('Confidence score', 0, 100),
   priority: z.enum(['', 'low', 'medium', 'high']),
-  jobDescription: z.string().max(10000),
+  jobDescription: z.string().max(30000),
 });
 
 export type OpportunityFormValues = z.infer<typeof opportunityFormSchema>;

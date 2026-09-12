@@ -9,9 +9,16 @@ import { SearchableSelect } from '@/components/ui/searchable-select';
 import { useCreateInterview } from '../hooks/use-create-interview';
 import { useUpdateInterview } from '../hooks/use-update-interview';
 import { interviewSchema, type InterviewFormValues } from '../schemas/interview.schema';
-import { INTERVIEW_TYPES, type Interview } from '../types';
+import { INTERVIEW_STATUSES, INTERVIEW_TYPES, type Interview } from '../types';
 
 const interviewTypeOptions = INTERVIEW_TYPES.map((type) => ({ value: type, label: type }));
+const interviewStatusOptions = INTERVIEW_STATUSES.map((status) => ({
+  value: status,
+  label:
+    status === 'no_show'
+      ? 'No-show'
+      : status.replace('_', ' ').replace(/^\w/, (letter) => letter.toUpperCase()),
+}));
 
 function toDateTimeLocal(value?: string) {
   if (!value) return '';
@@ -23,6 +30,7 @@ function toDateTimeLocal(value?: string) {
 function initialValues(interview?: Interview): InterviewFormValues {
   return {
     type: interview?.type ?? '',
+    status: interview?.status ?? 'scheduled',
     scheduledAt: toDateTimeLocal(interview?.scheduledAt),
     durationMinutes: interview?.durationMinutes?.toString() ?? '',
     interviewers: interview?.interviewers ?? '',
@@ -61,6 +69,7 @@ export function InterviewForm({
     setValidationError(null);
     const payload = {
       type: result.data.type,
+      status: result.data.status,
       scheduledAt: new Date(result.data.scheduledAt).toISOString(),
       ...(result.data.durationMinutes
         ? { durationMinutes: Number(result.data.durationMinutes) }
@@ -112,6 +121,15 @@ export function InterviewForm({
             value={values.scheduledAt}
             onChange={(event) => update('scheduledAt', event.target.value)}
             disabled={isSaving}
+          />
+        </label>
+        <label className="space-y-1.5 text-xs font-medium text-slate-600">
+          Status
+          <SearchableSelect
+            value={values.status}
+            options={interviewStatusOptions}
+            onChange={(value) => update('status', value as InterviewFormValues['status'])}
+            searchPlaceholder="Find interview status..."
           />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">

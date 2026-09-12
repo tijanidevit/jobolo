@@ -36,6 +36,9 @@ export class Interview {
   @Column({ type: 'varchar', length: 50 })
   type: string;
 
+  @Column({ type: 'varchar', length: 20, default: 'scheduled' })
+  status: string;
+
   @Column({ type: 'datetime' })
   scheduledAt: Date;
 

@@ -94,6 +94,13 @@ export class OpportunitiesRepository {
         ...(updateData.nextActionDueDate !== undefined
           ? { nextActionDueDate: updateData.nextActionDueDate ?? null }
           : {}),
+        ...(updateData.nextActionTaskId !== undefined
+          ? {
+              nextActionTaskId: updateData.nextActionTaskId ?? null,
+              nextAction: null,
+              nextActionDueDate: null,
+            }
+          : {}),
       },
     );
   }

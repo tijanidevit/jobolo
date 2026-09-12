@@ -155,6 +155,9 @@ export class Opportunity {
   @Column({ type: 'datetime', nullable: true })
   nextActionDueDate: Date | null;
 
+  @Column({ type: 'varchar', length: 36, nullable: true })
+  nextActionTaskId: string | null;
+
   // --- Metadata ---
   @CreateDateColumn()
   createdAt: Date;

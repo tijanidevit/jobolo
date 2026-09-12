@@ -10,11 +10,22 @@ export const INTERVIEW_TYPES = [
 
 export type InterviewType = (typeof INTERVIEW_TYPES)[number];
 
+export const INTERVIEW_STATUSES = [
+  'scheduled',
+  'confirmed',
+  'completed',
+  'cancelled',
+  'no_show',
+] as const;
+
+export type InterviewStatus = (typeof INTERVIEW_STATUSES)[number];
+
 export interface Interview {
   id: string;
   userId: string;
   opportunityId: string;
   type: string;
+  status: InterviewStatus;
   scheduledAt: string;
   durationMinutes: number | null;
   interviewers: string | null;
@@ -28,6 +39,7 @@ export interface Interview {
 
 export interface InterviewPayload {
   type: string;
+  status?: InterviewStatus;
   scheduledAt: string;
   durationMinutes?: number;
   interviewers?: string;

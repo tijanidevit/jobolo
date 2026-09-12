@@ -86,6 +86,7 @@ export interface Opportunity {
   priority: OpportunityPriority | null;
   nextAction: string | null;
   nextActionDueDate: string | null;
+  nextActionTaskId: string | null;
   createdAt: string;
   updatedAt: string;
 }

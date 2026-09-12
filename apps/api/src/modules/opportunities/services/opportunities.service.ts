@@ -11,6 +11,7 @@ import type { OpportunityStatus } from '@jobolo/shared';
 import type { OpportunityQueryDto } from '../dto/opportunity-query.dto.js';
 import { Resume } from '../../resumes/entities/resume.entity.js';
 import { CoverLetter } from '../../cover-letters/entities/cover-letter.entity.js';
+import { Task } from '../../tasks/entities/task.entity.js';
 
 @Injectable()
 export class OpportunitiesService {
@@ -21,6 +22,8 @@ export class OpportunitiesService {
     private readonly resumesRepository: Repository<Resume>,
     @InjectRepository(CoverLetter)
     private readonly coverLettersRepository: Repository<CoverLetter>,
+    @InjectRepository(Task)
+    private readonly tasksRepository: Repository<Task>,
   ) {}
 
   async create(
@@ -39,14 +42,22 @@ export class OpportunitiesService {
       description: `Started in ${opportunity.stage}`,
       occurredAt: new Date(),
     });
-    return opportunity;
+    return this.withTaskDerivedAction(opportunity, userId);
   }
 
   async findAllForUser(
     userId: string,
     query: OpportunityQueryDto = {},
   ): Promise<Opportunity[]> {
-    return this.opportunitiesRepository.findAllForUser(userId, query);
+    const opportunities = await this.opportunitiesRepository.findAllForUser(
+      userId,
+      query,
+    );
+    return Promise.all(
+      opportunities.map((opportunity) =>
+        this.withTaskDerivedAction(opportunity, userId),
+      ),
+    );
   }
 
   private async getOpportunity(
@@ -57,7 +68,7 @@ export class OpportunitiesService {
     if (!opportunity) {
       throw new NotFoundException('Opportunity not found');
     }
-    return opportunity;
+    return this.withTaskDerivedAction(opportunity, userId);
   }
 
   async findOne(id: string, userId: string): Promise<Opportunity> {
@@ -72,6 +83,11 @@ export class OpportunitiesService {
     const opportunity = await this.getOpportunity(id, userId);
     await this.ensureResumeBelongsToUser(userId, updateDto.resumeId);
     await this.ensureCoverLetterBelongsToUser(userId, updateDto.coverLetterId);
+    await this.ensureTaskBelongsToOpportunity(
+      userId,
+      updateDto.nextActionTaskId,
+      opportunity,
+    );
     const result = await this.opportunitiesRepository.update(
       id,
       userId,
@@ -139,5 +155,45 @@ export class OpportunitiesService {
       where: { id: coverLetterId, userId },
     });
     if (!coverLetter) throw new NotFoundException('Cover letter not found');
+  }
+
+  private async ensureTaskBelongsToOpportunity(
+    userId: string,
+    taskId?: string | null,
+    opportunity?: { id?: string; opportunityId?: string },
+  ) {
+    if (!taskId) return;
+    const task = await this.tasksRepository.findOne({
+      where: {
+        id: taskId,
+        userId,
+        opportunityId: opportunity?.opportunityId ?? opportunity?.id,
+      },
+    });
+    if (!task)
+      throw new NotFoundException('Task not found for this opportunity');
+  }
+
+  private async withTaskDerivedAction(
+    opportunity: Opportunity,
+    userId: string,
+  ) {
+    if (opportunity.nextActionTaskId) {
+      const task = await this.tasksRepository.findOne({
+        where: {
+          id: opportunity.nextActionTaskId,
+          userId,
+          opportunityId: opportunity.id,
+        },
+      });
+      if (!task || task.status === 'completed') {
+        opportunity.nextAction = null;
+        opportunity.nextActionDueDate = null;
+        return opportunity;
+      }
+      opportunity.nextAction = task.title;
+      opportunity.nextActionDueDate = task.dueDate;
+    }
+    return opportunity;
   }
 }

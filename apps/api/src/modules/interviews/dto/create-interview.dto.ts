@@ -1,5 +1,6 @@
 import {
   IsDate,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -10,11 +11,24 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export const INTERVIEW_STATUSES = [
+  'scheduled',
+  'confirmed',
+  'completed',
+  'cancelled',
+  'no_show',
+] as const;
+
 export class CreateInterviewDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
   type: string;
+
+  @IsOptional()
+  @IsString()
+  @IsEnum(INTERVIEW_STATUSES)
+  status?: (typeof INTERVIEW_STATUSES)[number];
 
   @IsDate()
   @Type(() => Date)

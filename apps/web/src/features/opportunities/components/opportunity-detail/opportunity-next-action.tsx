@@ -1,19 +1,13 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { CalendarClock, Check, Loader2, Pencil, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { SearchableSelect } from '@/components/ui/searchable-select';
+import { useTasks } from '@/features/tasks/hooks/use-tasks';
 import { useUpdateOpportunity } from '../../hooks/use-update-opportunity';
 import type { Opportunity } from '../../types';
-
-function toDateTimeLocal(value: string | null) {
-  if (!value) return '';
-  const date = new Date(value);
-  const offset = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
-}
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(
@@ -27,26 +21,31 @@ function isOverdue(value: string | null) {
 
 export function OpportunityNextAction({ opportunity }: { opportunity: Opportunity }) {
   const [isEditing, setIsEditing] = useState(false);
+  const { tasks } = useTasks(opportunity.id);
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-3 pb-4">
+    <Card className="border-blue-100 bg-blue-50/40">
+      <CardHeader className="flex flex-row items-center justify-between gap-3 pb-3">
         <div>
           <CardTitle className="text-base">Next action</CardTitle>
           <p className="mt-1 text-sm text-slate-500">
-            The clearest thing to do next for this opportunity.
+            Select one pending task to keep this opportunity moving.
           </p>
         </div>
         {!isEditing && (
           <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
-            {opportunity.nextAction ? 'Edit' : 'Add action'}
+            {opportunity.nextActionTaskId ? 'Change task' : 'Select task'}
           </Button>
         )}
       </CardHeader>
       <CardContent className="pt-0">
         {isEditing ? (
-          <NextActionForm opportunity={opportunity} onCancel={() => setIsEditing(false)} />
+          <NextActionForm
+            opportunity={opportunity}
+            tasks={tasks}
+            onCancel={() => setIsEditing(false)}
+          />
         ) : (
           <NextActionSummary opportunity={opportunity} />
         )}
@@ -56,19 +55,20 @@ export function OpportunityNextAction({ opportunity }: { opportunity: Opportunit
 }
 
 function NextActionSummary({ opportunity }: { opportunity: Opportunity }) {
-  if (!opportunity.nextAction) {
+  if (!opportunity.nextActionTaskId || !opportunity.nextAction) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-200 px-4 py-5 text-center">
-        <p className="text-sm font-medium text-slate-700">No next action set</p>
+      <div className="rounded-lg border border-dashed border-blue-200 bg-white/70 px-4 py-4 text-center">
+        <p className="text-sm font-medium text-slate-700">No task selected</p>
         <p className="mt-1 text-xs text-slate-500">
-          Choose one concrete step to keep this opportunity moving.
+          Create a task first, then select it as the next action.
         </p>
       </div>
     );
   }
+
   const overdue = isOverdue(opportunity.nextActionDueDate);
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-4">
+    <div className="flex items-start gap-3 rounded-lg border border-blue-100 bg-white px-4 py-3">
       <div className="mt-0.5 rounded-full bg-blue-600 p-1 text-white">
         <Check className="h-3.5 w-3.5" />
       </div>
@@ -90,62 +90,39 @@ function NextActionSummary({ opportunity }: { opportunity: Opportunity }) {
 
 function NextActionForm({
   opportunity,
+  tasks,
   onCancel,
 }: {
   opportunity: Opportunity;
+  tasks: { id: string; title: string; dueDate: string | null; status: string }[];
   onCancel: () => void;
 }) {
   const { updateOpportunity, isUpdating } = useUpdateOpportunity(opportunity.id);
-  const [action, setAction] = useState(opportunity.nextAction ?? '');
-  const [dueDate, setDueDate] = useState(toDateTimeLocal(opportunity.nextActionDueDate));
-  const [error, setError] = useState<string | null>(null);
+  const [taskId, setTaskId] = useState(opportunity.nextActionTaskId ?? '');
+  const taskOptions = tasks
+    .filter((task) => task.status !== 'completed')
+    .map((task) => ({
+      value: task.id,
+      label: task.dueDate ? `${task.title} · due ${formatDate(task.dueDate)}` : task.title,
+    }));
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (action.trim().length > 500) {
-      setError('Next action must be 500 characters or fewer.');
-      return;
-    }
-    setError(null);
-    await updateOpportunity({
-      nextAction: action.trim(),
-      nextActionDueDate: dueDate ? new Date(dueDate).toISOString() : null,
-    });
-    onCancel();
-  };
-
-  const clear = async () => {
-    await updateOpportunity({ nextAction: '', nextActionDueDate: null });
+  const save = async () => {
+    await updateOpportunity({ nextActionTaskId: taskId || null });
     onCancel();
   };
 
   return (
-    <form
-      onSubmit={submit}
-      className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/70 p-4"
-    >
-      <label className="block space-y-1.5 text-xs font-medium text-slate-600">
-        Next action
-        <Input
-          value={action}
-          onChange={(event) => setAction(event.target.value)}
-          placeholder="Follow up with recruiter"
-          disabled={isUpdating}
-        />
-      </label>
-      <label className="block space-y-1.5 text-xs font-medium text-slate-600">
-        Due date
-        <input
-          type="datetime-local"
-          value={dueDate}
-          onChange={(event) => setDueDate(event.target.value)}
-          className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500"
-          disabled={isUpdating}
-        />
-      </label>
-      {error && (
-        <p className="text-xs text-red-600" role="alert">
-          {error}
+    <div className="space-y-3 rounded-lg border border-blue-100 bg-white p-3">
+      <SearchableSelect
+        value={taskId}
+        options={[{ value: '', label: 'No next action' }, ...taskOptions]}
+        onChange={setTaskId}
+        placeholder="Select a pending task"
+        searchPlaceholder="Search tasks..."
+      />
+      {taskOptions.length === 0 && (
+        <p className="text-xs text-slate-500">
+          No pending tasks are available. Add one in the Tasks tab.
         </p>
       )}
       <div className="flex justify-end gap-2">
@@ -153,21 +130,11 @@ function NextActionForm({
           <X className="mr-1.5 h-3.5 w-3.5" />
           Cancel
         </Button>
-        {opportunity.nextAction && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => void clear()}
-            disabled={isUpdating}
-          >
-            Clear
-          </Button>
-        )}
-        <Button type="submit" size="sm" disabled={isUpdating}>
-          {isUpdating && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}Save action
+        <Button type="button" size="sm" onClick={() => void save()} disabled={isUpdating}>
+          {isUpdating && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+          Save next action
         </Button>
       </div>
-    </form>
+    </div>
   );
 }

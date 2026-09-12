@@ -61,6 +61,23 @@ export class DashboardService {
       .filter((interview) => interview.scheduledAt >= todayStart)
       .slice(0, 10);
     const activeOpportunities = opportunities
+      .map((opportunity) => {
+        const nextTask = opportunity.nextActionTaskId
+          ? tasks.find((task) => task.id === opportunity.nextActionTaskId)
+          : undefined;
+        if (
+          opportunity.nextActionTaskId &&
+          nextTask &&
+          nextTask.status !== 'completed'
+        ) {
+          opportunity.nextAction = nextTask.title;
+          opportunity.nextActionDueDate = nextTask.dueDate;
+        } else if (opportunity.nextActionTaskId) {
+          opportunity.nextAction = null;
+          opportunity.nextActionDueDate = null;
+        }
+        return opportunity;
+      })
       .filter(
         (opportunity) => isActive(opportunity.stage) && opportunity.nextAction,
       )

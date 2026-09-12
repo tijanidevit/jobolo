@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const interviewSchema = z.object({
   type: z.string().min(1, 'Choose an interview type.'),
+  status: z.enum(['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show']),
   scheduledAt: z.string().min(1, 'Choose a date and time.'),
   durationMinutes: z.string(),
   interviewers: z.string(),

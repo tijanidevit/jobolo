@@ -167,6 +167,9 @@ function InterviewCard({
             {interview.stage}
           </span>
         )}
+        <span className="rounded-full bg-slate-100 px-2 py-1 font-medium capitalize text-slate-700">
+          {interview.status === 'no_show' ? 'No-show' : interview.status.replace('_', ' ')}
+        </span>
         {interview.performanceRating && (
           <span className="flex items-center gap-1 text-amber-600">
             <Star className="h-3.5 w-3.5 fill-current" />

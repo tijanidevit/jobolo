@@ -17,8 +17,10 @@ import {
 import type { Opportunity, OpportunityPayload } from '../../types';
 import { useCreateOpportunity } from '../../hooks/use-create-opportunity';
 import { useUpdateOpportunity } from '../../hooks/use-update-opportunity';
-import { useResumes } from '@/features/resumes/hooks/use-resumes';
 import { useCoverLetters } from '@/features/cover-letters/hooks/use-cover-letters';
+import type { JobDescriptionAnalysis } from '@/features/job-description-analysis/types';
+import { OpportunityImport } from './opportunity-import';
+import { OpportunityResumeField } from './opportunity-resume-field';
 import {
   opportunityFormSchema,
   type OpportunityFormValues,
@@ -40,6 +42,25 @@ function numberValue(value: number | null | undefined) {
 
 function toIsoDate(value: string) {
   return value ? new Date(`${value}T00:00:00.000Z`).toISOString() : undefined;
+}
+
+function normalizeEmploymentType(value: string | null) {
+  if (!value) return '';
+  return value
+    .toLowerCase()
+    .replace(/-/g, '_')
+    .replace(/ /g, '_') as OpportunityFormValues['employmentType'];
+}
+
+function parseSalary(value: string | null) {
+  if (!value) return null;
+  const currency = value.match(/\b(USD|CAD|EUR|GBP)\b/i)?.[1]?.toUpperCase();
+  const amounts = [...value.matchAll(/\d[\d,.]*\s*(?:k|K)?/g)].map((match) => {
+    const raw = match[0].replace(/,/g, '').trim();
+    const multiplier = /k$/i.test(raw) ? 1000 : 1;
+    return Number.parseFloat(raw.replace(/k$/i, '')) * multiplier;
+  });
+  return amounts.length > 0 ? { currency, amounts } : null;
 }
 
 function defaultValues(opportunity?: Opportunity | null): OpportunityFormValues {
@@ -102,18 +123,42 @@ export function OpportunityForm({ opportunity }: OpportunityFormProps) {
   const router = useRouter();
   const { createOpportunity, isCreating } = useCreateOpportunity();
   const { updateOpportunity, isUpdating } = useUpdateOpportunity(opportunity?.id ?? '');
-  const { resumes } = useResumes();
   const { coverLetters } = useCoverLetters();
   const isSaving = isCreating || isUpdating;
   const {
     register,
     control,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunityFormSchema),
     defaultValues: defaultValues(opportunity),
   });
+
+  function applyAnalysis(analysis: JobDescriptionAnalysis) {
+    if (analysis.companyName) setValue('companyName', analysis.companyName, { shouldDirty: true });
+    if (analysis.jobTitle) setValue('jobTitle', analysis.jobTitle, { shouldDirty: true });
+    if (analysis.location) setValue('location', analysis.location, { shouldDirty: true });
+    if (analysis.employmentType) {
+      setValue('employmentType', normalizeEmploymentType(analysis.employmentType), {
+        shouldDirty: true,
+      });
+    }
+    if (analysis.sourceUrl) setValue('jobUrl', analysis.sourceUrl, { shouldDirty: true });
+    setValue('jobDescription', analysis.sourceDescription, { shouldDirty: true });
+    const salary = parseSalary(analysis.salary);
+    if (salary?.currency) setValue('currency', salary.currency, { shouldDirty: true });
+    if (salary?.amounts[0] !== undefined) {
+      setValue('salaryRangeMin', String(salary.amounts[0]), { shouldDirty: true });
+    }
+    if (salary?.amounts[1] !== undefined) {
+      setValue('salaryRangeMax', String(salary.amounts[1]), { shouldDirty: true });
+    }
+    if (analysis.location && /\bremote\b/i.test(analysis.location)) {
+      setValue('workArrangement', 'remote', { shouldDirty: true });
+    }
+  }
 
   const submit = async (values: OpportunityFormValues) => {
     if (opportunity) await updateOpportunity(toPayload(values));
@@ -135,6 +180,7 @@ export function OpportunityForm({ opportunity }: OpportunityFormProps) {
       </CardHeader>
       <form onSubmit={handleSubmit(submit)}>
         <CardContent className="space-y-6">
+          {!opportunity && <OpportunityImport onApply={applyAnalysis} />}
           <section className="space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
               Role basics
@@ -207,22 +253,7 @@ export function OpportunityForm({ opportunity }: OpportunityFormProps) {
               />
             </div>
             <Field label="Resume used" error={errors.resumeId?.message}>
-              <Controller
-                name="resumeId"
-                control={control}
-                render={({ field }) => (
-                  <SearchableSelect
-                    value={field.value}
-                    options={[
-                      { value: '', label: 'No resume selected' },
-                      ...resumes.map((resume) => ({ value: resume.id, label: resume.name })),
-                    ]}
-                    onChange={field.onChange}
-                    placeholder="Select a resume"
-                    searchPlaceholder="Search resumes..."
-                  />
-                )}
-              />
+              <OpportunityResumeField control={control} error={errors.resumeId?.message} />
             </Field>
             <Field label="Cover letter used" error={errors.coverLetterId?.message}>
               <Controller
@@ -332,6 +363,7 @@ export function OpportunityForm({ opportunity }: OpportunityFormProps) {
           <Field label="Job description" error={errors.jobDescription?.message}>
             <textarea
               className="min-h-32 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus-visible:ring-1 focus-visible:ring-blue-500"
+              maxLength={30000}
               {...register('jobDescription')}
               placeholder="Paste or summarize the role while the context is fresh."
             />
