@@ -24,6 +24,7 @@ import { ResumesModule } from './modules/resumes/resumes.module.js';
 import { CoverLettersModule } from './modules/cover-letters/cover-letters.module.js';
 import { SalaryIntelligenceModule } from './modules/salary-intelligence/salary-intelligence.module.js';
 import { JobDescriptionAnalysisModule } from './modules/job-description-analysis/job-description-analysis.module.js';
+import { AiModule } from './modules/ai/ai.module.js';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { JobDescriptionAnalysisModule } from './modules/job-description-analysis
     CoverLettersModule,
     SalaryIntelligenceModule,
     JobDescriptionAnalysisModule,
+    AiModule,
   ],
   controllers: [AppController],
 })

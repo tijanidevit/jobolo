@@ -12,6 +12,9 @@ import { Task } from '../modules/tasks/entities/task.entity.js';
 import { UserSkill } from '../modules/skills/entities/user-skill.entity.js';
 import { Resume } from '../modules/resumes/entities/resume.entity.js';
 import { CoverLetter } from '../modules/cover-letters/entities/cover-letter.entity.js';
+import { OpportunityFitScore } from '../modules/ai/entities/opportunity-fit-score.entity.js';
+import { InterviewPreparation } from '../modules/ai/entities/interview-preparation.entity.js';
+import { InterviewMemory } from '../modules/ai/entities/interview-memory.entity.js';
 
 export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
@@ -36,6 +39,9 @@ export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
       UserSkill,
       Resume,
       CoverLetter,
+      OpportunityFitScore,
+      InterviewPreparation,
+      InterviewMemory,
     ],
     migrations: ['dist/migrations/*.js'],
     migrationsRun: false,

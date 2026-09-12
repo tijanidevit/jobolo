@@ -17,6 +17,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorState } from '@/components/ui/error-state';
 import { LoadingState } from '@/components/ui/loading-state';
 import { RichText } from '@/components/ui/rich-text';
+import { InterviewMemoryPanel } from '@/features/ai-intelligence/components/interview-memory-panel';
+import { InterviewPreparationPanel } from '@/features/ai-intelligence/components/interview-preparation-panel';
 import { useDeleteInterview } from '../hooks/use-delete-interview';
 import { useInterviews } from '../hooks/use-interviews';
 import type { Interview } from '../types';
@@ -50,66 +52,70 @@ export function InterviewList({ opportunityId }: { opportunityId: string }) {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-3">
-        <div>
-          <CardTitle className="text-base">Interviews</CardTitle>
-          <p className="mt-1 text-sm text-slate-500">
-            Plan conversations and capture what you learn.
-          </p>
-        </div>
-        {!isAdding && !editingInterview && (
-          <Button variant="outline" size="sm" onClick={() => setIsAdding(true)}>
-            <Plus className="mr-1.5 h-3.5 w-3.5" /> Schedule interview
-          </Button>
+    <div className="space-y-6">
+      <InterviewPreparationPanel opportunityId={opportunityId} />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between gap-3">
+          <div>
+            <CardTitle className="text-base">Interviews</CardTitle>
+            <p className="mt-1 text-sm text-slate-500">
+              Plan conversations and capture what you learn.
+            </p>
+          </div>
+          {!isAdding && !editingInterview && (
+            <Button variant="outline" size="sm" onClick={() => setIsAdding(true)}>
+              <Plus className="mr-1.5 h-3.5 w-3.5" /> Schedule interview
+            </Button>
+          )}
+        </CardHeader>
+        {(isAdding || editingInterview) && (
+          <CardContent className="border-t border-slate-100 pt-5">
+            <InterviewForm
+              key={editingInterview?.id ?? 'new'}
+              opportunityId={opportunityId}
+              interview={editingInterview ?? undefined}
+              onCancel={closeForm}
+            />
+          </CardContent>
         )}
-      </CardHeader>
-      {(isAdding || editingInterview) && (
-        <CardContent className="border-t border-slate-100 pt-5">
-          <InterviewForm
-            key={editingInterview?.id ?? 'new'}
-            opportunityId={opportunityId}
-            interview={editingInterview ?? undefined}
-            onCancel={closeForm}
-          />
-        </CardContent>
-      )}
-      <CardContent className={isAdding || editingInterview ? 'pt-5' : 'pt-0'}>
-        {isLoading && <LoadingState message="Loading interviews..." className="py-6" />}
-        {error && (
-          <ErrorState
-            message="We could not load interviews."
-            onRetry={() => void refetch()}
-            className="mt-2"
-          />
-        )}
-        {!isLoading &&
-          !error &&
-          visibleInterviews.length === 0 &&
-          !isAdding &&
-          !editingInterview && (
-            <div className="rounded-lg border border-dashed border-slate-200 px-4 py-7 text-center">
-              <p className="text-sm font-medium text-slate-700">No interviews scheduled</p>
-              <p className="mt-1 text-xs text-slate-500">
-                Keep your upcoming conversations and learnings here.
-              </p>
+        <CardContent className={isAdding || editingInterview ? 'pt-5' : 'pt-0'}>
+          {isLoading && <LoadingState message="Loading interviews..." className="py-6" />}
+          {error && (
+            <ErrorState
+              message="We could not load interviews."
+              onRetry={() => void refetch()}
+              className="mt-2"
+            />
+          )}
+          {!isLoading &&
+            !error &&
+            visibleInterviews.length === 0 &&
+            !isAdding &&
+            !editingInterview && (
+              <div className="rounded-lg border border-dashed border-slate-200 px-4 py-7 text-center">
+                <p className="text-sm font-medium text-slate-700">No interviews scheduled</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Keep your upcoming conversations and learnings here.
+                </p>
+              </div>
+            )}
+          {!isLoading && !error && visibleInterviews.length > 0 && (
+            <div className="space-y-3">
+              {visibleInterviews.map((interview) => (
+                <InterviewCard
+                  key={interview.id}
+                  interview={interview}
+                  isDeleting={isDeleting}
+                  onEdit={() => setEditingInterview(interview)}
+                  onDelete={() => void remove(interview)}
+                  opportunityId={opportunityId}
+                />
+              ))}
             </div>
           )}
-        {!isLoading && !error && visibleInterviews.length > 0 && (
-          <div className="space-y-3">
-            {visibleInterviews.map((interview) => (
-              <InterviewCard
-                key={interview.id}
-                interview={interview}
-                isDeleting={isDeleting}
-                onEdit={() => setEditingInterview(interview)}
-                onDelete={() => void remove(interview)}
-              />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -118,11 +124,13 @@ function InterviewCard({
   isDeleting,
   onEdit,
   onDelete,
+  opportunityId,
 }: {
   interview: Interview;
   isDeleting: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  opportunityId: string;
 }) {
   return (
     <article className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
@@ -199,6 +207,7 @@ function InterviewCard({
           <RichText text={interview.notes} />
         </div>
       )}
+      <InterviewMemoryPanel opportunityId={opportunityId} interviewId={interview.id} />
     </article>
   );
 }
